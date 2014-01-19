@@ -2,16 +2,17 @@ VSTRING Library
 1998-2014 (c) Vladi Belperchinov-Shabanski "Cade" <cade@bis.bg>
 Distributed under the GPL license, see end of this file for full text!
 
-VSTRING library provides vast set of string manipulation features
-including dynamic string object that can be freely exchanged with
+VSTRING is C++ string library. It provides dynamic strings and char* 
+compatibility and also Perl-like arrays, hashes and regexp objects.
+
+The dynamic string object can be freely exchanged with
 standard char* type, so there is no need to change function calls
 nor the implementation when you change from char* to String (and
 vice versa). The main difference from other similar libs is that
-the dynamic String class has no visible methods (except operators)
+the dynamic string class has no visible methods (except operators)
 so you will use it as a plain char* but it will expand/shrink as
 needed. 
 
-Thank you for the attention!
 If you find bug or you have note about vstring lib, please feel
 free to contact me at: 
 
