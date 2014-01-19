@@ -5,24 +5,24 @@ VSTRING is C++ string manipulation and handling library.
 
 # SYNOPSIS
 
-  #include <stdio.h>
-  #include "vstrlib.h"
+    #include <stdio.h>
+    #include "vstrlib.h"
 
-  VString str = "Hello";
-  str += " World";    // str is `Hello World' now
-  str_reverse( str ); // str is `dlroW olleH' now
-  str_low( str );     // lower case
+    VString str = "Hello";
+    str += " World";    // str is `Hello World' now
+    str_reverse( str ); // str is `dlroW olleH' now
+    str_low( str );     // lower case
 
-  VArray va = str_split( " +", str ); // array has `dlroW', `olleH'
+    VArray va = str_split( " +", str ); // array has `dlroW', `olleH'
 
-  str_reverse( va[0] );
-  str_reverse( va[1] );
+    str_reverse( va[0] );
+    str_reverse( va[1] );
 
-  str = str_join( va, " " );  // str is back to "Hello World"
-  
-  VTrie tr = va;
-  
-  // tr[ "Hello" ] contains "World"
+    str = str_join( va, " " );  // str is back to "Hello World"
+    
+    VTrie tr = va;
+    
+    // tr[ "Hello" ] contains "World"
 
 # DESCRIPTION
 
