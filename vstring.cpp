@@ -203,7 +203,7 @@
 **
 ****************************************************************************/
 
-  VString &str_mul( VString &target, int n ) // multiplies the VString n times, i.e. `1'*5 = `11111'
+  VString &str_mul( VString &target, int n ) // multiplies the VString n times, i.e. "1"*5 = "11111"
   {
     target.resize( target.box->sl * n );
     str_mul( target.box->s, n );
@@ -480,7 +480,7 @@
 **
 ****************************************************************************/
 
-  char* str_mul( char* target, int n ) // multiplies the string n times, i.e. `1'*5 = `11111'
+  char* str_mul( char* target, int n ) // multiplies the string n times, i.e. "1"*5 = "11111"
   {
     if ( n < 0 ) return target;
     if ( n == 0 )
@@ -1125,6 +1125,21 @@
     return box->_count;
   }
 
+  int VArray::push( VTrie *tr )
+  {
+    tr->keys_and_values( this, this );
+    return box->_count;
+  }
+
+  int VArray::push( VArray *arr )
+  {
+    ASSERT( arr != this );
+    int cnt = arr->count();
+    for( int z = 0; z < cnt; z++ )
+      push( arr->get( z ) );
+    return box->_count;
+  }
+
   const char* VArray::pop()
   {
     if ( box->_count == 0 ) return NULL;
@@ -1139,26 +1154,30 @@
     return box->_count;
   }
 
+  int VArray::unshift( VTrie *tr )
+  {
+    VArray tmp_arr;
+    tr->keys_and_values( &tmp_arr, &tmp_arr );
+    unshift( &tmp_arr );
+    return box->_count;
+  }
+
+  int VArray::unshift( VArray *arr )
+  {
+    ASSERT( arr != this );
+    // TODO: this is not efficient, data storage must be moved by input count and filled in place!
+    int cnt = arr->count();
+    for( int z = cnt - 1; z >= 0; z-- )
+      unshift( arr->get( z ) );
+    return box->_count;
+  }
+
   const char* VArray::shift()
   {
     if ( box->_count == 0 ) return NULL;
     _ret_str = get( 0 );
     del( 0 );
     return _ret_str.data();
-  }
-
-  int VArray::merge( VTrie *tr )
-  {
-    tr->keys_and_values( this, this );
-    return box->_count;
-  }
-
-  int VArray::merge( VArray *arr )
-  {
-    int cnt = arr->count();
-    for( int z = 0; z < cnt; z++ )
-      push( arr->get( z ) );
-    return box->_count;
   }
 
   int VArray::fload( const char* fname )
@@ -1582,6 +1601,7 @@
 
   void VTrie::merge( VTrie *tr )
   {
+    ASSERT( tr != this );
     VArray ka = tr->keys();
     VArray va = tr->values();
     ASSERT( ka.count() == va.count() );
@@ -1632,7 +1652,7 @@
   int VTrie::fsave( FILE* f )
   {
     VArray arr;
-    arr.merge( this );
+    arr.push( this );
     return arr.fsave( f );
   }
 

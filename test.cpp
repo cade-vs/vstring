@@ -99,7 +99,7 @@ void test3()
   VArray v1;
 
   printf( "--------------------\n" );
-  v1 = tr;    // same as: v1.undef; v1.merge( &tr );
+  v1 = tr;    // same as: v1.undef; v1.push( &tr );
   v1.print(); // print array data
 
   VRegexp re( "a([0-9]+)" ); // compiling new regexp
@@ -389,6 +389,40 @@ void test8()
   printf( "************************ test 5 ends here\n" );
 }
 
+void test9()
+{
+  VArray va;
+  VTrie  tr;
+  
+  printf( "---9---------------------------------------------------\n" );
+  
+  va.push( "one" );
+  va.push( "two" );
+  va.push( "tri" );
+  va.push( "pet" );
+  
+  tr = va;
+  
+  tr.print();
+
+  va.push( &tr );
+  
+  va.print();
+  
+  VArray va2;
+  va2.push( "1" );
+  va2.push( "2" );
+  va2.push( "3" );
+  va2.push( "4" );
+
+  va2.unshift( "0" );
+  va2.unshift( &va );
+  va2.push( &va );
+
+  va2.print();
+  
+}
+
 int main( int argc, char* argv[] )
 {
 
@@ -452,6 +486,8 @@ int main( int argc, char* argv[] )
   test5();
   test6();
   test7();
+  test8();
+  test9();
   //*/
   return 0;
 }

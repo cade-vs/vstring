@@ -5,7 +5,7 @@ VSTRING is C++ string manipulation and handling library.
 
 # SYNOPSIS
 
-    #include <stdio.h>
+    #include "vstring.h"
     #include "vstrlib.h"
 
     VString str = "Hello";
@@ -37,28 +37,87 @@ the dynamic string class has no visible methods (except operators)
 so you will use it as a plain char* but it will expand/shrink as
 needed. 
 
-If you find bug or you have note about vstring lib, please feel
-free to contact me at: 
+# REFERENCE
 
-# BASE char* FUNCTIONS REFERENCE
+vstring.h and vstrlib.h files can be used as reference. This file contains
+brief introduction and some notes but for further API documentation check
+the .h files.
 
-todo...
+# BASE char* AND VString FUNCTIONS NOTES
 
-# VString CLASS REFERENCE
+All functions for char* handling may overflow! If you need safe strings, use
+the same functions but with VString instead of char*.
 
-todo...
+Functions common for char* and VString:
 
-# VArray CLASS REFERENCE
+    str_set( str, "hello" );
+    str_mul( str, 4 );
+    str_replace( str, "o", " " );
+    str_left( dest_str, str, 4 );
+    str_up( dest_str );
 
-todo...
+In the examples above, str, dest_str and source_str may be either char* 
+or VString.
 
-# VTrie CLASS REFERENCE
+# VString CLASS NOTES
 
-todo...
+    VString str = "hello";
+    str += " world";
+    if( str == "hello world") { ... }
+    int len = str_len( str );
+    str[3] = 'z'; // safe! even outside string boundaries
 
-# VRegexp CLASS REFERENCE
+# VArray CLASS NOTES
 
-todo...
+    VArray va;
+    
+    // append array elements
+    va.push( "element 1" );
+    va.push( str ); // i.e. VString
+    va.push( other_varray ); 
+    va.push( trie ); // see VTrie below
+
+    // take out the last element
+    VString str = va.pop()
+    
+    // push elements at the beginning 
+    va.unshift( "element 1" );
+    va.unshift( str ); // i.e. VString
+    va.unshift( other_varray ); 
+    va.unshift( trie ); // see VTrie below
+    
+    // take out the first element
+    VString str = va.shift();
+
+    va.reverse(); // reverse elements order
+    va.undef(); // remove all elements
+
+# VTrie CLASS NOTES
+
+    VTrie tr;
+    
+    tr[ "hello"  ] = "world";
+    tr[ "number" ] = "12345";
+    
+    VArray va = tr; // array is: hello world number 12345
+                    // however only key+value order is preserved!
+
+    tr.reverse(); // reverse keys <-> values
+                    
+    tr.undef(); // remove all keys
+
+# VRegexp CLASS NOTES
+
+    VRegexp re( "a([0-9]+)" ); // compiling new regexp
+
+    if( re.m( "tralala85." ) ) // match against compiled regexp
+      res1 = re[1]; // re[1] returns `85'
+
+    if( re.m( "tralala85.", "(la)+" ) ) // match against new regexp pattern
+      {
+      str_all_matched   = re[0]; // `lala'
+      str_first_capture = re[1]; // `la'
+      }
 
 # FEEDBACK
 
