@@ -70,6 +70,7 @@ please, contact me.
 VSTRING Library
 
 Vladi Belperchinov-Shabanski "Cade" 
+
 <cade@bis.bg> <cade@biscom.net> <cade@datamax.bg> <cade@cpan.org>
 http://cade.datamax.bg/away/vstring/
 
