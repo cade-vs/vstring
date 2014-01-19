@@ -14,7 +14,7 @@ VSTRING is C++ string manipulation and handling library.
     str_low( str );     // lower case
 
     VArray va = str_split( " +", str ); // array has `dlroW', `olleH'
-
+                                        // " +" is Regexp
     str_reverse( va[0] );
     str_reverse( va[1] );
 
@@ -53,6 +53,10 @@ todo...
 todo...
 
 # VTrie CLASS REFERENCE
+
+todo...
+
+# VRegexp CLASS REFERENCE
 
 todo...
 
