@@ -1,14 +1,15 @@
 /****************************************************************************
  *
  *  VSTRING Library
- *  1998-2014 (c) Vladi Belperchinov-Shabanski "Cade" 
- *  <cade@bis.bg> <cade@biscom.net> <cade@datamax.bg> <cade@cpan.org>
- *  http://cade.datamax.bg/away/vstring/  
+ *
+ *  1996-2020 (c) Vladi Belperchinov-Shabanski "Cade" 
+ *
+ *  http://cade.datamax.bg/  <cade@biscom.net> <cade@bis.bg> <cade@datamax.bg>
  *  Distributed under the GPL license, you should receive copy of GPL!
  *
  *  SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- *  VSTRING library provides vast set of string manipulation features
+ *  VSTRING library provides wide set of string manipulation features
  *  including dynamic string object that can be freely exchanged with
  *  standard char* type, so there is no need to change function calls
  *  nor the implementation when you change from char* to VString (and
@@ -20,14 +21,23 @@
  *  If you find bug or you have note about vstring lib, please feel
  *  free to contact me.
  *
- *  NOTE: vstring was initially (and loosely) based on
- *        `cxstring' lib (c) Ivo Baylov 1998.
- *  NOTE: vstring is distributed standalone as well as a part from vslib.
+ *  VSTRING part (vstring.h and vstring.cpp) implements plain string-only
+ *  manipulations:
  *
- *  This file (vstring.h and vstring.cpp) implements plain string-only
- *  manipulations. For further functionality see vstrlib.h and vstrlib.cpp.
+ *  char* functions to manipulate in-memory string buffers
+ *  VString -- dynamic string, which resizes automatically
  *
- ****************************************************************************/
+ *  VSTRLIB part (vstrlib.h and vstrlib.cpp) provides string data 
+ *  structures which mimic Perl's. There are several classes:
+ *
+ *  VArray  -- array of VString elements
+ *  VTrie   -- associative array (hash) of VString elements
+ *  VRegexp -- regular expression helper class
+ *
+ *  VString, VArray, VTrie use shallow copy and copy-on-write functionality,
+ *  so things like str1 = str2, varray1 = varray2 etc. are cheap and fast :)
+ *
+ ***************************************************************************/
 
 #ifndef _VSTRING_H_
 #define _VSTRING_H_
@@ -285,7 +295,7 @@ public:
   friend VString& str_cut_spc  ( VString& target                       ); // does `str_cut(" ");'
 
   friend VString& str_pad  ( VString& target, int len, char ch = ' ' );
-  friend VString& str_comma( VString& target, char delim = ',' );
+  friend VString& str_comma( VString& target, char delim = '\'' );
 
   // next 3 functions are safe! so if you get/set out f the VString range!
   friend void str_set_ch( VString& target, int pos, const char ch ); // sets `ch' char at position `pos'
@@ -373,8 +383,8 @@ public:
   char* str_pad( char* target, int len, char ch = ' ' );
 
   // insert `commas' for 1000's delimiter or use another delimiter
-  // VString/char* supposed to be a integer or real w/o `e' format
-  char* str_comma( char* target, char delim = ',' );
+  // VString supposed to be a integer or real w/o `e' format
+  char* str_comma( char* target, char delim = '\'' );
 
   // translate chars from `from' to `to'
   // length of `from' MUST be equal to length of `to'
@@ -394,7 +404,7 @@ public:
 **
 ****************************************************************************/
 
-  VString str_up( const char* src );
+  VString str_up ( const char* src );
   VString str_low( const char* src );
   VString str_flip_case( const char* src );
 

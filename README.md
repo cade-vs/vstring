@@ -37,6 +37,15 @@ the dynamic string class has no visible methods (except operators)
 so you will use it as a plain char* but it will expand/shrink as
 needed. 
 
+All classes (VString, VArray, Vtrie) implementation provide shallow copy
+and copy-on-write functionality so assignment operators like:
+
+  str1 = str2
+  varr1 = varr2
+  vtrie1 = vtri2
+  
+are cheap and fast!
+
 # REFERENCE
 
 vstring.h and vstrlib.h files can be used as reference. This file contains
@@ -126,17 +135,15 @@ please, contact me.
 
 # AUTHOR
 
-VSTRING Library
+    Vladi Belperchinov-Shabanski "Cade" 
 
-Vladi Belperchinov-Shabanski "Cade" 
+    <cade@bis.bg> <cade@biscom.net> <cade@datamax.bg> <cade@cpan.org>
 
-<cade@bis.bg> <cade@biscom.net> <cade@datamax.bg> <cade@cpan.org>
-http://cade.datamax.bg/away/vstring/
+    http://cade.datamax.bg/away/vstring/
 
-Distributed under the GPL license, see end of this file for full text!
+    https://github.com/cade-vs/vstring
 
-NOTE: vstring is distributed standalone as well as a part from vslib/vfu:
-http://cade.datamax.bg/vfu/
+# LICENSE
 
-
+Distributed under the GPL license, see COPYING file for the full text.
 

@@ -1,20 +1,43 @@
 /****************************************************************************
  *
  *  VSTRING Library
- *  1998-2014 (c) Vladi Belperchinov-Shabanski "Cade" 
- *  <cade@bis.bg> <cade@biscom.net> <cade@datamax.bg> <cade@cpan.org>
- *  http://cade.datamax.bg/away/vstring/  
+ *
+ *  1996-2020 (c) Vladi Belperchinov-Shabanski "Cade" 
+ *
+ *  http://cade.datamax.bg/  <cade@biscom.net> <cade@bis.bg> <cade@datamax.bg>
  *  Distributed under the GPL license, you should receive copy of GPL!
  *
  *  SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- *  This part provides string data structures which mimic Perl's:
+ *  VSTRING library provides wide set of string manipulation features
+ *  including dynamic string object that can be freely exchanged with
+ *  standard char* type, so there is no need to change function calls
+ *  nor the implementation when you change from char* to VString (and
+ *  vice versa). The main difference from other similar libs is that
+ *  the dynamic VString class has no visible methods (except operators)
+ *  so you will use it as a plain char* but it will expand/shrink as
+ *  needed.
+ *
+ *  If you find bug or you have note about vstring lib, please feel
+ *  free to contact me.
+ *
+ *  VSTRING part (vstring.h and vstring.cpp) implements plain string-only
+ *  manipulations:
+ *
+ *  char* functions to manipulate in-memory string buffers
+ *  VString -- dynamic string, which resizes automatically
+ *
+ *  VSTRLIB part (vstrlib.h and vstrlib.cpp) provides string data 
+ *  structures which mimic Perl's. There are several classes:
  *
  *  VArray  -- array of VString elements
  *  VTrie   -- associative array (hash) of VString elements
  *  VRegexp -- regular expression helper class
  *
- ****************************************************************************/
+ *  VString, VArray, VTrie use shallow copy and copy-on-write functionality,
+ *  so things like str1 = str2, varray1 = varray2 etc. are cheap and fast :)
+ *
+ ***************************************************************************/
 
 #ifdef WIN32
 #include "stdafx.h"
@@ -234,13 +257,12 @@ int mem_quick_search_nc( const char *p, int ps, const char *d, int ds )
 **
 ** Sum search
 **
-** This exact form is made myself. It is not anything new or exceptional :)
-** It is Karp-Rabin idea of searching `similar' pattern and if found check
-** the actual one. The hash function here is simple sum of bytes in the range
-** of pattern size.
+** It is variation of Karp-Rabin idea of searching `similar' pattern and 
+** if found check the actual one. The hash function here is simple sum of 
+** bytes in the range of pattern size.
 **
-** Mostly useless since Quick search performs better in almost all cases.
-** I wrote it for benchmarking purpose.
+** Not much useful since Quick search performs better in almost all cases.
+** Written for benchmarking purposes.
 **
 *****************************************************************************/
 
@@ -267,6 +289,8 @@ int mem_sum_search( const char *p, int ps, const char *d, int ds )
 **
 ** mem_*_search benchmarks:
 **
+** (NOTE: These results are circa 2000
+**
 ** For simple benchmark I used ~700MB file and tried to find 10- and 70-chars
 ** patterns. Results in seconds for both cases (similar to 1-2 seconds) were:
 **
@@ -274,8 +298,7 @@ int mem_sum_search( const char *p, int ps, const char *d, int ds )
 ** KMP    42
 ** Sum    39
 **
-** Even though KMP returns right result I prefer Quick search for default!
-** (last one was joke:))
+** Even though KMP returns right result I prefer Quick search as default :))
 **
 ** Case insensitive search is 2 times slower due to the simple implementation.
 **
@@ -343,7 +366,7 @@ long file_pattern_search( const char *p, int ps, const char* fn, const char* opt
 **
 *****************************************************************************/
 
-/* FGrep -- regular expression search (I know `G' here stands for <nothing>:)) */
+/* FGrep -- regular expression search (I know `G' here stands for <nothing> :)) */
 
 long file_grep( const char *re_string, const char* file_name, int nocase, off_t spos )
 {

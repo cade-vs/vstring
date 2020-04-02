@@ -1,20 +1,43 @@
 /****************************************************************************
  *
  *  VSTRING Library
- *  1998-2014 (c) Vladi Belperchinov-Shabanski "Cade" 
- *  <cade@bis.bg> <cade@biscom.net> <cade@datamax.bg> <cade@cpan.org>
- *  http://cade.datamax.bg/away/vstring/  
+ *
+ *  1996-2020 (c) Vladi Belperchinov-Shabanski "Cade" 
+ *
+ *  http://cade.datamax.bg/  <cade@biscom.net> <cade@bis.bg> <cade@datamax.bg>
  *  Distributed under the GPL license, you should receive copy of GPL!
  *
  *  SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
- *  This part provides string data structures which mimic Perl's:
+ *  VSTRING library provides wide set of string manipulation features
+ *  including dynamic string object that can be freely exchanged with
+ *  standard char* type, so there is no need to change function calls
+ *  nor the implementation when you change from char* to VString (and
+ *  vice versa). The main difference from other similar libs is that
+ *  the dynamic VString class has no visible methods (except operators)
+ *  so you will use it as a plain char* but it will expand/shrink as
+ *  needed.
+ *
+ *  If you find bug or you have note about vstring lib, please feel
+ *  free to contact me.
+ *
+ *  VSTRING part (vstring.h and vstring.cpp) implements plain string-only
+ *  manipulations:
+ *
+ *  char* functions to manipulate in-memory string buffers
+ *  VString -- dynamic string, which resizes automatically
+ *
+ *  VSTRLIB part (vstrlib.h and vstrlib.cpp) provides string data 
+ *  structures which mimic Perl's. There are several classes:
  *
  *  VArray  -- array of VString elements
  *  VTrie   -- associative array (hash) of VString elements
  *  VRegexp -- regular expression helper class
  *
- ****************************************************************************/
+ *  VString, VArray, VTrie use shallow copy and copy-on-write functionality,
+ *  so things like str1 = str2, varray1 = varray2 etc. are cheap and fast :)
+ *
+ ***************************************************************************/
 
 #ifndef _VSTRLIB_H_
 #define _VSTRLIB_H_

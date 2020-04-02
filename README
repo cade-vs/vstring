@@ -1,5 +1,8 @@
+
 VSTRING Library
-1998-2014 (c) Vladi Belperchinov-Shabanski "Cade" <cade@bis.bg>
+
+1996-2020 (c) Vladi Belperchinov-Shabanski "Cade" 
+
 Distributed under the GPL license, see end of this file for full text!
 
 VSTRING is C++ string library. It provides dynamic strings and char* 
@@ -19,8 +22,4 @@ free to contact me at:
 Vladi Belperchinov-Shabanski "Cade" 
 <cade@bis.bg> <cade@biscom.net> <cade@datamax.bg> <cade@cpan.org>
 http://cade.datamax.bg/away/vstring/
-
-NOTE: vstring is distributed standalone as well as a part from vslib/vfu:
-http://cade.datamax.bg/vfu/
-
 
