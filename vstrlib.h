@@ -199,14 +199,14 @@ class VRegexp
   int opt_nocase; // 1 if caseless search needed
 
   /* regexp data */
-  pcre*       re;
-  pcre_extra *pe;
+  pcre*       re; // regexp object, allocated here, for MODE_REGEXP
+  pcre_extra *pe; // regexp extra data if re was studied, not in use now (TODO)
   int         sp[VREGEXP_MAX_SUBS*3]; // sub pointers
-  int         rc;
-  const char *lp; // last line matched ptr
+  int         rc; // result after successful pcre_exec()
+  const char *lp; // last subject data to search in, external, just keep ptr
 
   /* no-regexp/hex search pattern */
-  char*       pt; // pattern
+  char*       pt; // pattern for MODE_FIND and MODE_HEX
   int         pl; // pattern length
   int         pos; // last match found pos
 

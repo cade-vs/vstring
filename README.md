@@ -127,6 +127,9 @@ or VString.
       str_all_matched   = re[0]; // `lala'
       str_first_capture = re[1]; // `la'
       }
+      
+    re.comp( "^[a-z]+[0-9]*" ); // reuse/recompile new regexp in the same obj
+    re.study(); // takes extra time to speed multiple matchings with m()
 
 # FEEDBACK
 

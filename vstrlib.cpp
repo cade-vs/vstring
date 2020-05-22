@@ -527,19 +527,20 @@ int mem_string_search( const char *p, const char* d, const char* opt )
 
   VRegexp::VRegexp( const char* rs, const char* opt )
   {
-    re = NULL;
-    pe = NULL;
-    rc = 0;
-    lp = NULL;
+    re = NULL;  
+    pe = NULL;  
+    rc = 0;     
+    lp = NULL;  
 
-    pt = NULL;
-    pl = 0;
+    pt = NULL;  
+    pl = 0;     
 
     comp( rs, opt );
   }
 
   VRegexp::~VRegexp()
   {
+    if ( pe ) pcre_free_study( pe );
     if ( re ) pcre_free( re );
     if ( pt ) delete pt;
   }
@@ -564,7 +565,7 @@ int mem_string_search( const char *p, const char* d, const char* opt )
         case 'f': opt_mode = MODE_FIND; break;
         case 'h': opt_mode = MODE_HEX; break;
         case 'r': opt_mode = MODE_REGEXP; break;
-        default: errstr = "invalid option, allowed are: imsxfhr"; return -1;
+        default: errstr = "invalid option, expected are: imsxfhr"; return -1;
         }
       }
     return options;
@@ -572,6 +573,7 @@ int mem_string_search( const char *p, const char* d, const char* opt )
 
   int VRegexp::comp( const char* pattern, const char *opt )
   {
+    if ( pe ) pcre_free_study( pe );
     if ( re ) pcre_free( re );
     if ( pt ) delete pt;
     re = NULL;
@@ -613,7 +615,12 @@ int mem_string_search( const char *p, const char* d, const char* opt )
 
   int VRegexp::study()
   {
-    return 1;
+    if ( ! re ) return 0;
+    if ( pe ) pcre_free_study( pe );
+    const char *err;
+    pe = pcre_study( re, 0, &err ); // TODO: PCRE_STUDY_JIT_COMPILE ***
+    
+    return pe ? 1 : 0;
   }
 
   int VRegexp::ok()
