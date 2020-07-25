@@ -502,10 +502,7 @@
     int z = (n - 1) * sl;
     while( z > 0 )
       {
-      #pragma GCC diagnostic push
-      #pragma GCC diagnostic ignored "-Wstringop-truncation"
-      strncpy( target + z, target, sl );
-      #pragma GCC diagnostic pop
+      memcpy( target + z, target, sl );
       z -= sl;
       }
     target[sl*n] = 0;
