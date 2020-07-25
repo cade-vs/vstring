@@ -945,9 +945,9 @@
     if (!target) return 0;
     int sl = strlen( target );
     if ( startpos >= sl || startpos < 0 ) return 0;
-    int z = startpos;
+    int z;
     int cnt = 0;
-    for ( z = 0; z < sl; z++ )
+    for ( z = startpos; z < sl; z++ )
       cnt += ( strchr( charlist, target[z]) != NULL );
     return cnt;
   }
@@ -957,7 +957,8 @@
     if (!target) return 0;
     int cnt = 0;
     int sl = strlen( s );
-    const char* pc = target;
+    if ( startpos >= sl || startpos < 0 ) return 0;
+    const char* pc = target + startpos;
     while( (pc = strstr( pc, s )) )
       {
       pc += sl;
