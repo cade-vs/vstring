@@ -67,10 +67,6 @@ class VString; /* forward */
 #define VHash   VTrie;   /* using casual names... */
 #define VRegExp VRegexp; /* using casual names... */
 
-VString& str_copy  ( VString& target, const char* source, int pos = 0, int len = -1 );
-VString& str_pad  ( VString& target, int len, char ch = ' ' );
-VString& str_comma( VString& target, char delim = '\'' );
-
 /***************************************************************************
 **
 ** VREF
@@ -128,7 +124,7 @@ public:
 
 class VString;
 
-VString& str_copy  ( VString& target, const char* source, int pos = 0, int len = -1 ); // returns `len' chars from `pos'
+VString& str_copy ( VString& target, const char* source, int pos = 0, int len = -1 ); // returns `len' chars from `pos'
 VString& str_pad  ( VString& target, int len, char ch = ' ' );
 VString& str_comma( VString& target, char delim = '\'' );
 
