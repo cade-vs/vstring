@@ -2,7 +2,7 @@
 ### MAKEMAKE STARTS HERE #######################################################
 
 
-### Created by makemake.pl on Tue Jan  7 23:37:26 2014 #########################
+### Created by makemake.pl on Thu Jul 30 23:37:53 2020 #########################
 
 
 ### GLOBAL TARGETS #############################################################
@@ -25,9 +25,10 @@ link: mm_update link-modules link-vstring.a link-test
 
 
 AR = ar rv
-CC = g++
-CFLAGS = -g
-LD = g++
+CC = gcc
+CCX = g++
+LD = gcc
+LDX = g++
 MKDIR = mkdir -p
 MODULES = pcre
 RANLIB = ranlib
@@ -38,12 +39,12 @@ SRC = *.c *.cpp *.cc *.cxx
 
 ### TARGET 1: libvstring.a #####################################################
 
-CC_1       = g++
-LD_1       = g++
+CC_1       = $(CCX)
+LD_1       = $(LDX)
 AR_1       = ar rv
 RANLIB_1   = ranlib
-CCFLAGS_1  = -I. -Ipcre -O2   
-LDFLAGS_1  = -Lpcre  
+CCFLAGS_1  = -I. -Ipcre -O2 $(CCDEF) $(DEBUG) 
+LDFLAGS_1  = -Lpcre $(LDDEF) 
 DEPFLAGS_1 = 
 ARFLAGS_1  = 
 TARGET_1   = libvstring.a
@@ -91,12 +92,12 @@ link-vstring.a: .OBJ.vstring.a $(OBJ_1)
 
 ### TARGET 2: test #############################################################
 
-CC_2       = g++
-LD_2       = g++
+CC_2       = $(CCX)
+LD_2       = $(LDX)
 AR_2       = ar rv
 RANLIB_2   = ranlib
-CCFLAGS_2  = -I. -O2 -g   
-LDFLAGS_2  = -Lpcre -lpcre  
+CCFLAGS_2  = -I. -O2 -g $(CCDEF) $(DEBUG) 
+LDFLAGS_2  = -Lpcre -lpcre $(LDDEF) 
 DEPFLAGS_2 = 
 ARFLAGS_2  = 
 TARGET_2   = test

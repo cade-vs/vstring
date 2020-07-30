@@ -2,7 +2,7 @@
 ### MAKEMAKE STARTS HERE #######################################################
 
 
-### Created by makemake.pl on Fri May 22 02:58:56 2020 #########################
+### Created by makemake.pl on Thu Jul 30 22:21:57 2020 #########################
 
 
 ### GLOBAL TARGETS #############################################################
@@ -36,10 +36,10 @@ SRC = *.c *.cpp *.cc *.cxx
 
 ### TARGET 1: libpcre.a ########################################################
 
-CC_1       = gcc
-LD_1       = gcc
-AR_1       = ar rv
-RANLIB_1   = ranlib
+CC_1       = $(CC)
+LD_1       = $(LD)
+AR_1       = $(AR)
+RANLIB_1   = $(RANLIB)
 CCFLAGS_1  = -I. -O2 $(CCDEF) -DHAVE_CONFIG_H  
 LDFLAGS_1  = $(LDDEF) 
 DEPFLAGS_1 = 
