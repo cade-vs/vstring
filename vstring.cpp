@@ -502,7 +502,7 @@
     int z = (n - 1) * sl;
     while( z > 0 )
       {
-      strncpy( target + z, target, sl );
+      memcpy( target + z, target, sl );
       z -= sl;
       }
     target[sl*n] = 0;
@@ -726,12 +726,13 @@
     while ((strchr(delimiters, target[z]) == NULL) && (target[z] != 0)) z++;
     memmove(result, target, z);
     result[z] = 0;
-    if ( z > 0 ) {
+    if ( z > 0 )
+      {
       if( z < sl )
         memmove( target, target + z + 1, sl - z ); // including trailing zero
       else
         target[0] = 0;
-    }
+      }
     return result[0] ? result : NULL;
   }
 
@@ -944,9 +945,9 @@
     if (!target) return 0;
     int sl = strlen( target );
     if ( startpos >= sl || startpos < 0 ) return 0;
-    int z = startpos;
+    int z;
     int cnt = 0;
-    for ( z = 0; z < sl; z++ )
+    for ( z = startpos; z < sl; z++ )
       cnt += ( strchr( charlist, target[z]) != NULL );
     return cnt;
   }
@@ -956,7 +957,8 @@
     if (!target) return 0;
     int cnt = 0;
     int sl = strlen( s );
-    const char* pc = target;
+    if ( startpos >= sl || startpos < 0 ) return 0;
+    const char* pc = target + startpos;
     while( (pc = strstr( pc, s )) )
       {
       pc += sl;

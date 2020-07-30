@@ -126,6 +126,12 @@ public:
 
 #define STR_BLOCK_SIZE    256
 
+class VString;
+
+VString& str_copy  ( VString& target, const char* source, int pos = 0, int len = -1 ); // returns `len' chars from `pos'
+VString& str_pad  ( VString& target, int len, char ch = ' ' );
+VString& str_comma( VString& target, char delim = '\'' );
+
 class VString
 {
   VStringBox* box;
