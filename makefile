@@ -2,7 +2,7 @@
 ### MAKEMAKE STARTS HERE #######################################################
 
 
-### Created by makemake.pl on Thu Aug  6 03:04:48 2020 #########################
+### Created by makemake.pl on Thu Aug  6 03:44:47 2020 #########################
 
 
 ### GLOBAL TARGETS #############################################################
@@ -39,7 +39,7 @@ CC_1       = $(CXX)
 LD_1       = $(CXX)
 AR_1       = $(AR) rv
 RANLIB_1   = $(RANLIB)
-CCFLAGS_1  = -I. -Ipcre -O2 $(CFLAGS) $(CCDEF)  
+CCFLAGS_1  = -I. -Ipcre -O2 $(CFLAGS) $(CPPFLAGS) $(CCDEF)  
 LDFLAGS_1  = $(LDFLAGS) $(LDDEF) 
 DEPFLAGS_1 = 
 ARFLAGS_1  = 
@@ -94,7 +94,7 @@ CC_2       = $(CXX)
 LD_2       = $(CXX)
 AR_2       = $(AR) rv
 RANLIB_2   = $(RANLIB)
-CCFLAGS_2  = -I. -O2 -g $(CFLAGS) $(CCDEF)  
+CCFLAGS_2  = -I. -O2 -g $(CFLAGS) $(CPPFLAGS) $(CCDEF)  
 LDFLAGS_2  = -lpcre $(LDFLAGS) $(LDDEF) 
 DEPFLAGS_2 = 
 ARFLAGS_2  = 
