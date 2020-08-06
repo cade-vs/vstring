@@ -2,7 +2,7 @@
 ### MAKEMAKE STARTS HERE #######################################################
 
 
-### Created by makemake.pl on Thu Jul 30 22:21:57 2020 #########################
+### Created by makemake.pl on Thu Aug  6 02:58:37 2020 #########################
 
 
 ### GLOBAL TARGETS #############################################################
@@ -24,11 +24,9 @@ link: mm_update link-libpcre.a
 ### GLOBAL (AND USER) DEFS #####################################################
 
 
-AR = ar rv
-CC = gcc
-LD = gcc
+AR ?= ar
 MKDIR = mkdir -p
-RANLIB = ranlib
+RANLIB ?= ranlib
 RMDIR = rm -rf
 RMFILE = rm -f
 SRC = *.c *.cpp *.cc *.cxx
@@ -38,10 +36,10 @@ SRC = *.c *.cpp *.cc *.cxx
 
 CC_1       = $(CC)
 LD_1       = $(LD)
-AR_1       = $(AR)
+AR_1       = $(AR) rv
 RANLIB_1   = $(RANLIB)
-CCFLAGS_1  = -I. -O2 $(CCDEF) -DHAVE_CONFIG_H  
-LDFLAGS_1  = $(LDDEF) 
+CCFLAGS_1  = -I. -O2 $(CFLAGS) $(CCDEF) -DHAVE_CONFIG_H  
+LDFLAGS_1  = $(LDFLAGS) $(LDDEF) 
 DEPFLAGS_1 = 
 ARFLAGS_1  = 
 TARGET_1   = libpcre.a
@@ -112,6 +110,8 @@ clean-libpcre.a:
 	$(RMDIR) .OBJ.libpcre.a
 
 rebuild-libpcre.a: clean-libpcre.a libpcre.a
+
+re-libpcre.a: rebuild-libpcre.a
 
 link-libpcre.a: .OBJ.libpcre.a $(OBJ_1)
 	$(RMFILE) libpcre.a

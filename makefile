@@ -2,36 +2,32 @@
 ### MAKEMAKE STARTS HERE #######################################################
 
 
-### Created by makemake.pl on Thu Jul 30 23:37:53 2020 #########################
+### Created by makemake.pl on Thu Aug  6 03:04:48 2020 #########################
 
 
 ### GLOBAL TARGETS #############################################################
 
-default: mm_update all
+default: mm_update  vstring.a  test 
 
 re: mm_update rebuild
 
 li: mm_update link
 
-all: mm_update modules vstring.a test 
+all: mm_update vstring.a test 
 
-clean: mm_update clean-modules clean-vstring.a clean-test 
+clean: mm_update clean-vstring.a clean-test 
 
-rebuild: mm_update rebuild-modules rebuild-vstring.a rebuild-test 
+rebuild: mm_update rebuild-vstring.a rebuild-test 
 
-link: mm_update link-modules link-vstring.a link-test 
+link: mm_update link-vstring.a link-test 
 
 ### GLOBAL (AND USER) DEFS #####################################################
 
 
-AR = ar rv
-CC = gcc
-CCX = g++
-LD = gcc
-LDX = g++
+AR ?= ar
+LD = $(CXX)
 MKDIR = mkdir -p
-MODULES = pcre
-RANLIB = ranlib
+RANLIB ?= ranlib
 RMDIR = rm -rf
 RMFILE = rm -f
 SRC = *.c *.cpp *.cc *.cxx
@@ -39,12 +35,12 @@ SRC = *.c *.cpp *.cc *.cxx
 
 ### TARGET 1: libvstring.a #####################################################
 
-CC_1       = $(CCX)
-LD_1       = $(LDX)
-AR_1       = ar rv
-RANLIB_1   = ranlib
-CCFLAGS_1  = -I. -Ipcre -O2 $(CCDEF) $(DEBUG) 
-LDFLAGS_1  = -Lpcre $(LDDEF) 
+CC_1       = $(CXX)
+LD_1       = $(CXX)
+AR_1       = $(AR) rv
+RANLIB_1   = $(RANLIB)
+CCFLAGS_1  = -I. -Ipcre -O2 $(CFLAGS) $(CCDEF)  
+LDFLAGS_1  = $(LDFLAGS) $(LDDEF) 
 DEPFLAGS_1 = 
 ARFLAGS_1  = 
 TARGET_1   = libvstring.a
@@ -76,6 +72,8 @@ clean-vstring.a:
 
 rebuild-vstring.a: clean-vstring.a vstring.a
 
+re-vstring.a: rebuild-vstring.a
+
 link-vstring.a: .OBJ.vstring.a $(OBJ_1)
 	$(RMFILE) libvstring.a
 	$(AR_1) $(ARFLAGS_1) $(TARGET_1) $(OBJ_1)
@@ -84,20 +82,20 @@ link-vstring.a: .OBJ.vstring.a $(OBJ_1)
 
 ### TARGET OBJECTS FOR TARGET 1: libvstring.a ##################################
 
-.OBJ.vstring.a/vstring.o: vstring.cpp  vstring.cpp vstring.h
+.OBJ.vstring.a/vstring.o: vstring.cpp 
 	$(CC_1) $(CFLAGS_1) $(CCFLAGS_1) -c vstring.cpp          -o .OBJ.vstring.a/vstring.o
-.OBJ.vstring.a/vstrlib.o: vstrlib.cpp  vstrlib.cpp vstrlib.h vstring.h
+.OBJ.vstring.a/vstrlib.o: vstrlib.cpp 
 	$(CC_1) $(CFLAGS_1) $(CCFLAGS_1) -c vstrlib.cpp          -o .OBJ.vstring.a/vstrlib.o
 
 
 ### TARGET 2: test #############################################################
 
-CC_2       = $(CCX)
-LD_2       = $(LDX)
-AR_2       = ar rv
-RANLIB_2   = ranlib
-CCFLAGS_2  = -I. -O2 -g $(CCDEF) $(DEBUG) 
-LDFLAGS_2  = -Lpcre -lpcre $(LDDEF) 
+CC_2       = $(CXX)
+LD_2       = $(CXX)
+AR_2       = $(AR) rv
+RANLIB_2   = $(RANLIB)
+CCFLAGS_2  = -I. -O2 -g $(CFLAGS) $(CCDEF)  
+LDFLAGS_2  = -lpcre $(LDFLAGS) $(LDDEF) 
 DEPFLAGS_2 = 
 ARFLAGS_2  = 
 TARGET_2   = test
@@ -130,6 +128,8 @@ clean-test:
 
 rebuild-test: clean-test test
 
+re-test: rebuild-test
+
 link-test: .OBJ.test $(OBJ_2)
 	$(RMFILE) test
 	$(LD_2) $(OBJ_2) $(LDFLAGS_2) -o $(TARGET_2)
@@ -137,27 +137,12 @@ link-test: .OBJ.test $(OBJ_2)
 
 ### TARGET OBJECTS FOR TARGET 2: test ##########################################
 
-.OBJ.test/vstring.o: vstring.cpp  vstring.cpp vstring.h
+.OBJ.test/vstring.o: vstring.cpp 
 	$(CC_2) $(CFLAGS_2) $(CCFLAGS_2) -c vstring.cpp          -o .OBJ.test/vstring.o
-.OBJ.test/vstrlib.o: vstrlib.cpp  vstrlib.cpp vstrlib.h vstring.h
+.OBJ.test/vstrlib.o: vstrlib.cpp 
 	$(CC_2) $(CFLAGS_2) $(CCFLAGS_2) -c vstrlib.cpp          -o .OBJ.test/vstrlib.o
-.OBJ.test/test.o: test.cpp  test.cpp vstrlib.h vstring.h
+.OBJ.test/test.o: test.cpp 
 	$(CC_2) $(CFLAGS_2) $(CCFLAGS_2) -c test.cpp             -o .OBJ.test/test.o
-
-
-### MODULES ####################################################################
-
-modules:
-	$(MAKE) -C pcre 
-
-clean-modules:
-	$(MAKE) -C pcre clean
-
-rebuild-modules:
-	$(MAKE) -C pcre rebuild
-
-link-modules:
-	$(MAKE) -C pcre link
 
 
 mm_update:
