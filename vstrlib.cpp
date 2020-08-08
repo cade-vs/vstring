@@ -1,8 +1,9 @@
+
 /****************************************************************************
  *
  *  VSTRING Library
  *
- *  1996-2020 (c) Vladi Belperchinov-Shabanski "Cade" 
+ *  Copyright (c) 1996-2020 Vladi Belperchinov-Shabanski "Cade" 
  *
  *  http://cade.datamax.bg/  <cade@biscom.net> <cade@bis.bg> <cade@datamax.bg>
  *  Distributed under the GPL license, you should receive copy of GPL!
@@ -344,8 +345,8 @@ long file_pattern_search( const char *p, int ps, FILE* f, const char* opt,
        }
      if ( bs < BUFSIZE ) break;
      }
-   delete np;
-   delete buff;
+   delete [] np;
+   delete [] buff;
    return pos;
 }
 
@@ -535,6 +536,7 @@ int mem_string_search( const char *p, const char* d, const char* opt )
     pt = NULL;  
     pl = 0;     
 
+    opt_mode = MODE_REGEXP;
     comp( rs, opt );
   }
 
@@ -575,7 +577,7 @@ int mem_string_search( const char *p, const char* d, const char* opt )
   {
     if ( pe ) pcre_free_study( pe );
     if ( re ) pcre_free( re );
-    if ( pt ) delete pt;
+    if ( pt ) delete [] pt;
     re = NULL;
     pt = NULL;
     pl = 0;

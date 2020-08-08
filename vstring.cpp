@@ -2,7 +2,7 @@
  *
  *  VSTRING Library
  *
- *  1996-2020 (c) Vladi Belperchinov-Shabanski "Cade" 
+ *  Copyright (c) 1996-2020 Vladi Belperchinov-Shabanski "Cade" 
  *
  *  http://cade.datamax.bg/  <cade@biscom.net> <cade@bis.bg> <cade@datamax.bg>
  *  Distributed under the GPL license, you should receive copy of GPL!
@@ -646,7 +646,7 @@
 
   char* str_sleft( char* target, int len ) // SelfLeft -- just as 'Left' but works on `this'
   {
-    if ( (size_t)len < strlen(target) && (size_t)len >= 0 ) target[len] = 0;
+    if ( (size_t)len < strlen(target) && len >= 0 ) target[len] = 0;
     return target;
   }
 
