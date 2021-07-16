@@ -1,7 +1,7 @@
 
 VSTRING Library
 
-Copyright (c) 1996-2020 Vladi Belperchinov-Shabanski "Cade" 
+Copyright (c) 1996-2021 Vladi Belperchinov-Shabanski "Cade" 
 
 Distributed under the GPL license, see end of this file for full text!
 
@@ -19,7 +19,8 @@ needed.
 If you find bug or you have note about vstring lib, please feel
 free to contact me at: 
 
-Vladi Belperchinov-Shabanski "Cade" 
-<cade@bis.bg> <cade@biscom.net> <cade@datamax.bg> <cade@cpan.org>
-http://cade.datamax.bg/away/vstring/
+    Vladi Belperchinov-Shabanski "Cade" 
+    <cade@noxrun.com> <cade@bis.bg> <cade@cpan.org>
+    http://cade.noxrun.bg/projects/vstring/
+    https://github.com/cade-vs/vstring
 

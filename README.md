@@ -9,11 +9,11 @@ VSTRING is C++ string manipulation and handling library.
     #include "vstrlib.h"
 
     VString str = "Hello";
-    str += " World";    // str is `Hello World' now
-    str_reverse( str ); // str is `dlroW olleH' now
+    str += " World";    // str is 'Hello World' now
+    str_reverse( str ); // str is 'dlroW olleH' now
     str_low( str );     // lower case
 
-    VArray va = str_split( " +", str ); // array has `dlroW', `olleH'
+    VArray va = str_split( " +", str ); // array has 'dlroW', 'olleH'
                                         // " +" is Regexp
     str_reverse( va[0] );
     str_reverse( va[1] );
@@ -120,12 +120,12 @@ or VString.
     VRegexp re( "a([0-9]+)" ); // compiling new regexp
 
     if( re.m( "tralala85." ) ) // match against compiled regexp
-      res1 = re[1]; // re[1] returns `85'
+      res1 = re[1]; // re[1] returns '85'
 
     if( re.m( "tralala85.", "(la)+" ) ) // match against new regexp pattern
       {
-      str_all_matched   = re[0]; // `lala'
-      str_first_capture = re[1]; // `la'
+      str_all_matched   = re[0]; // 'lala'
+      str_first_capture = re[1]; // 'la'
       }
       
     re.comp( "^[a-z]+[0-9]*" ); // reuse/recompile new regexp in the same obj
@@ -140,9 +140,9 @@ please, contact me.
 
     Vladi Belperchinov-Shabanski "Cade" 
 
-    <cade@bis.bg> <cade@biscom.net> <cade@datamax.bg> <cade@cpan.org>
+    <cade@noxrun.com> <cade@bis.bg> <cade@cpan.org>
 
-    http://cade.datamax.bg/away/vstring/
+    http://cade.noxrun.bg/projects/vstring/
 
     https://github.com/cade-vs/vstring
 
