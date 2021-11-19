@@ -2,12 +2,12 @@
 ### MAKEMAKE STARTS HERE #######################################################
 
 
-### Created by makemake.pl on Fri Nov 19 03:09:42 2021 #########################
+### Created by makemake.pl on Fri Nov 19 03:21:26 2021 #########################
 
 
 ### GLOBAL TARGETS #############################################################
 
-default: mm_update  vstring.a  test 
+default: mm_update all
 
 re: mm_update rebuild
 
