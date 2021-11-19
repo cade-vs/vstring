@@ -518,7 +518,7 @@ int mem_string_search( const char *p, const char* d, const char* opt )
   VRegexp::VRegexp()
   {
     re = NULL;
-    pe = NULL;
+    md = NULL;
     rc = 0;
     lp = NULL;
 
@@ -529,7 +529,7 @@ int mem_string_search( const char *p, const char* d, const char* opt )
   VRegexp::VRegexp( const char* rs, const char* opt )
   {
     re = NULL;  
-    pe = NULL;  
+    md = NULL;
     rc = 0;     
     lp = NULL;  
 
@@ -542,8 +542,8 @@ int mem_string_search( const char *p, const char* d, const char* opt )
 
   VRegexp::~VRegexp()
   {
-    if ( pe ) pcre_free_study( pe );
-    if ( re ) pcre_free( re );
+    if ( re ) pcre2_code_free( re );
+    if ( md ) pcre2_match_data_free( md );
     if ( pt ) delete pt;
   }
 
@@ -560,10 +560,10 @@ int mem_string_search( const char *p, const char* d, const char* opt )
       {
       switch( opt[z] )
         {
-        case 'i': options |= PCRE_CASELESS; opt_nocase = 1; break;
-        case 'm': options |= PCRE_MULTILINE; break;
-        case 's': options |= PCRE_DOTALL; break;
-        case 'x': options |= PCRE_EXTENDED; break;
+        case 'i': options |= PCRE2_CASELESS; opt_nocase = 1; break;
+        case 'm': options |= PCRE2_MULTILINE; break;
+        case 's': options |= PCRE2_DOTALL; break;
+        case 'x': options |= PCRE2_EXTENDED; break;
         case 'f': opt_mode = MODE_FIND; break;
         case 'h': opt_mode = MODE_HEX; break;
         case 'r': opt_mode = MODE_REGEXP; break;
@@ -575,8 +575,7 @@ int mem_string_search( const char *p, const char* d, const char* opt )
 
   int VRegexp::comp( const char* pattern, const char *opt )
   {
-    if ( pe ) pcre_free_study( pe );
-    if ( re ) pcre_free( re );
+    if ( re ) pcre2_code_free( re );
     if ( pt ) delete [] pt;
     re = NULL;
     pt = NULL;
@@ -587,9 +586,9 @@ int mem_string_search( const char *p, const char* d, const char* opt )
 
     if ( opt_mode == MODE_REGEXP )
       {
-      const char *error;
-      int erroffset;
-      re = pcre_compile( pattern, options, &error, &erroffset, NULL );
+      int errorcode;
+      PCRE2_SIZE erroffset;
+      re = pcre2_compile( (PCRE2_SPTR)pattern, PCRE2_ZERO_TERMINATED, options, &errorcode, &erroffset, NULL );
 
       if ( re )
         {
@@ -598,7 +597,7 @@ int mem_string_search( const char *p, const char* d, const char* opt )
         }
       else
         {
-        errstr = error;
+        errstr = errorcode;
         return 0;
         }
       }
@@ -617,12 +616,7 @@ int mem_string_search( const char *p, const char* d, const char* opt )
 
   int VRegexp::study()
   {
-    if ( ! re ) return 0;
-    if ( pe ) pcre_free_study( pe );
-    const char *err;
-    pe = pcre_study( re, 0, &err ); // TODO: PCRE_STUDY_JIT_COMPILE ***
-    
-    return pe ? 1 : 0;
+    return 1; // not implemented
   }
 
   int VRegexp::ok()
@@ -649,9 +643,11 @@ int mem_string_search( const char *p, const char* d, const char* opt )
     lp = line;
     if ( opt_mode == MODE_REGEXP )
       {
-      rc = pcre_exec( re, pe, lp, strlen( lp ), 0, 0, sp, VREGEXP_MAX_SUBS*3 );
-      ASSERT( rc >= -1 && rc != 0 );
-      if ( rc > VREGEXP_MAX_SUBS ) rc = VREGEXP_MAX_SUBS;
+      if( md ) pcre2_match_data_free( md );
+      md = pcre2_match_data_create_from_pattern( re, NULL );
+
+      unsigned int options;
+      rc = pcre2_match( re, (PCRE2_SPTR)lp, strlen(lp), 0, options, md, NULL);
       if ( rc < 1 ) rc = 0; // fail-safe, should throw exception above in debug mode
       return rc;
       }
@@ -679,10 +675,13 @@ int mem_string_search( const char *p, const char* d, const char* opt )
     if ( opt_mode == MODE_REGEXP )
       {
       if ( n < 0 || n >= rc ) return substr;
-      //substr = "";
+      PCRE2_SIZE *ovector = pcre2_get_ovector_pointer( md );
 
-      int s = sp[n*2];
-      int e = sp[n*2+1];
+      int s = ovector[n*2];
+      int e = ovector[n*2+1];
+      
+      if ( s == PCRE2_UNSET || e == PCRE2_UNSET ) return substr;
+      
       int l = e - s;
       substr.setn( lp + s, l );
       }
@@ -699,7 +698,8 @@ int mem_string_search( const char *p, const char* d, const char* opt )
     if ( opt_mode == MODE_REGEXP )
       {
       if ( n < 0 || n >= rc ) return -1;
-      return sp[n*2];
+      PCRE2_SIZE *ovector = pcre2_get_ovector_pointer( md );
+      return ovector[n*2] == PCRE2_UNSET ? -1 : ovector[n*2];
       }
     else
       {
@@ -713,7 +713,8 @@ int mem_string_search( const char *p, const char* d, const char* opt )
     if ( opt_mode == MODE_REGEXP )
       {
       if ( n < 0 || n >= rc ) return -1;
-      return sp[n*2+1];
+      PCRE2_SIZE *ovector = pcre2_get_ovector_pointer( md );
+      return ovector[n*2+1] == PCRE2_UNSET ? -1 : ovector[n*2+1];
       }
     else
       {

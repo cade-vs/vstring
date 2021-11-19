@@ -49,7 +49,9 @@
 
 #include <stdlib.h>
 #include <time.h>
-#include <pcre.h>
+
+#define PCRE2_CODE_UNIT_WIDTH 8
+#include <pcre2.h>
 
 #include "vstring.h"
 
@@ -199,11 +201,10 @@ class VRegexp
   int opt_nocase; // 1 if caseless search needed
 
   /* regexp data */
-  pcre*       re; // regexp object, allocated here, for MODE_REGEXP
-  pcre_extra *pe; // regexp extra data if re was studied, not in use now (TODO)
-  int         sp[VREGEXP_MAX_SUBS*3]; // sub pointers
-  int         rc; // result after successful pcre_exec()
-  const char *lp; // last subject data to search in, external, just keep ptr
+  pcre2_code       *re; // regexp object, allocated here, for MODE_REGEXP
+  pcre2_match_data *md; // match data
+  int               rc; // result after successful pcre_exec()
+  const char       *lp; // last subject data to search in, external, just keep ptr
 
   /* no-regexp/hex search pattern */
   char*       pt; // pattern for MODE_FIND and MODE_HEX

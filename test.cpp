@@ -117,11 +117,14 @@ void test3()
 
   VRegexp re( "a([0-9]+)" ); // compiling new regexp
 
-  if( re.m( "tralala85." ) ) // match against regexp
+  if( re.m( "tralala85.zz" ) ) // match against regexp
+    {
+    printf( "sub 0 = %s\n", re[0].data() ); // re[1] returns `85'
     printf( "sub 1 = %s\n", re[1].data() ); // re[1] returns `85'
+    }
 
   VString vs;
-  if( re.m( "tralala85.", "(la)+" ) ) // match against regexp
+  if( re.m( "tralala85.", "a(la)+" ) ) // match against regexp
     {
     printf( "sub 0 = %s\n", re[0].data() ); // `lala'
     printf( "sub 1 = %s\n", re[1].data() ); // `la'
@@ -139,6 +142,8 @@ void test3()
   printf( "--------------------\n" );
   v1 = str_split( " +", "tralala  opala and another   one", 3 ); // splits data on spaces up to 3 elements
   v1.print();
+
+exit(1);
 
   printf( "--------------------\n" );
   v1[1] = "hack this one here"; // set (overwrite) element 1
