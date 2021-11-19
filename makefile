@@ -2,7 +2,7 @@
 ### MAKEMAKE STARTS HERE #######################################################
 
 
-### Created by makemake.pl on Fri Nov 19 02:58:30 2021 #########################
+### Created by makemake.pl on Fri Nov 19 03:09:42 2021 #########################
 
 
 ### GLOBAL TARGETS #############################################################
@@ -13,13 +13,13 @@ re: mm_update rebuild
 
 li: mm_update link
 
-all: mm_update vstring.a test 
+all: mm_update modules vstring.a test 
 
-clean: mm_update clean-vstring.a clean-test 
+clean: mm_update clean-modules clean-vstring.a clean-test 
 
-rebuild: mm_update rebuild-vstring.a rebuild-test 
+rebuild: mm_update rebuild-modules rebuild-vstring.a rebuild-test 
 
-link: mm_update link-vstring.a link-test 
+link: mm_update link-modules link-vstring.a link-test 
 
 ### GLOBAL (AND USER) DEFS #####################################################
 
@@ -27,6 +27,7 @@ link: mm_update link-vstring.a link-test
 AR ?= ar
 LD = $(CXX)
 MKDIR = mkdir -p
+MODULES = pcre2
 RANLIB ?= ranlib
 RMDIR = rm -rf
 RMFILE = rm -f
@@ -143,6 +144,21 @@ link-test: .OBJ.test $(OBJ_2)
 	$(CC_2) $(CFLAGS_2) $(CCFLAGS_2) -c vstrlib.cpp          -o .OBJ.test/vstrlib.o
 .OBJ.test/test.o: test.cpp 
 	$(CC_2) $(CFLAGS_2) $(CCFLAGS_2) -c test.cpp             -o .OBJ.test/test.o
+
+
+### MODULES ####################################################################
+
+modules:
+	$(MAKE) -C pcre2 
+
+clean-modules:
+	$(MAKE) -C pcre2 clean
+
+rebuild-modules:
+	$(MAKE) -C pcre2 rebuild
+
+link-modules:
+	$(MAKE) -C pcre2 link
 
 
 mm_update:
