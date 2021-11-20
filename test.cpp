@@ -116,6 +116,7 @@ void test3()
   v1.print(); // print array data
 
   VRegexp re( "a([0-9]+)" ); // compiling new regexp
+  printf( "regexp error: %s\n", re.error_str() );
 
   if( re.m( "tralala85.zz" ) ) // match against regexp
     {
@@ -143,7 +144,7 @@ void test3()
   v1 = str_split( " +", "tralala  opala and another   one", 3 ); // splits data on spaces up to 3 elements
   v1.print();
 
-exit(1);
+//exit(1);
 
   printf( "--------------------\n" );
   v1[1] = "hack this one here"; // set (overwrite) element 1

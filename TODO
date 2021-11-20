@@ -1,0 +1,5 @@
+-- get_prematch()          $`
+-- get_match()             $&
+-- get_postmatch()         $'
+
+-- replace()     $1 $2 ... $` $& $' ...

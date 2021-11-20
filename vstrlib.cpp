@@ -592,12 +592,16 @@ int mem_string_search( const char *p, const char* d, const char* opt )
 
       if ( re )
         {
-        errstr = "";
+        errstr = "OK";
         return 1;
         }
       else
         {
-        errstr = errorcode;
+        char errbuf[256];
+        pcre2_get_error_message( errorcode, (PCRE2_UCHAR*)errbuf, sizeof(errbuf)/2 );
+        errstr  = errbuf;
+        errstr += ", at pos ";
+        errstr += (int)erroffset;
         return 0;
         }
       }
@@ -648,7 +652,7 @@ int mem_string_search( const char *p, const char* d, const char* opt )
 
       unsigned int options;
       rc = pcre2_match( re, (PCRE2_SPTR)lp, strlen(lp), 0, options, md, NULL);
-      if ( rc < 1 ) rc = 0; // fail-safe, should throw exception above in debug mode
+      if ( rc < 1 ) rc = 0;
       return rc;
       }
     else
