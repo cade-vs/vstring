@@ -2,12 +2,12 @@
  *
  *  VSTRING Library
  *
- *  Copyright (c) 1996-2020 Vladi Belperchinov-Shabanski "Cade" 
+ *  Copyright (c) 1996-2022 Vladi Belperchinov-Shabanski "Cade" 
+ *  http://cade.noxrun.com/  <cade@noxrun.com> <cade@bis.bg> <cade@cpan.org>
  *
- *  http://cade.datamax.bg/  <cade@biscom.net> <cade@bis.bg> <cade@datamax.bg>
- *  Distributed under the GPL license, you should receive copy of GPL!
+ *  Distributed under the GPL license, you should receive copy of GPLv2!
  *
- *  SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
+ *  SEE 'README','LICENSE' OR 'COPYING' FILE FOR LICENSE DETAILS!
  *
  *  VSTRING library provides wide set of string manipulation features
  *  including dynamic string object that can be freely exchanged with
@@ -45,6 +45,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <wchar.h>
 
 #include <assert.h>
 #ifndef ASSERT
@@ -304,7 +305,7 @@ public:
   friend VString& str_pad  ( VString& target, int len, char ch );
   friend VString& str_comma( VString& target, char delim );
 
-  // next 3 functions are safe! so if you get/set out f the VString range!
+  // next 3 functions are safe! so if you get/set out of the VString range!
   friend void str_set_ch( VString& target, int pos, const char ch ); // sets `ch' char at position `pos'
   friend char str_get_ch( VString& target, int pos                ); // return char at position `pos', -1 for the last char etc...
   friend void str_add_ch( VString& target, const char ch          ); // adds `ch' at the end

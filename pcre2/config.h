@@ -313,7 +313,7 @@ sure both macros are undefined; an emulation function will then be used. */
 /* #undef SUPPORT_PCRE2_16 */
 
 /* Define to any value to enable the 32 bit PCRE2 library. */
-/* #undef SUPPORT_PCRE2_32 */
+#define SUPPORT_PCRE2_32 /**/
 
 /* Define to any value to enable the 8 bit PCRE2 library. */
 #define SUPPORT_PCRE2_8 /**/
@@ -372,4 +372,4 @@ sure both macros are undefined; an emulation function will then be used. */
 /* Define to `unsigned int' if <sys/types.h> does not define. */
 /* #undef size_t */
 
-#define PCRE2_CODE_UNIT_WIDTH 8
+#define PCRE2_CODE_UNIT_WIDTH 0

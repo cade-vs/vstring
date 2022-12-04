@@ -1,12 +1,11 @@
-
 /****************************************************************************
  *
  *  VSTRING Library
  *
- *  Copyright (c) 1996-2020 Vladi Belperchinov-Shabanski "Cade" 
+ *  Copyright (c) 1996-2022 Vladi Belperchinov-Shabanski "Cade" 
+ *  http://cade.noxrun.com/  <cade@noxrun.com> <cade@bis.bg> <cade@cpan.org>
  *
- *  http://cade.datamax.bg/  <cade@biscom.net> <cade@bis.bg> <cade@datamax.bg>
- *  Distributed under the GPL license, you should receive copy of GPL!
+ *  Distributed under the GPL license, you should receive copy of GPLv2!
  *
  *  SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
@@ -542,8 +541,8 @@ int mem_string_search( const char *p, const char* d, const char* opt )
 
   VRegexp::~VRegexp()
   {
-    if ( re ) pcre2_code_free( re );
-    if ( md ) pcre2_match_data_free( md );
+    if ( re ) pcre2_code_free_8( re );
+    if ( md ) pcre2_match_data_free_8( md );
     if ( pt ) delete pt;
   }
 
@@ -575,7 +574,7 @@ int mem_string_search( const char *p, const char* d, const char* opt )
 
   int VRegexp::comp( const char* pattern, const char *opt )
   {
-    if ( re ) pcre2_code_free( re );
+    if ( re ) pcre2_code_free_8( re );
     if ( pt ) delete [] pt;
     re = NULL;
     pt = NULL;
@@ -588,7 +587,7 @@ int mem_string_search( const char *p, const char* d, const char* opt )
       {
       int errorcode;
       PCRE2_SIZE erroffset;
-      re = pcre2_compile( (PCRE2_SPTR)pattern, PCRE2_ZERO_TERMINATED, options, &errorcode, &erroffset, NULL );
+      re = pcre2_compile_8( (PCRE2_SPTR8)pattern, PCRE2_ZERO_TERMINATED, options, &errorcode, &erroffset, NULL );
 
       if ( re )
         {
@@ -598,7 +597,7 @@ int mem_string_search( const char *p, const char* d, const char* opt )
       else
         {
         char errbuf[256];
-        pcre2_get_error_message( errorcode, (PCRE2_UCHAR*)errbuf, sizeof(errbuf)/2 );
+        pcre2_get_error_message_8( errorcode, (PCRE2_UCHAR8*)errbuf, sizeof(errbuf)/2 );
         errstr  = errbuf;
         errstr += ", at pos ";
         errstr += (int)erroffset;
@@ -647,11 +646,11 @@ int mem_string_search( const char *p, const char* d, const char* opt )
     lp = line;
     if ( opt_mode == MODE_REGEXP )
       {
-      if( md ) pcre2_match_data_free( md );
-      md = pcre2_match_data_create_from_pattern( re, NULL );
+      if( md ) pcre2_match_data_free_8( md );
+      md = pcre2_match_data_create_from_pattern_8( re, NULL );
 
       unsigned int options;
-      rc = pcre2_match( re, (PCRE2_SPTR)lp, strlen(lp), 0, options, md, NULL);
+      rc = pcre2_match_8( re, (PCRE2_SPTR8)lp, strlen(lp), 0, options, md, NULL);
       if ( rc < 1 ) rc = 0;
       return rc;
       }
@@ -675,11 +674,11 @@ int mem_string_search( const char *p, const char* d, const char* opt )
   {
     VString substr;
     if ( ! ok() ) return substr;
-    if ( ! lp ) return substr;
+    if ( ! lp   ) return substr;
     if ( opt_mode == MODE_REGEXP )
       {
       if ( n < 0 || n >= rc ) return substr;
-      PCRE2_SIZE *ovector = pcre2_get_ovector_pointer( md );
+      PCRE2_SIZE *ovector = pcre2_get_ovector_pointer_8( md );
 
       int s = ovector[n*2];
       int e = ovector[n*2+1];
@@ -702,7 +701,7 @@ int mem_string_search( const char *p, const char* d, const char* opt )
     if ( opt_mode == MODE_REGEXP )
       {
       if ( n < 0 || n >= rc ) return -1;
-      PCRE2_SIZE *ovector = pcre2_get_ovector_pointer( md );
+      PCRE2_SIZE *ovector = pcre2_get_ovector_pointer_8( md );
       return ovector[n*2] == PCRE2_UNSET ? -1 : ovector[n*2];
       }
     else
@@ -717,7 +716,7 @@ int mem_string_search( const char *p, const char* d, const char* opt )
     if ( opt_mode == MODE_REGEXP )
       {
       if ( n < 0 || n >= rc ) return -1;
-      PCRE2_SIZE *ovector = pcre2_get_ovector_pointer( md );
+      PCRE2_SIZE *ovector = pcre2_get_ovector_pointer_8( md );
       return ovector[n*2+1] == PCRE2_UNSET ? -1 : ovector[n*2+1];
       }
     else

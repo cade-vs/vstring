@@ -2,10 +2,10 @@
  *
  *  VSTRING Library
  *
- *  Copyright (c) 1996-2020 Vladi Belperchinov-Shabanski "Cade" 
+ *  Copyright (c) 1996-2022 Vladi Belperchinov-Shabanski "Cade" 
+ *  http://cade.noxrun.com/  <cade@noxrun.com> <cade@bis.bg> <cade@cpan.org>
  *
- *  http://cade.datamax.bg/  <cade@biscom.net> <cade@bis.bg> <cade@datamax.bg>
- *  Distributed under the GPL license, you should receive copy of GPL!
+ *  Distributed under the GPL license, you should receive copy of GPLv2!
  *
  *  SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *

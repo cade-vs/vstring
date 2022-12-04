@@ -2,10 +2,10 @@
  *
  *  VSTRING Library
  *
- *  Copyright (c) 1996-2020 Vladi Belperchinov-Shabanski "Cade" 
+ *  Copyright (c) 1996-2022 Vladi Belperchinov-Shabanski "Cade" 
+ *  http://cade.noxrun.com/  <cade@noxrun.com> <cade@bis.bg> <cade@cpan.org>
  *
- *  http://cade.datamax.bg/  <cade@biscom.net> <cade@bis.bg> <cade@datamax.bg>
- *  Distributed under the GPL license, you should receive copy of GPL!
+ *  Distributed under the GPL license, you should receive copy of GPLv2!
  *
  *  SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
  *
@@ -50,7 +50,8 @@
 #include <stdlib.h>
 #include <time.h>
 
-#define PCRE2_CODE_UNIT_WIDTH 8
+// monsters on the loose... :)
+#define PCRE2_CODE_UNIT_WIDTH 0
 #include <pcre2.h>
 
 #include "vstring.h"
@@ -201,10 +202,10 @@ class VRegexp
   int opt_nocase; // 1 if caseless search needed
 
   /* regexp data */
-  pcre2_code       *re; // regexp object, allocated here, for MODE_REGEXP
-  pcre2_match_data *md; // match data
-  int               rc; // result after successful pcre_exec()
-  const char       *lp; // last subject data to search in, external, just keep ptr
+  pcre2_code_8       *re; // regexp object, allocated here, for MODE_REGEXP
+  pcre2_match_data_8 *md; // match data
+  int                 rc; // result after successful pcre_exec()
+  const char         *lp; // last subject data to search in, external, just keep ptr
 
   /* no-regexp/hex search pattern */
   char*       pt; // pattern for MODE_FIND and MODE_HEX

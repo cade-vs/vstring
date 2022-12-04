@@ -2,7 +2,7 @@
 ### MAKEMAKE STARTS HERE #######################################################
 
 
-### Created by makemake.pl on Fri Nov 19 03:21:26 2021 #########################
+### Created by makemake.pl on Mon Dec  5 00:57:18 2022 #########################
 
 
 ### GLOBAL TARGETS #############################################################
@@ -24,11 +24,12 @@ link: mm_update link-modules link-vstring.a link-test
 ### GLOBAL (AND USER) DEFS #####################################################
 
 
-AR ?= ar
-LD = $(CXX)
+AR = ar rv
+CC = g++
+LD = g++
 MKDIR = mkdir -p
 MODULES = pcre2
-RANLIB ?= ranlib
+RANLIB = ranlib
 RMDIR = rm -rf
 RMFILE = rm -f
 SRC = *.c *.cpp *.cc *.cxx
@@ -36,10 +37,10 @@ SRC = *.c *.cpp *.cc *.cxx
 
 ### TARGET 1: libvstring.a #####################################################
 
-CC_1       = $(CXX)
-LD_1       = $(CXX)
-AR_1       = $(AR) rv
-RANLIB_1   = $(RANLIB)
+CC_1       = g++
+LD_1       = g++
+AR_1       = ar rv
+RANLIB_1   = ranlib
 CCFLAGS_1  = -I. -Ipcre2 -O2 $(CFLAGS) $(CPPFLAGS) $(CCDEF)  
 LDFLAGS_1  = $(LDFLAGS) $(LDDEF) 
 DEPFLAGS_1 = 
@@ -83,18 +84,18 @@ link-vstring.a: .OBJ.vstring.a $(OBJ_1)
 
 ### TARGET OBJECTS FOR TARGET 1: libvstring.a ##################################
 
-.OBJ.vstring.a/vstring.o: vstring.cpp 
+.OBJ.vstring.a/vstring.o: vstring.cpp  vstring.cpp vstring.h
 	$(CC_1) $(CFLAGS_1) $(CCFLAGS_1) -c vstring.cpp          -o .OBJ.vstring.a/vstring.o
-.OBJ.vstring.a/vstrlib.o: vstrlib.cpp 
+.OBJ.vstring.a/vstrlib.o: vstrlib.cpp  vstrlib.cpp vstrlib.h vstring.h
 	$(CC_1) $(CFLAGS_1) $(CCFLAGS_1) -c vstrlib.cpp          -o .OBJ.vstring.a/vstrlib.o
 
 
 ### TARGET 2: test #############################################################
 
-CC_2       = $(CXX)
-LD_2       = $(CXX)
-AR_2       = $(AR) rv
-RANLIB_2   = $(RANLIB)
+CC_2       = g++
+LD_2       = g++
+AR_2       = ar rv
+RANLIB_2   = ranlib
 CCFLAGS_2  = -I. -Ipcre2 -O2 -g $(CFLAGS) $(CPPFLAGS) $(CCDEF)  
 LDFLAGS_2  = -Lpcre2 -lpcre2 $(LDFLAGS) $(LDDEF) 
 DEPFLAGS_2 = 
@@ -138,11 +139,11 @@ link-test: .OBJ.test $(OBJ_2)
 
 ### TARGET OBJECTS FOR TARGET 2: test ##########################################
 
-.OBJ.test/vstring.o: vstring.cpp 
+.OBJ.test/vstring.o: vstring.cpp  vstring.cpp vstring.h
 	$(CC_2) $(CFLAGS_2) $(CCFLAGS_2) -c vstring.cpp          -o .OBJ.test/vstring.o
-.OBJ.test/vstrlib.o: vstrlib.cpp 
+.OBJ.test/vstrlib.o: vstrlib.cpp  vstrlib.cpp vstrlib.h vstring.h
 	$(CC_2) $(CFLAGS_2) $(CCFLAGS_2) -c vstrlib.cpp          -o .OBJ.test/vstrlib.o
-.OBJ.test/test.o: test.cpp 
+.OBJ.test/test.o: test.cpp  test.cpp vstrlib.h vstring.h
 	$(CC_2) $(CFLAGS_2) $(CCFLAGS_2) -c test.cpp             -o .OBJ.test/test.o
 
 
