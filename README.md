@@ -27,22 +27,25 @@ VSTRING is C++ string manipulation and handling library.
 # DESCRIPTION
 
 VSTRING provides dynamic strings and char* compatibility and also 
-Perl-like arrays, hashes and regexp objects.
+Perl-like arrays, hashes and regexp objects. It also offers wide
+char (wchar_t) support for ISO10646/Unicode strings.
+
 
 The dynamic string object can be freely exchanged with
-standard char* type, so there is no need to change function calls
-nor the implementation when you change from char* to String (and
-vice versa). The main difference from other similar libs is that
-the dynamic string class has no visible methods (except operators)
-so you will use it as a plain char* but it will expand/shrink as
-needed. 
+standard char* (or wchar_t*) type, so there is no need to change 
+function calls nor the implementation when you change from char* 
+to String (and vice versa). The main difference from other similar 
+libs is that the dynamic string class has no visible methods (except 
+operators) so you will use it as a plain char* but it will expand/shrink 
+as needed. 
 
-All classes (VString, VArray, Vtrie) implementation provide shallow copy
-and copy-on-write functionality so assignment operators like:
+All classes (VString, VArray, Vtrie and their counterparts WString, WArray, 
+WTrie) implementation provide shallow copy and copy-on-write functionality 
+so assignment operators like:
 
-  str1 = str2
-  varr1 = varr2
-  vtrie1 = vtri2
+  str1  = str2
+  arr1  = arr2
+  trie1 = tri2
   
 are cheap and fast!
 
@@ -52,7 +55,7 @@ vstring.h and vstrlib.h files can be used as reference. This file contains
 brief introduction and some notes but for further API documentation check
 the .h files.
 
-# BASE char* AND VString FUNCTIONS NOTES
+# BASE char*/wchar_t* AND VString/WString FUNCTIONS NOTES
 
 All functions for char* handling may overflow! If you need safe strings, use
 the same functions but with VString instead of char*.

@@ -12,9 +12,9 @@
  *  VSTRING library provides wide set of string manipulation features
  *  including dynamic string object that can be freely exchanged with
  *  standard char* type, so there is no need to change function calls
- *  nor the implementation when you change from char* to VString (and
+ *  nor the implementation when you change from char* to WString (and
  *  vice versa). The main difference from other similar libs is that
- *  the dynamic VString class has no visible methods (except operators)
+ *  the dynamic WString class has no visible methods (except operators)
  *  so you will use it as a plain char* but it will expand/shrink as
  *  needed.
  *
@@ -24,17 +24,23 @@
  ***************************************************************************/
 
 #include <stdio.h>
-#include "vstring.h"
-#include "vstrlib.h"
+#include <locale.h>
+#include "wstring.h"
+#include "wstrlib.h"
 
 void test1()
 {
-  VString str = "Hello";
-  str += " World"; // str is `Hello World' now
+  WString str = L"Hello";
+  str += L" World"; // str is `Hello World' now
   str_reverse( str ); // str is `dlroW olleH' now
+  ASSERT( str == L"dlroW olleH" );
   str_low( str ); // lower case
+  ASSERT( str == L"dlrow olleh" );
 
-  VArray va = str_split( " +", str ); // array contains `dlroW' at pos 0 and `olleH' at 1
+  wprintf( L"************************ test 1 mid: %ls\n", str.data() ); // this should print `hello world'
+
+  WArray va = str_split( L" +", str ); // array contains `dlroW' at pos 0 and `olleH' at 1
+  va.print();
 
   va.reverse(); // array reversed: `dlroW' at pos 1 and `olleH' at 0
 
@@ -44,55 +50,59 @@ void test1()
     str_reverse( va[z] ); // reverses each string element
     }
 
+  str = str_join( va, L" " ); // joins into temporary string
 
-  str = str_join( va, " " ); // joins into temporary string
+  wprintf( L"************************ test 1 result is: %ls\n", str.data() ); // this should print `hello world'
 
-  printf( "************************ test 1 result is: %s\n", str.data() ); // this should print `hello world'
+  ASSERT( str == L"hello world" );
 }
 
 void test2()
 {
-  VArray va;
-  va.push( "hello" ); // pos 0
-  va.push( "world" ); // pos 1
+  WArray va;
+  va.push( L"hello" ); // pos 0
+  va.push( L"world" ); // pos 1
 
-  va.ins( 1, "your" ); // pos 1 shifted
+  va.ins( 1, L"your" ); // pos 1 shifted
 
-  va[1] = "my"; // replaces `your'
-  va[3] = "!";  // set outside the size, array is extended
+  va[1] = L"my"; // replaces `your'
+  va[3] = L"!";  // set outside the size, array is extended
 
-  VString str = va.pop(); // pops last element, str is now `!'
+  WString str = va.pop(); // pops last element, str is now `!'
 
-  str = str_join( va, "-" ); // joins to given string
+  str = str_join( va, L"-" ); // joins to given string
 
-  str_tr( str, "-", " " ); // replaces dashes with spaces
+  str_tr( str, L"-", L" " ); // replaces dashes with spaces
 
-  str_replace( str, " my ", " " ); // removes ` my '
+  str_replace( str, L" my ", L" " ); // removes ` my '
 
-  printf( "************************ test 2 result is: %s\n", str.data() ); // this should print `hello world'
+  wprintf( L"************************ test 2 result is: %ls\n", str.data() ); // this should print `hello world'
+  ASSERT( str == L"hello world" );
 }
 
 void test3()
 {
-  VTrie tr; // hash-like
-  VArray va;
+  WTrie  tr; // hash-like
+  WArray va;
 
   // inserting keys and values
-  tr[ "tralala" ] = "data1";
-  tr[ "opala"   ] = "data2";
-  tr[ "keynext" ] =  "data3";
+  tr[ L"tralala" ] = L"data1";
+  tr[ L"opala"   ] = L"data2";
+  tr[ L"keynext" ] = L"data3";
 
   // inserting elements into the array
-  va.push( "this" );
-  va.push( "just" );
-  va.push( "test" );
-  va.push( "simple" );
+  va.push( L"this" );
+  va.push( L"just" );
+  va.push( L"test" );
+  va.push( L"simple" );
 
   // adding string to the first element of the array
-  va[1] += " x2";
+  va[1] += L" x2";
 
   // the array is converted to trie (hash) and merged into `tr'
   tr += va; // same as: tr.merge( &va );
+
+  ASSERT( tr[ L"this" ] == L"just x2" );
 
   // clear the array--remove all elements
   va.undef();
@@ -102,105 +112,116 @@ void test3()
   int i;
   va = tr.keys();
 
-  printf( "keys count = %d\n", va.count() );
+  wprintf( L"keys count = %d\n", va.count() );
+  ASSERT( va.count() == 5 );
 
   // printing the array and trie data
   for( i = 0; i < va.count(); i++ )
     {
-    printf( "%d -> %s (%s)\n", i, va[i].data(), tr[ va[i] ].data() );
+    wprintf( L"%d -> %ls (%ls)\n", i, va[i].data(), tr[ va[i] ].data() );
     }
 
-  VArray v1;
+  WArray v1;
 
-  printf( "--------------------\n" );
+  wprintf( L"--------------------\n" );
   v1 = tr;    // same as: v1.undef; v1.push( &tr );
   v1.print(); // print array data
 
-  VRegexp re( "a([0-9]+)" ); // compiling new regexp
-  printf( "regexp error: %s\n", re.error_str() );
+  WRegexp re( L"a([0-9]+)" ); // compiling new regexp
+  wprintf( L"regexp error: %ls\n", re.error_str() );
 
-  if( re.m( "tralala85.zz" ) ) // match against regexp
+  if( re.m( L"tralala85.zz" ) ) // match against regexp
     {
-    printf( "sub 0 = %s\n", re[0].data() ); // re[1] returns `85'
-    printf( "sub 1 = %s\n", re[1].data() ); // re[1] returns `85'
+    wprintf( L"sub 0 = %ls\n", re[0].data() ); // re[0] returns `a85'
+    wprintf( L"sub 1 = %ls\n", re[1].data() ); // re[1] returns `85'
+    ASSERT( re[0] == L"a85" );
+    ASSERT( re[1] == L"85" );
     }
 
-  VString vs;
-  if( re.m( "tralala85.", "a(la)+" ) ) // match against regexp
+  WString vs;
+  if( re.m( L"tralala85.", L"a(la)+" ) ) // match against regexp
     {
-    printf( "sub 0 = %s\n", re[0].data() ); // `lala'
-    printf( "sub 1 = %s\n", re[1].data() ); // `la'
+    wprintf( L"sub 0 = %ls\n", re[0].data() ); // `alala'
+    wprintf( L"sub 1 = %ls\n", re[1].data() ); // `la'
+    ASSERT( re[0] == L"alala" );
+    ASSERT( re[1] == L"la"    );
     }
 
-  printf( "--------------------\n" );
-  v1 = str_split( ",", "*.tralala,opala and another   one" ); // splits on spaces
+  wprintf( L"--------------------\n" );
+  v1 = str_split( L",", L"*.tralala,opala and another   one" ); // splits on spaces
   v1.print();
 
-  printf( "joined: %s\n", (const char*)str_join( v1, "---" ) ); // join the same data back
-  VString m1 = v1[0];
-  VString m2 = v1[1];
-  printf( "1[%s] 2[%s]\n", m1.data(), m2.data() );
+  WString js1 = str_join( v1, L"---" );
+  wprintf( L"joined: %ls\n", (const wchar_t*)js1 ); // join the same data back
+  ASSERT( js1 == L"*.tralala---opala and another   one" );
+  
+  WString m1 = v1[0];
+  WString m2 = v1[1];
+  wprintf( L"1[%ls] 2[%ls]\n", m1.data(), m2.data() );
 
-  printf( "--------------------\n" );
-  v1 = str_split( " +", "tralala  opala and another   one", 3 ); // splits data on spaces up to 3 elements
+  wprintf( L"--------------------\n" );
+  v1 = str_split( L" +", L"tralala  opala and another   one", 3 ); // splits data on spaces up to 3 elements
   v1.print();
+  ASSERT( v1[2] == L"and another   one" );
 
 //exit(1);
 
-  printf( "--------------------\n" );
-  v1[1] = "hack this one here"; // set (overwrite) element 1
+  wprintf( L"--------------------\n" );
+  v1[1] = L"hack this one here"; // set (overwrite) element 1
   str_sleft( v1[2], 11 ); // reset element 2 to the left 11 chars only
   v1[0] = 12345; // convert integer into string
   v1.print();
 
-  printf( "--------------------\n" );
-  VArray aa[3]; // array of arrays
+  wprintf( L"--------------------\n" );
+  WArray aa[3]; // array of arrays
 
-  aa[0] = str_split( " ", "this is just a simple test" );
-  aa[1] = str_split( " ", "never ending story" );
-  aa[2] = str_split( " ", "star-wars rulez" );
+  aa[0] = str_split( L" ", L"this is just a simple test" );
+  aa[1] = str_split( L" ", L"never ending story" );
+  aa[2] = str_split( L" ", L"star-wars rulez" );
 
-  aa[0][1] = "was"; // first array, second element, replaces `is' with `was'
-  aa[2][0] = "slackware"; // third array, first element, `star-wars' is now `slackware'
+  aa[0][1] = L"was"; // first array, second element, replaces `is' with `was'
+  aa[2][0] = L"slackware"; // third array, first element, `star-wars' is now `slackware'
 
   // expands the array from 3 to 11 elements
-  aa[1][10] = "king of the hill";
+  aa[1][10] = L"king of the hill";
 
   for( i = 0; i < 3; i++ )
     {
-    printf("---\n");
+    wprintf( L"---\n");
     aa[i].print();
     }
 
-  printf( "---box test-----------------------------\n" );
+  wprintf( L"---box test-----------------------------\n" );
   i = 20;
   while( i-- )
   {
-  v1.push( "this" );
-  v1.push( "just" );
-  v1.push( "test" );
-  v1.push( "simple" );
+  v1.push( L"this" );
+  v1.push( L"just" );
+  v1.push( L"test" );
+  v1.push( L"simple" );
   }
 
   v1.print();
-  VArray vv = v1; // this makes vv data aliased to the data of v1
+  WArray vv = v1; // this makes vv data aliased to the data of v1
   vv.print(); // actually print the v1's data which is shared right now
-  vv.set( 0, "---" ); // vv makes own copy of the array data
+  vv.set( 0, L"---" ); // vv makes own copy of the array data
   vv.print(); // vv's data is no more aliased to v1's
 
 
 
-  VRegexp re_see( "^\\s*see\\s*=\\s*([^, \011]*)\\s*,(.*)$", "i" );
-  if( re_see.m( "see=*.tgz,tralala" ) )
+  WRegexp re_see( L"^\\s*see\\s*=\\s*([^, \011]*)\\s*,(.*)$", L"i" );
+  if( re_see.m( L"see=*.tgz,tralala" ) )
     {
-    VString str;
-    str = str + re_see[1] + re_see[2];
-    printf( "VRegexp[1+2]=[%s]\n", str.data() );
+    WString str;
+    str = str + re_see[1] + L":" + re_see[2];
+    wprintf( L"WRegexp[1+2]=[%ls]\n", str.data() );
+    ASSERT( str == L"*.tgz:tralala" );
     }
 
-  printf( "************************ test 3 ends here\n" );
+  wprintf( L"************************ test 3 ends here\n" );
 }
 
+/*
 void test4()
 {
   // this is regression test, please ignore it...
@@ -208,7 +229,7 @@ void test4()
   int i;
   int ii;
 
-  VArray va;
+  WArray va;
   ii = 20;
   i = ii;
   while( i-- )
@@ -217,12 +238,12 @@ void test4()
     printf( "%d%% va count = %d\n", (100*i)/ii, va.count() );
     }
 
-  VString set;
-  VString cat;
-  VString setn;
-  VString catn;
-  VString sete;
-  VString setp;
+  WString set;
+  WString cat;
+  WString setn;
+  WString catn;
+  WString sete;
+  WString setp;
 
   i = 2000;
 
@@ -255,8 +276,8 @@ void test4()
     str_ins( set, 30, "***opa***" );
     str_replace( setn, "i", "[I]" );
     }
-  printf( "set  = %s\n", set.data() );
-  printf( "setn = %s\n", setn.data() );
+  printf( "set  = %ls\n", set.data() );
+  printf( "setn = %ls\n", setn.data() );
 
   printf( "---array sort-------\n" );
   va.undef();
@@ -272,43 +293,32 @@ void test4()
 
 void test5()
 {
-  VTrie tr; // hash-like
-  VArray va;
+  WTrie tr; // hash-like
+  WArray va;
 
   // inserting keys and values
   tr[ "key1" ] = "data1";
   tr[ "key2" ] = "data2";
   tr[ "key3" ] = "data3";
+  tr[ "key4" ] = "data4";
+  tr[ "key5" ] = "data5";
 
   tr.print();
+  
+exit(1);  
+  
   tr.reverse();
   tr.print();
   tr.reverse();
   tr.print();
-
-  VCharSet cs;
-
-  cs.push( 'a' );
-  printf( "char_set: %d, %d\n", cs.in( 'a' ), cs.in( 'z' ) );
-  cs.undef( 'a' );
-  printf( "char_set: %d, %d\n", cs.in( 'a' ), cs.in( 'z' ) );
-  cs.undef();
-
-  int i = 2000;
-  while( i-- )
-    {
-    cs.push( i );
-    }
-  cs.undef();
-
 
   printf( "************************ test 5 ends here\n" );
 }
 
 void test6()
 {
-  VRegexp re;
-  VArray va;
+  WRegexp re;
+  WArray va;
 
   re.comp( "^([^!]+)!(.+)=apquxz(.+)$" );
   int i = re.m( "abc!pqr=apquxz.ixr.zzz.ac.uk" );
@@ -334,13 +344,13 @@ void test6()
   while( ( ps = va.next() ) )
     {
     printf( "------------------------------------\n" );
-    printf( "file is: %s\n", ps );
-    printf( "path is: %s\n", (const char*)str_file_path( ps ) );
-    printf( "name is: %s\n", (const char*)str_file_name( ps ) );
-    printf( "ext  is: %s\n", (const char*)str_file_ext( ps ) );
-    printf( "n+ex is: %s\n", (const char*)str_file_name_ext( ps ) );
-    printf( "reduced path is: %s\n", (const char*)str_reduce_path( ps ) );
-    printf( "dot reduce sample is: %s\n", (const char*)str_dot_reduce( ps, 10 ) );
+    printf( "file is: %ls\n", ps );
+    printf( "path is: %ls\n", (const char*)str_file_path( ps ) );
+    printf( "name is: %ls\n", (const char*)str_file_name( ps ) );
+    printf( "ext  is: %ls\n", (const char*)str_file_ext( ps ) );
+    printf( "n+ex is: %ls\n", (const char*)str_file_name_ext( ps ) );
+    printf( "reduced path is: %ls\n", (const char*)str_reduce_path( ps ) );
+    printf( "dot reduce sample is: %ls\n", (const char*)str_dot_reduce( ps, 10 ) );
     }
 
   va.fsave( "/tmp/a.aaa" );
@@ -350,9 +360,9 @@ void test6()
 
 void test7()
 {
-  VTrie tr; // hash-like
-  VTrie tr2; // hash-like
-  VArray va;
+  WTrie tr; // hash-like
+  WTrie tr2; // hash-like
+  WArray va;
 
   // inserting keys and values
   tr[ "key1" ] = "data1";
@@ -383,8 +393,8 @@ void test7()
 
 void test8()
 {
-  VString v1;
-  VString v2;
+  WString v1;
+  WString v2;
 
   v1 = "this is simple test ";
   v1 *= 1024;
@@ -403,16 +413,16 @@ void test8()
 
   v2 = ""; // this will free all data allocated by v2
 
-  printf( "copy 7,6: [%s]", (const char*)str_copy( v2, v1, 8, 6 ) );
-  printf( "copy 10: [%s]", (const char*)str_copy( v2, v1, -10 ) );
+  printf( "copy 7,6: [%ls]", (const char*)str_copy( v2, v1, 8, 6 ) );
+  printf( "copy 10: [%ls]", (const char*)str_copy( v2, v1, -10 ) );
 
   printf( "************************ test 5 ends here\n" );
 }
 
 void test9()
 {
-  VArray va;
-  VTrie  tr;
+  WArray va;
+  WTrie  tr;
   
   printf( "---9---------------------------------------------------\n" );
   
@@ -420,37 +430,66 @@ void test9()
   va.push( "two" );
   va.push( "tri" );
   va.push( "pet" );
+
+  va.print();
   
   tr = va;
   
   tr.print();
 
-  va.push( &tr );
+  printf( "\n            ----\n" );
+
+  va.push( tr );
   
   va.print();
   
-  VArray va2;
+  WArray va2;
   va2.push( "1" );
   va2.push( "2" );
   va2.push( "3" );
   va2.push( "4" );
 
   va2.unshift( "0" );
-  va2.unshift( &va );
-  va2.push( &va );
+  va2.unshift( va );
+  va2.push( va );
 
   va2.print();
   
 }
+*/
+
+void test10()
+{
+  WArray va;
+  WTrie  tr;
+  
+    wint_t x = 5;
+    wchar_t name[] = L"GEEKS";
+    wprintf( L"x = %d \n", x);
+    wprintf( L"HELLO %ls \n", name);
+
+  fwide( stdout, 0 );
+  printf( "--- WIDE CHAR TESTS -----------------------------------\n" );
+
+  fwide( stdout, 1 );
+  
+  wchar_t t[256];
+  wcscpy( t, L"Това е проста проба щеш не щеш" );
+  
+  wprintf( L"%ls\n", L"Това е проста проба щеш не щеш" );
+  
+  printf( "--- test 10 ends --------------------------------------\n" );
+}
+
 
 int main( int argc, char* argv[] )
 {
-
+  setlocale( LC_ALL, "" );
   /*
   char t[256] = "123456----------------------------------------9999999999999";
   char T[256] = "123456----------------------------------------9999999999999";
   str_trim_left( t, 3 );
-  printf( "%s\n", t );
+  printf( "%ls\n", t );
 
   for( long z; z < 300000000; z++ )
   {
@@ -462,39 +501,39 @@ int main( int argc, char* argv[] )
   }
   /**/
 
-  char t[92] = "this is simple test";
-  char r[92] = "1111111111111111111";
-  str_word( t, " ", r );
-  ASSERT( strcmp( t, "is simple test" ) == 0 );
-  ASSERT( strcmp( r, "this" ) == 0 );
+  wchar_t t[92] = L"this is simple test";
+  wchar_t r[92] = L"1111111111111111111";
+  str_word( t, L" ", r );
+  ASSERT( wcscmp( t, L"is simple test" ) == 0 );
+  ASSERT( wcscmp( r, L"this" ) == 0 );
 
-  strcpy( t, "   opa" );
-  str_cut_left( t, " " );
-  ASSERT( strcmp( t, "opa" ) == 0 );
+  str_set( t, L"   opa" );
+  str_cut_left( t, L" " );
+  ASSERT( wcscmp( t, L"opa" ) == 0 );
 
-  strcpy( t, "opa   " );
-  str_cut_right( t, " " );
-  ASSERT( strcmp( t, "opa" ) == 0 );
+  str_set( t, L"opa   " );
+  str_cut_right( t, L" " );
+  ASSERT( wcscmp( t, L"opa" ) == 0 );
 
-  strcpy( t, "this is good" );
-  str_ins( t, 8, "not " );
-  ASSERT( strcmp( t, "this is not good" ) == 0 );
+  str_set( t, L"this is good" );
+  str_ins( t, 8, L"not " );
+  ASSERT( wcscmp( t, L"this is not good" ) == 0 );
 
   str_del( t, 8, 4 );
-  ASSERT( strcmp( t, "this is good" ) == 0 );
+  ASSERT( wcscmp( t, L"this is good" ) == 0 );
 
-  strcpy( t, "more" );
+  str_set( t, L"more" );
   str_mul( t, 3 );
-  ASSERT( strcmp( t, "moremoremore" ) == 0 );
+  ASSERT( wcscmp( t, L"moremoremore" ) == 0 );
 
   str_copy( t+10, t,    0, 15 ); // check for overlapping borders, begin of str
   str_copy( t+10, t+20, 0, 15 ); // check for overlapping borders, end   of str
 
-  strcpy( t, "despicable me" );
-  str_word( t, " ", r );
-  ASSERT( strcmp( r, "despicable" ) == 0 );
-  str_word( t, " ", r );
-  ASSERT( strcmp( r, "me" ) == 0 );
+  str_set( t, L"despicable me" );
+  str_word( t, L" ", r );
+  ASSERT( wcscmp( r, L"despicable" ) == 0 );
+  str_word( t, L" ", r );
+  ASSERT( wcscmp( r, L"me" ) == 0 );
   ASSERT( t[0] == 0 );
 
 
@@ -502,12 +541,16 @@ int main( int argc, char* argv[] )
   test1();
   test2();
   test3();
+  /*
   test4();
   test5();
   test6();
   test7();
   test8();
   test9();
+  /**/
+  test10();
+
   //*/
   return 0;
 }

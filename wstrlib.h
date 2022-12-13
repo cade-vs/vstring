@@ -7,7 +7,7 @@
  *
  *  Distributed under the GPL license, you should receive copy of GPLv2!
  *
- *  SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
+ *  SEE 'README','LICENSE' OR 'COPYING' FILE FOR LICENSE DETAILS!
  *
  *  VSTRING library provides wide set of string manipulation features
  *  including dynamic string object that can be freely exchanged with
@@ -39,6 +39,18 @@
  *
  ***************************************************************************/
 
+#ifndef _WSTRLIB_H_
+#define _WSTRLIB_H_
+
+#define  _VSTRING_WIDE_
 #include "vdef.h"
 #include "vref.h"
-#include "vstring_internal.cpp"
+#include "vstrlib_internal.h"
+
+#endif /* *TOP* */
+
+/***************************************************************************
+**
+** EOF
+**
+****************************************************************************/
