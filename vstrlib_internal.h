@@ -63,7 +63,7 @@
 **
 ****************************************************************************/
 
-VS_CHAR*  time2str( const time_t tim );
+const VS_CHAR*  time2str( const time_t tim );
 time_t str2time( const VS_CHAR* timstr );
 
 /*****************************************************************************

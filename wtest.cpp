@@ -26,6 +26,7 @@
 #include <stdio.h>
 #include <locale.h>
 #include "wstring.h"
+#include "vstring.h"
 #include "wstrlib.h"
 
 void test1()
@@ -479,6 +480,19 @@ void test10()
   wprintf( L"%ls\n", L"Това е проста проба щеш не щеш" );
   
   printf( "--- test 10 ends --------------------------------------\n" );
+
+
+  WString ws( "щото това е конвертиране" );
+  wprintf( L"%ls\n", ws.data() );
+  
+  ws = "и това е пак също ковертиране";
+  wprintf( L"%ls\n", ws.data() );
+
+  VString vv = ws.data();
+  WString ww = vv.data();
+  ww += L" x2";
+  wprintf( L"%ls\n", ww.data() );
+
 }
 
 

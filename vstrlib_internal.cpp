@@ -50,11 +50,11 @@
   #ifdef _VSTRING_WIDE_
   VS_CHAR time2str_wchar_t_return[128];
   #endif
-  VS_CHAR* time2str( const time_t tim )
+  const VS_CHAR* time2str( const time_t tim )
   {
     time_t t = tim;
     #ifdef _VSTRING_WIDE_
-    mbstowcs( time2str_wchar_t_return, ctime( &t ), sizeof(time2str_wchar_t_return) );
+    mbstowcs( time2str_wchar_t_return, ctime( &t ), LENOF_VS_CHAR(time2str_wchar_t_return) );
     return time2str_wchar_t_return;
     #else
     return ctime( &t );
@@ -803,12 +803,12 @@ int mem_string_search( const VS_CHAR *p, const VS_CHAR* d, const VS_CHAR* opt )
       if ( n < 0 || n >= rc ) return substr;
       PCRE2_SIZE *ovector = pcre2_get_ovector_pointer( md );
 
-      int s = ovector[n*2];
-      int e = ovector[n*2+1];
+      size_t s = ovector[n*2];
+      size_t e = ovector[n*2+1];
       
       if ( s == PCRE2_UNSET || e == PCRE2_UNSET ) return substr;
       
-      int l = e - s;
+      size_t l = e - s;
       substr.setn( lp + s, l );
       }
     else

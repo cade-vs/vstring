@@ -49,6 +49,7 @@
 
 /* forward */
 class VS_STRING_CLASS;
+class VS_STRING_CLASS_R;
 class VS_ARRAY_CLASS;
 class VS_TRIE_CLASS;
 
@@ -96,8 +97,6 @@ public:
 ****************************************************************************/
 
 #define STR_BLOCK_SIZE    256
-
-class VS_STRING_CLASS;
 
 VS_STRING_CLASS& str_copy ( VS_STRING_CLASS& target, const VS_CHAR* source, int pos = 0, int len = -1 ); // returns `len' VS_CHARs from `pos'
 VS_STRING_CLASS& str_pad  ( VS_STRING_CLASS& target, int len, VS_CHAR ch = VS_CHAR_L(' ') );
@@ -206,7 +205,7 @@ public:
   friend int operator <= ( const VS_STRING_CLASS& s1, const VS_CHAR*    s2 ) { return VS_FN_STRCMP( s1, s2 ) <= 0; };
 
   operator const VS_CHAR* ( ) const { return (const VS_CHAR*)box->s; }
-  const VS_CHAR* data() { return box->s; }
+  const VS_CHAR* data()             { return (const VS_CHAR*)box->s; }
 
   VS_CHAR& operator [] ( int n )
       {
@@ -306,6 +305,14 @@ public:
 
   friend VS_STRING_CLASS& str_reverse( VS_STRING_CLASS& target                       ); // reverse the VS_STRING_CLASS: `abcde' becomes `edcba'
   friend VS_STRING_CLASS& str_squeeze( VS_STRING_CLASS& target, const VS_CHAR* sq_VS_CHARs ); // squeeze encountered repeating VS_CHARs to one only
+
+
+  // conversions/reversed char type functions
+  VS_STRING_CLASS( const VS_CHAR_R* prs  )  {  box = new VS_STRING_BOX(); set( prs );  };
+
+  const VS_STRING_CLASS& operator  = ( const VS_CHAR_R* prs   ) { set(prs); return *this; };
+
+  void   set(  const VS_CHAR_R* prs );
 
 }; /* end of VS_STRING_CLASS class */
 

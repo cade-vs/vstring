@@ -2,7 +2,7 @@
 ### MAKEMAKE STARTS HERE #######################################################
 
 
-### Created by makemake.pl on Tue Dec 13 00:29:34 2022 #########################
+### Created by makemake.pl on Fri Dec 16 00:45:34 2022 #########################
 
 
 ### GLOBAL TARGETS #############################################################
@@ -25,8 +25,8 @@ link: mm_update link-vstring.a link-wstring.a link-test link-wtest
 
 
 AR = ar rv
-CC = $(CXX)
-LD = $(CXX)
+CC = g++
+LD = g++
 MKDIR = mkdir -p
 RANLIB = ranlib
 RMDIR = rm -rf
@@ -36,11 +36,11 @@ SRC = *.c *.cpp *.cc *.cxx
 
 ### TARGET 1: libvstring.a #####################################################
 
-CC_1       = $(CXX)
-LD_1       = $(CXX)
+CC_1       = g++
+LD_1       = g++
 AR_1       = ar rv
 RANLIB_1   = $(RANLIB)
-CCFLAGS_1  = -I. -O2 $(CFLAGS) $(CPPFLAGS) $(CCDEF)  
+CCFLAGS_1  = -I. -O2 -Wpedantic -Wextra -Wformat -Werror=format-security -Wdate-time -D_FORTIFY_SOURCE=2 $(CFLAGS) $(CPPFLAGS) $(CCDEF)  
 LDFLAGS_1  = $(LDFLAGS) $(LDDEF) 
 DEPFLAGS_1 = 
 ARFLAGS_1  = 
@@ -85,11 +85,11 @@ link-vstring.a: .OBJ.vstring.a $(OBJ_1)
 
 ### TARGET OBJECTS FOR TARGET 1: libvstring.a ##################################
 
-.OBJ.vstring.a/vstring.o: vstring.cpp  vstring.cpp vref.h vdef.h vstring_internal.cpp \
+.OBJ.vstring.a/vstring.o: vstring.cpp  vstring.cpp vdef.h vref.h vstring_internal.cpp \
  vstring_internal.h
 	$(CC_1) $(CFLAGS_1) $(CCFLAGS_1) -c vstring.cpp          -o .OBJ.vstring.a/vstring.o
-.OBJ.vstring.a/vstrlib.o: vstrlib.cpp  vstrlib.cpp vdef.h vref.h vstring_internal.cpp \
- vstring_internal.h vstrlib_internal.cpp vstrlib_internal.h
+.OBJ.vstring.a/vstrlib.o: vstrlib.cpp  vstrlib.cpp vdef.h vref.h vstring_internal.h \
+ vstrlib_internal.cpp vstrlib_internal.h
 	$(CC_1) $(CFLAGS_1) $(CCFLAGS_1) -c vstrlib.cpp          -o .OBJ.vstring.a/vstrlib.o
 .OBJ.vstring.a/vref.o: vref.cpp  vref.cpp vdef.h vref.h
 	$(CC_1) $(CFLAGS_1) $(CCFLAGS_1) -c vref.cpp             -o .OBJ.vstring.a/vref.o
@@ -97,11 +97,11 @@ link-vstring.a: .OBJ.vstring.a $(OBJ_1)
 
 ### TARGET 2: libwstring.a #####################################################
 
-CC_2       = $(CXX)
-LD_2       = $(CXX)
+CC_2       = g++
+LD_2       = g++
 AR_2       = ar rv
 RANLIB_2   = $(RANLIB)
-CCFLAGS_2  = -I. -O2 $(CFLAGS) $(CPPFLAGS) $(CCDEF)  
+CCFLAGS_2  = -I. -O2 -Wpedantic -Wextra -Wformat -Werror=format-security -Wdate-time -D_FORTIFY_SOURCE=2 $(CFLAGS) $(CPPFLAGS) $(CCDEF)  
 LDFLAGS_2  = $(LDFLAGS) $(LDDEF) 
 DEPFLAGS_2 = 
 ARFLAGS_2  = 
@@ -149,8 +149,8 @@ link-wstring.a: .OBJ.wstring.a $(OBJ_2)
 .OBJ.wstring.a/wstring.o: wstring.cpp  wstring.cpp vdef.h vref.h vstring_internal.cpp \
  vstring_internal.h
 	$(CC_2) $(CFLAGS_2) $(CCFLAGS_2) -c wstring.cpp          -o .OBJ.wstring.a/wstring.o
-.OBJ.wstring.a/wstrlib.o: wstrlib.cpp  wstrlib.cpp vdef.h vref.h vstring_internal.cpp \
- vstring_internal.h vstrlib_internal.cpp vstrlib_internal.h
+.OBJ.wstring.a/wstrlib.o: wstrlib.cpp  wstrlib.cpp vdef.h vref.h vstring_internal.h \
+ vstrlib_internal.cpp vstrlib_internal.h
 	$(CC_2) $(CFLAGS_2) $(CCFLAGS_2) -c wstrlib.cpp          -o .OBJ.wstring.a/wstrlib.o
 .OBJ.wstring.a/vref.o: vref.cpp  vref.cpp vdef.h vref.h
 	$(CC_2) $(CFLAGS_2) $(CCFLAGS_2) -c vref.cpp             -o .OBJ.wstring.a/vref.o
@@ -158,12 +158,12 @@ link-wstring.a: .OBJ.wstring.a $(OBJ_2)
 
 ### TARGET 3: test #############################################################
 
-CC_3       = $(CXX)
-LD_3       = $(CXX)
+CC_3       = g++
+LD_3       = g++
 AR_3       = ar rv
 RANLIB_3   = $(RANLIB)
-CCFLAGS_3  = -I. -O2 -g $(CFLAGS) $(CPPFLAGS) $(CCDEF)  
-LDFLAGS_3  = -L. -lpcre2-8 -lpcre2-32 -lvstring $(LDFLAGS) $(LDDEF) 
+CCFLAGS_3  = -I. -O2 -g -Wpedantic -Wextra -Wformat -Werror=format-security -Wdate-time -D_FORTIFY_SOURCE=2 $(CFLAGS) $(CPPFLAGS) $(CCDEF)  
+LDFLAGS_3  = -L. -lvstring -lpcre2-8 -lpcre2-32 $(LDFLAGS) $(LDDEF) 
 DEPFLAGS_3 = 
 ARFLAGS_3  = 
 TARGET_3   = test
@@ -207,27 +207,27 @@ link-test: .OBJ.test $(OBJ_3)
 
 ### TARGET OBJECTS FOR TARGET 3: test ##########################################
 
-.OBJ.test/vstring.o: vstring.cpp  vstring.cpp vref.h vdef.h vstring_internal.cpp \
+.OBJ.test/vstring.o: vstring.cpp  vstring.cpp vdef.h vref.h vstring_internal.cpp \
  vstring_internal.h
 	$(CC_3) $(CFLAGS_3) $(CCFLAGS_3) -c vstring.cpp          -o .OBJ.test/vstring.o
-.OBJ.test/vstrlib.o: vstrlib.cpp  vstrlib.cpp vdef.h vref.h vstring_internal.cpp \
- vstring_internal.h vstrlib_internal.cpp vstrlib_internal.h
+.OBJ.test/vstrlib.o: vstrlib.cpp  vstrlib.cpp vdef.h vref.h vstring_internal.h \
+ vstrlib_internal.cpp vstrlib_internal.h
 	$(CC_3) $(CFLAGS_3) $(CCFLAGS_3) -c vstrlib.cpp          -o .OBJ.test/vstrlib.o
 .OBJ.test/vref.o: vref.cpp  vref.cpp vdef.h vref.h
 	$(CC_3) $(CFLAGS_3) $(CCFLAGS_3) -c vref.cpp             -o .OBJ.test/vref.o
-.OBJ.test/test.o: test.cpp  test.cpp vstring.h vref.h vdef.h vstring_internal.h vstrlib.h \
+.OBJ.test/test.o: test.cpp  test.cpp vstring.h vdef.h vref.h vstring_internal.h vstrlib.h \
  vstrlib_internal.h
 	$(CC_3) $(CFLAGS_3) $(CCFLAGS_3) -c test.cpp             -o .OBJ.test/test.o
 
 
 ### TARGET 4: wtest ############################################################
 
-CC_4       = $(CXX)
-LD_4       = $(CXX)
+CC_4       = g++
+LD_4       = g++
 AR_4       = ar rv
 RANLIB_4   = $(RANLIB)
-CCFLAGS_4  = -I. -O2 -g $(CFLAGS) $(CPPFLAGS) $(CCDEF)  
-LDFLAGS_4  = -L. -lpcre2-8 -lpcre2-32 -lwstring  $(LDFLAGS) $(LDDEF) 
+CCFLAGS_4  = -I. -O2 -g -Wpedantic -Wextra -Wformat -Werror=format-security -Wdate-time -D_FORTIFY_SOURCE=2 $(CFLAGS) $(CPPFLAGS) $(CCDEF)  
+LDFLAGS_4  = -L. -lwstring -lvstring -lpcre2-8 -lpcre2-32 $(LDFLAGS) $(LDDEF) 
 DEPFLAGS_4 = 
 ARFLAGS_4  = 
 TARGET_4   = wtest
@@ -274,13 +274,13 @@ link-wtest: .OBJ.wtest $(OBJ_4)
 .OBJ.wtest/wstring.o: wstring.cpp  wstring.cpp vdef.h vref.h vstring_internal.cpp \
  vstring_internal.h
 	$(CC_4) $(CFLAGS_4) $(CCFLAGS_4) -c wstring.cpp          -o .OBJ.wtest/wstring.o
-.OBJ.wtest/wstrlib.o: wstrlib.cpp  wstrlib.cpp vdef.h vref.h vstring_internal.cpp \
- vstring_internal.h vstrlib_internal.cpp vstrlib_internal.h
+.OBJ.wtest/wstrlib.o: wstrlib.cpp  wstrlib.cpp vdef.h vref.h vstring_internal.h \
+ vstrlib_internal.cpp vstrlib_internal.h
 	$(CC_4) $(CFLAGS_4) $(CCFLAGS_4) -c wstrlib.cpp          -o .OBJ.wtest/wstrlib.o
 .OBJ.wtest/vref.o: vref.cpp  vref.cpp vdef.h vref.h
 	$(CC_4) $(CFLAGS_4) $(CCFLAGS_4) -c vref.cpp             -o .OBJ.wtest/vref.o
-.OBJ.wtest/wtest.o: wtest.cpp  wtest.cpp wstring.h vref.h vdef.h vstring_internal.h wstrlib.h \
- vstrlib_internal.h
+.OBJ.wtest/wtest.o: wtest.cpp  wtest.cpp wstring.h vdef.h vref.h vstring_internal.h vstring.h \
+ wstrlib.h vstrlib_internal.h
 	$(CC_4) $(CFLAGS_4) $(CCFLAGS_4) -c wtest.cpp            -o .OBJ.wtest/wtest.o
 
 

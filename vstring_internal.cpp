@@ -140,21 +140,21 @@
   void VS_STRING_CLASS::i( const int n )
   {
     VS_CHAR tmp[64];
-    VS_FN_SPRINTF( tmp, sizeof(tmp), VS_CHAR_L("%d"), n );
+    VS_FN_SPRINTF( tmp, LENOF_VS_CHAR(tmp), VS_CHAR_L("%d"), n );
     set( tmp );
   }
 
   void VS_STRING_CLASS::l( const long n )
   {
     VS_CHAR tmp[64];
-    VS_FN_SPRINTF( tmp, sizeof(tmp), VS_CHAR_L("%ld"), n );
+    VS_FN_SPRINTF( tmp, LENOF_VS_CHAR(tmp), VS_CHAR_L("%ld"), n );
     set( tmp );
   }
 
   void VS_STRING_CLASS::f( const double d )
   {
     VS_CHAR tmp[64];
-    VS_FN_SPRINTF( tmp, sizeof(tmp), VS_CHAR_L("%.10f"), d );
+    VS_FN_SPRINTF( tmp, LENOF_VS_CHAR(tmp), VS_CHAR_L("%.10f"), d );
     int z = VS_FN_STRLEN( tmp );
     while( tmp[z-1] == VS_CHAR_L('0') ) z--;
     if ( tmp[z-1] == VS_CHAR_L('.') ) z--;
@@ -165,7 +165,7 @@
   void VS_STRING_CLASS::fi( const double d ) // sets double as int (w/o frac)
   {
     VS_CHAR tmp[64];
-    VS_FN_SPRINTF( tmp, sizeof(tmp), VS_CHAR_L("%.0f"), d );
+    VS_FN_SPRINTF( tmp, LENOF_VS_CHAR(tmp), VS_CHAR_L("%.0f"), d );
     set( tmp );
   }
 
@@ -511,6 +511,22 @@
     str_squeeze( target.box->s, sq_VS_CHARs );
     target.fix();
     return target;
+  }
+
+  // conversions/reversed char type functions
+  void VS_STRING_CLASS::set( const VS_CHAR_R* prs )
+  {
+    if (prs == NULL || prs[0] == 0)
+      resize( 0 );
+    else
+      {
+      int rz = VS_FN_CONVERT( NULL, prs, 0 ); // calc required "result size"
+      if( rz == -1 )
+        return resize( 0 );
+      resize( rz );
+      VS_FN_CONVERT( box->s, prs, rz );
+      box->sl = rz;
+      }
   }
 
 /****************************************************************************
@@ -1042,15 +1058,7 @@
 
   void VS_ARRAY_BOX::resize( int new_size )
   {
-    ASSERT( new_size >= 0 );
     if ( new_size < 0 ) new_size = 0;
-    while ( new_size < _count )
-      {
-      ASSERT( _data[ _count - 1 ] );
-      delete _data[ _count - 1 ];
-      _data[ _count - 1 ] = NULL;
-      _count--;
-      }
     if ( new_size == 0 )
       {
       if ( _data ) delete [] _data;
@@ -1058,6 +1066,13 @@
       _size = 0;
       _count = 0;
       return;
+      }
+    while ( new_size < _count )
+      {
+      ASSERT( _data[ _count - 1 ] );
+      delete _data[ _count - 1 ];
+      _data[ _count - 1 ] = NULL;
+      _count--;
       }
     new_size  = new_size / VARRAY_BLOCK_SIZE + (new_size % VARRAY_BLOCK_SIZE != 0);
     new_size *= VARRAY_BLOCK_SIZE;
@@ -1507,10 +1522,10 @@
   void VS_TRIE_NODE::print()
   {
     VS_FN_PRINTF( VS_CHAR_L("---------------------------------\n") );
-    VS_FN_PRINTF( VS_CHAR_L("this = %p\n"), this );
+    VS_FN_PRINTF( VS_CHAR_L("this = %p\n"), (void*)this );
     VS_FN_PRINTF( VS_CHAR_L("key  = %c\n"), c );
-    VS_FN_PRINTF( VS_CHAR_L("next = %p\n"), next );
-    VS_FN_PRINTF( VS_CHAR_L("down = %p\n"), down );
+    VS_FN_PRINTF( VS_CHAR_L("next = %p\n"), (void*)next );
+    VS_FN_PRINTF( VS_CHAR_L("down = %p\n"), (void*)down );
     VS_FN_PRINTF( VS_CHAR_L("data = " VS_SFMT "\n"), data ? data->data() : VS_CHAR_L("(null)") );
     if (next) next->print();
     if (down) down->print();
