@@ -63,7 +63,12 @@
 **
 ****************************************************************************/
 
+#ifdef _VSTRING_WIDE_
+const VS_CHAR*  time2wstr( const time_t tim );
+#else
 const VS_CHAR*  time2str( const time_t tim );
+#endif
+
 time_t str2time( const VS_CHAR* timstr );
 
 /*****************************************************************************

@@ -525,6 +525,7 @@
         return resize( 0 );
       resize( rz );
       VS_FN_CONVERT( box->s, prs, rz );
+      box->s[rz] = 0;
       box->sl = rz;
       }
   }
@@ -1059,6 +1060,13 @@
   void VS_ARRAY_BOX::resize( int new_size )
   {
     if ( new_size < 0 ) new_size = 0;
+    while ( new_size < _count )
+      {
+      ASSERT( _data[ _count - 1 ] );
+      delete _data[ _count - 1 ];
+      _data[ _count - 1 ] = NULL;
+      _count--;
+      }
     if ( new_size == 0 )
       {
       if ( _data ) delete [] _data;
@@ -1066,13 +1074,6 @@
       _size = 0;
       _count = 0;
       return;
-      }
-    while ( new_size < _count )
-      {
-      ASSERT( _data[ _count - 1 ] );
-      delete _data[ _count - 1 ];
-      _data[ _count - 1 ] = NULL;
-      _count--;
       }
     new_size  = new_size / VARRAY_BLOCK_SIZE + (new_size % VARRAY_BLOCK_SIZE != 0);
     new_size *= VARRAY_BLOCK_SIZE;
@@ -1139,9 +1140,10 @@
              ( box->_count - n ) * sizeof(VS_STRING_CLASS*) );
     box->_count++;
 
-    box->_data[n] = new VS_STRING_CLASS;
-    box->_data[n]->compact( compact );
-    box->_data[n]->set( s );
+    VS_STRING_CLASS* ne = new VS_STRING_CLASS;
+    ne->compact( compact );
+    ne->set( s );
+    box->_data[n] = ne;
   }
 
   void VS_ARRAY_CLASS::del( int n )
