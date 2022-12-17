@@ -129,6 +129,12 @@
 **
 ****************************************************************************/
 
+  VS_STRING_CLASS::VS_STRING_CLASS( VS_STRING_CLASS_R& rs  )
+  {
+    box = new VS_STRING_BOX();
+    set( rs.data() );
+  }
+
   void VS_STRING_CLASS::detach()
   {
     if ( box->refs() == 1 ) return;
@@ -225,6 +231,12 @@
     vs_memcpy( box->s + box->sl, ps, z );
     box->sl += z;
     box->s[ box->sl ] = 0;
+  }
+
+  const VS_STRING_CLASS& VS_STRING_CLASS::operator  = ( VS_STRING_CLASS_R& rs   ) 
+  { 
+    set( rs.data() ); 
+    return *this; 
   }
 
 /****************************************************************************

@@ -47,7 +47,7 @@
 #include "vref.h"
 #include "vstring_internal.h"
 
-#endif /* _WSTRING_H_ */
+#endif /* TOP */
 
 /***************************************************************************
 **

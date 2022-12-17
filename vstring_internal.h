@@ -122,6 +122,7 @@ public:
   VS_STRING_CLASS( const int      n   )  {  box = new VS_STRING_BOX(); i(n);     };
   VS_STRING_CLASS( const long     n   )  {  box = new VS_STRING_BOX(); l(n);     };
   VS_STRING_CLASS( const double   n   )  {  box = new VS_STRING_BOX(); f(n);     };
+  VS_STRING_CLASS( VS_STRING_CLASS_R& rs  );
   ~VS_STRING_CLASS() { box->unref(); };
 
   void compact( int a_compact ) // set this != 0 for compact (memory preserving) behaviour
@@ -145,6 +146,7 @@ public:
   const VS_STRING_CLASS& operator  = ( const int      n    ) { i(n);    return *this; };
   const VS_STRING_CLASS& operator  = ( const long     n    ) { l(n);    return *this; };
   const VS_STRING_CLASS& operator  = ( const double   n    ) { f(n);    return *this; };
+  const VS_STRING_CLASS& operator  = ( VS_STRING_CLASS_R& rs   );
 
   const VS_STRING_CLASS& operator += ( const VS_STRING_CLASS& str )
         { cat( str.box->s ); return *this; };
@@ -448,7 +450,8 @@ class VS_ARRAY_CLASS
 
   int       _fe; // foreach element index
 
-  VS_STRING_CLASS   _ret_str; // return-container
+  const VS_STRING_CLASS   _ret_empty; // return-empty-container
+        VS_STRING_CLASS   _ret_str;   // return-container
 
   void detach();
   void q_sort( int lo, int hi, int (*q_strcmp)(const VS_CHAR *, const VS_CHAR *) );
@@ -501,6 +504,13 @@ class VS_ARRAY_CLASS
         set( n, VS_CHAR_L("") );
       else
         detach(); // I don't know if user will change returned VS_STRING_CLASS?!
+      return *box->_data[n];
+    }
+
+  // FIXME: TODO: verify behaviour!
+  const VS_STRING_CLASS& operator []( int n ) const 
+    {
+      if ( n < 0 || n >= box->_count ) { return _ret_empty; }
       return *box->_data[n];
     }
 

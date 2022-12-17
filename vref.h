@@ -87,7 +87,8 @@ public:
   void *vs_memcpy(  wchar_t *dest, const wchar_t *src, size_t n );
   void *vs_memmove( wchar_t *dest, const wchar_t *src, size_t n );
 
-#endif 
+#endif /* TOP */
+
 /***************************************************************************
 **
 ** EOF

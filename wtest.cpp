@@ -29,6 +29,8 @@
 #include "vstring.h"
 #include "wstrlib.h"
 
+typedef VString VPath;
+
 void test1()
 {
   WString str = L"Hello";
@@ -459,6 +461,11 @@ void test9()
 }
 */
 
+void print_vpath( VPath& vp )
+{
+  wprintf( L"pp = %ls\n", WString( vp.data() ).data() );
+}
+
 void test10()
 {
   WArray va;
@@ -481,18 +488,21 @@ void test10()
   
   printf( "--- test 10 ends --------------------------------------\n" );
 
-
   WString ws( "щото това е конвертиране" );
   wprintf( L"%ls\n", ws.data() );
   
   ws = "и това е пак също ковертиране";
   wprintf( L"%ls\n", ws.data() );
 
-  VString vv = ws.data();
-  WString ww = vv.data();
+  VString vv = ws;
+  WString ww = vv;
   ww += L" x2";
   wprintf( L"%ls\n", ww.data() );
 
+  VPath pp = ws;
+  pp = str_dot_reduce( pp.data(), 11 );
+  vv = 123;
+  print_vpath( vv );
 }
 
 

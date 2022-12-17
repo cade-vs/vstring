@@ -88,6 +88,8 @@ void test3()
   va.push( "test" );
   va.push( "simple" );
 
+  VString zzss = va[1];
+
   // adding string to the first element of the array
   va[1] += " x2";
 

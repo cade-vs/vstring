@@ -39,6 +39,10 @@
  *
  ***************************************************************************/
 
-#include "vdef.h"
 #include "vref.h"
+#define _VSTRING_WIDE_
+#include "vdef.h"
+#include "vstring_internal.h"
+#undef _VSTRING_WIDE_
+#include "vdef.h"
 #include "vstring_internal.cpp"
