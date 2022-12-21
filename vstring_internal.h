@@ -81,7 +81,7 @@ public:
   int   compact;
 
   VS_STRING_BOX() { s = NULL; sl = size = compact = 0; resize_buf( 0 ); };
-  ~VS_STRING_BOX() { undef(); if ( s ) free( s ); };
+  virtual ~VS_STRING_BOX() { undef(); if ( s ) free( s ); };
 
   VS_STRING_BOX* clone();
 
@@ -122,7 +122,7 @@ public:
   VS_STRING_CLASS( const int      n   )  {  box = new VS_STRING_BOX(); i(n);     };
   VS_STRING_CLASS( const long     n   )  {  box = new VS_STRING_BOX(); l(n);     };
   VS_STRING_CLASS( const double   n   )  {  box = new VS_STRING_BOX(); f(n);     };
-  VS_STRING_CLASS( VS_STRING_CLASS_R& rs  );
+  VS_STRING_CLASS( VS_STRING_CLASS_R  rs  );
   ~VS_STRING_CLASS() { box->unref(); };
 
   void compact( int a_compact ) // set this != 0 for compact (memory preserving) behaviour
@@ -308,13 +308,21 @@ public:
   friend VS_STRING_CLASS& str_reverse( VS_STRING_CLASS& target                       ); // reverse the VS_STRING_CLASS: `abcde' becomes `edcba'
   friend VS_STRING_CLASS& str_squeeze( VS_STRING_CLASS& target, const VS_CHAR* sq_VS_CHARs ); // squeeze encountered repeating VS_CHARs to one only
 
+  /* utilities */
 
-  // conversions/reversed char type functions
+  void print(); // print string data to stdout (console)
+
+  /* conversions/reversed char type functions */
+  
   VS_STRING_CLASS( const VS_CHAR_R* prs  )  {  box = new VS_STRING_BOX(); set( prs );  };
 
   const VS_STRING_CLASS& operator  = ( const VS_CHAR_R* prs   ) { set(prs); return *this; };
 
   void   set(  const VS_CHAR_R* prs );
+
+  #ifdef _VSTRING_WIDE_
+  int   set_failsafe( const char* mbs ); // convert from multi-byte string to wide string, returns error chars count
+  #endif
 
 }; /* end of VS_STRING_CLASS class */
 
@@ -404,8 +412,8 @@ public:
 **
 ****************************************************************************/
 
-  int str_find ( const VS_CHAR* target, int c,         int startpos = 0 ); // returns first zero-based position of VS_CHAR, or -1 if not found
-  int str_rfind( const VS_CHAR* target, int c                           ); // returns last  zero-based position of VS_CHAR, or -1 if not found
+  int str_find ( const VS_CHAR* target, const VS_CHAR  c, int startpos = 0 ); // returns first zero-based position of VS_CHAR, or -1 if not found
+  int str_rfind( const VS_CHAR* target, const VS_CHAR  c                   ); // returns last  zero-based position of VS_CHAR, or -1 if not found
   int str_find ( const VS_CHAR* target, const VS_CHAR* s, int startpos = 0 ); // returns first zero-based position of VS_STRING_CLASS, or -1 if not found
   int str_rfind( const VS_CHAR* target, const VS_CHAR* s                   ); // returns last  zero-based position of VS_STRING_CLASS, or -1 if not found
 
@@ -485,14 +493,6 @@ class VS_ARRAY_CLASS
   int unshift( VS_ARRAY_CLASS *arr   ); // add to the beginning of the array
   const VS_CHAR* shift(); // get and remove the first element
 
-
-  void print(); // print array data to stdout (console)
-
-  int fload( const char* fname ); // return 0 for ok
-  int fsave( const char* fname ); // return 0 for ok
-  int fload( FILE* f ); // return 0 for ok
-  int fsave( FILE* f ); // return 0 for ok
-
   void sort( int rev = 0, int (*q_strcmp)(const VS_CHAR *, const VS_CHAR *) = NULL ); // sort (optional reverse order)
   void reverse(); // reverse elements order
   void shuffle(); // randomize element order with Fisher-Yates shuffle
@@ -534,6 +534,13 @@ class VS_ARRAY_CLASS
     { push( str ); return *this; };
 
   /* utilities */
+
+  void print(); // print array data to stdout (console)
+
+  int fload( const char* fname ); // return 0 for ok
+  int fsave( const char* fname ); // return 0 for ok
+  int fload( FILE* f ); // return 0 for ok
+  int fsave( FILE* f ); // return 0 for ok
 
   /* implement `foreach'-like interface */
   void reset() // reset position to beginning

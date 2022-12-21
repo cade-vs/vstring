@@ -503,6 +503,8 @@ void test10()
   pp = str_dot_reduce( pp.data(), 11 );
   vv = 123;
   print_vpath( vv );
+  
+  str_dot_reduce( ww, 16 );
 }
 
 
@@ -559,7 +561,6 @@ int main( int argc, char* argv[] )
   str_word( t, L" ", r );
   ASSERT( wcscmp( r, L"me" ) == 0 );
   ASSERT( t[0] == 0 );
-
 
   /**/
   test1();

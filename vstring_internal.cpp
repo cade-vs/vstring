@@ -129,7 +129,7 @@
 **
 ****************************************************************************/
 
-  VS_STRING_CLASS::VS_STRING_CLASS( VS_STRING_CLASS_R& rs  )
+  VS_STRING_CLASS::VS_STRING_CLASS( VS_STRING_CLASS_R rs  )
   {
     box = new VS_STRING_BOX();
     set( rs.data() );
@@ -186,11 +186,11 @@
       }
     else
       {
-      int sl = str_len(ps);
+      int sl = str_len( ps );
       resize( sl );
       vs_memcpy( box->s, ps, sl );
       box->sl = sl;
-      box->s[sl] = 0;
+      box->s[ sl ] = 0;
       }
   }
 
@@ -525,7 +525,19 @@
     return target;
   }
 
-  // conversions/reversed char type functions
+  /* utilities */
+
+  void VS_STRING_CLASS::print() // print string data to stdout (console)
+  {
+    #ifdef _VSTRING_WIDE_
+    wprintf( L"%ls\n", box->s );
+    #else
+    printf( "%s\n", box->s );
+    #endif
+  }
+
+  /* conversions/reversed char type functions */
+
   void VS_STRING_CLASS::set( const VS_CHAR_R* prs )
   {
     if (prs == NULL || prs[0] == 0)
@@ -541,6 +553,39 @@
       box->sl = rz;
       }
   }
+
+  #ifdef _VSTRING_WIDE_
+  int   VS_STRING_CLASS::set_failsafe( const char* mbs )
+  {
+    int err = 0;
+    undef();
+    mbtowc( NULL, NULL, 0 ); /* reset mbtowc shift state */
+    
+    wchar_t wch;
+    const char* ps = mbs;
+    while( ps )
+      {
+      int r = mbtowc( &wch, ps, 4 );
+      if( r == -1 )
+        {
+        err++;
+        wch = 0xFFFD;
+        ps++;
+        }
+      else if( r > 0 )  
+        {
+        ps += r;
+        }
+      else
+        {
+        return err;
+        }  
+      str_add_ch( *this, wch );
+      }
+    return err;
+  }
+  #endif
+
 
 /****************************************************************************
 **
@@ -575,7 +620,7 @@
     return target;
   }
 
-  int str_find( const VS_CHAR* target, int c, int startpos ) // returns first zero-based position of VS_CHAR, or -1 if not found
+  int str_find( const VS_CHAR* target, const VS_CHAR c, int startpos ) // returns first zero-based position of VS_CHAR, or -1 if not found
   {
     if (startpos < 0) return -1;
     int sl = str_len( target );
@@ -586,9 +631,9 @@
     return  pc - target;
   }
 
-  int str_rfind( const VS_CHAR* target, int c ) // returns last zero-based position of VS_CHAR, or -1 if not found
+  int str_rfind( const VS_CHAR* target, const VS_CHAR c ) // returns last zero-based position of VS_CHAR, or -1 if not found
   {
-    const VS_CHAR* pc = VS_FN_STRCHR( target, c );
+    const VS_CHAR* pc = VS_FN_STRRCHR( target, c );
     if( ! pc )
       return -1;
     return  pc - target;
@@ -669,7 +714,6 @@
   VS_CHAR* str_copy( VS_CHAR* target, const VS_CHAR* source, int pos, int len ) // returns `len' VS_CHARs from `pos'
   {
     ASSERT( len >= -1 );
-    target[0] = 0;
     int sl = str_len( source );
     if ( pos < 0 )
       {
@@ -1273,36 +1317,41 @@
 
   int VS_ARRAY_CLASS::fload( FILE* f )
   {
-#ifdef _VSTRING_WIDE_
-//    #error int WArray::fload( FILE* f ) is not implemented
-#else
     undef();
-    char buf[1024];
-    VS_STRING_CLASS str;
+    char buf[1024*1024];
+    VString vstr;
     while( fgets( buf, sizeof(buf)-1, f ) )
       {
-      str += buf;
-      if ( str_get_ch( str, -1 ) != VS_CHAR_L('\n') && !feof(f) ) continue;
-      while ( str_get_ch( str, -1 ) == VS_CHAR_L('\n') ) str_trim_right( str, 1 );
-      push( str );
-      str = VS_CHAR_L("");
+      vstr += buf;
+      if ( str_get_ch( vstr, -1 ) != '\n' && !feof(f) ) continue;
+      while ( str_get_ch( vstr, -1 ) == '\n' ) str_trim_right( vstr, 1 );
+      #ifdef _VSTRING_WIDE_
+      push( WString( vstr ) );
+      #else
+      push( vstr );
+      #endif
+      vstr.undef();
       }
-#endif
     return 0;
   }
 
   int VS_ARRAY_CLASS::fsave( FILE* f )
   {
-#ifdef _VSTRING_WIDE_
-//    #error int WArray::fsafe( FILE* f ) is not implemented
-#else
     for( int z = 0; z < box->_count; z++ )
       {
-      size_t len = str_len( get(z) );
-      if ( fwrite( get(z), 1, len, f ) != len ) return 2;
-      if ( fwrite( VS_CHAR_L("\n"), 1, 1, f ) != 1 ) return 2;
+      size_t len;
+      const char* ps;
+      #ifdef _VSTRING_WIDE_
+      VString vstr = get(z);
+      ps  = vstr.data();
+      len = str_len( vstr );
+      #else
+      ps  = get(z);
+      len = str_len( ps );
+      #endif
+      if ( fwrite( ps, 1, len, f ) != len ) return 2;
+      if ( fwrite( "\n", 1, 1, f ) != 1 ) return 2;
       }
-#endif
     return 0;
   }
 

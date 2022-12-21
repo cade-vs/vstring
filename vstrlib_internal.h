@@ -113,8 +113,6 @@ long file_pattern_search( const VS_CHAR *p, int ps, const char* fn, const VS_CHA
 **
 *****************************************************************************/
 
-extern int file_grep_max_line;
-extern int file_grep_lines_read;
 long file_grep( const VS_CHAR *re_string, const char* file_name, int nocase, off_t spos = -1 );
 long file_grep( const VS_CHAR *re_string, FILE* f,               int nocase, off_t spos = -1 );
 

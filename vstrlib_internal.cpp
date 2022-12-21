@@ -314,8 +314,10 @@ long file_grep( const VS_CHAR *re_string, const char* file_name, int nocase, off
   return pos;
 }
 
-int file_grep_max_line = MAX_GREP_LINE;
+/*
+int file_grep_max_line   = MAX_GREP_LINE;
 int file_grep_lines_read = 0;
+*/
 long file_grep( const VS_CHAR *re_string, FILE* f, int nocase, off_t spos )
 {
   /*

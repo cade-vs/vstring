@@ -67,6 +67,7 @@
   #undef VS_FN_STRCMP     
   #undef VS_FN_STRNCMP    
   #undef VS_FN_STRCHR     
+  #undef VS_FN_STRRCHR
   #undef VS_FN_STRSTR     
   #undef VS_FN_STRDUP     
   #undef VS_FN_STRTOL
@@ -111,6 +112,7 @@
   #define VS_FN_STRCMP      wcscmp
   #define VS_FN_STRNCMP     wcsncmp
   #define VS_FN_STRCHR      wcschr
+  #define VS_FN_STRRCHR     wcsrchr
   #define VS_FN_STRSTR      wcsstr
   #define VS_FN_STRDUP      wcsdup
   #define VS_FN_STRTOL(s)   wcstol(s,NULL,10)
@@ -150,6 +152,7 @@
   #define VS_FN_STRCMP      strcmp
   #define VS_FN_STRNCMP     strncmp
   #define VS_FN_STRCHR      strchr
+  #define VS_FN_STRRCHR     strrchr
   #define VS_FN_STRSTR      strstr
   #define VS_FN_STRDUP      strdup
   #define VS_FN_STRTOL(s)   strtol(s,NULL,10)
