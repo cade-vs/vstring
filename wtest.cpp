@@ -525,6 +525,11 @@ void test11()
   ASSERT( sfn_match( "vf*x*r", "vfudir"     ) != 0 );
 
   ASSERT( sfn_match( "vf*\\?*r", "vfutest?xdir"     ) == 0 );
+
+  ASSERT( sfn_match( "??*", "vfutest"  ) == 0 );
+  ASSERT( sfn_match( "??*", "vf"       ) == 0 );
+  ASSERT( sfn_match( "??*", "v"        ) != 0 );
+
 }
 
 int main( int argc, char* argv[] )
