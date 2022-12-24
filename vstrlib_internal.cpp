@@ -153,7 +153,11 @@ int sfn_match( const VS_CHAR* pattern, const VS_CHAR* string, int flags )
       if( ! *ps ) return 0; // pattern ends with *, will match anything
       if( ( *ps == VS_CHAR_L('*') ) || ( *ps == VS_CHAR_L('?') ) ) continue; // next is special
       if( *ps == VS_CHAR_L('[') )
-        while( *ss && __sfn_match_charset( ps, *ss, flags ) ) ss++;
+        {
+        int a;
+        while( *ss && __sfn_match_charset( ps, *ss, flags, &a ) ) ss++;
+        if( *ss ) ps += a; // found, advance data position
+        }
       else
         while( *ss && *ps != *ss ) ss++;
       if( ! *ss ) return 3; // no found string char after *
@@ -164,7 +168,7 @@ int sfn_match( const VS_CHAR* pattern, const VS_CHAR* string, int flags )
       ps++;
       int a;
       int r = __sfn_match_charset( ps, *ss, flags, &a );
-      ps += a; // advance
+      ps += a; // advance data position
       if( r != 0 ) return 4;
       }
     else
