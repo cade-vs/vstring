@@ -159,7 +159,10 @@ int sfn_match( const VS_CHAR* pattern, const VS_CHAR* string, int flags )
         if( *ss ) ps += a; // found, advance data position
         }
       else
+        {
+        if( *ps && *ps == VS_CHAR_L('\\') ) ps++; // found escape, right after *
         while( *ss && *ps != *ss ) ss++;
+        }
       if( ! *ss ) return 3; // no found string char after *
       // char after * matched, continue
       }
