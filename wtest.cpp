@@ -529,6 +529,7 @@ void test11()
   ASSERT( sfn_match( "??*", "vfutest"  ) == 0 );
   ASSERT( sfn_match( "??*", "vf"       ) == 0 );
   ASSERT( sfn_match( "??*", "v"        ) != 0 );
+  ASSERT( sfn_match( "*vfu*?", "vfuz"  ) == 0 );
 
   ASSERT( sfn_match( "vf[^you]*", "vfudir" ) != 0 );
 

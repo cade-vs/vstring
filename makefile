@@ -25,8 +25,8 @@ link: mm_update link-vstring.a link-wstring.a link-test link-wtest
 
 
 AR = ar rv
-CC = g++
-LD = g++
+CC = $(CXX)
+LD = $(CXX)
 MKDIR = mkdir -p
 RANLIB = ranlib
 RMDIR = rm -rf
@@ -36,11 +36,11 @@ SRC = *.c *.cpp *.cc *.cxx
 
 ### TARGET 1: libvstring.a #####################################################
 
-CC_1       = g++
-LD_1       = g++
+CC_1       = $(CXX)
+LD_1       = $(CXX)
 AR_1       = ar rv
 RANLIB_1   = $(RANLIB)
-CCFLAGS_1  = -I. -O2 -Wpedantic -Wextra -Wformat -Werror=format-security -Wdate-time -D_FORTIFY_SOURCE=2 $(CFLAGS) $(CPPFLAGS) $(CCDEF)  
+CCFLAGS_1  = -I. -O3 -Wpedantic -Wextra -Wformat -Werror=format-security -Wdate-time -D_FORTIFY_SOURCE=2 $(CFLAGS) $(CPPFLAGS) $(CCDEF)  
 LDFLAGS_1  = $(LDFLAGS) $(LDDEF) 
 DEPFLAGS_1 = 
 ARFLAGS_1  = 
@@ -97,11 +97,11 @@ link-vstring.a: .OBJ.vstring.a $(OBJ_1)
 
 ### TARGET 2: libwstring.a #####################################################
 
-CC_2       = g++
-LD_2       = g++
+CC_2       = $(CXX)
+LD_2       = $(CXX)
 AR_2       = ar rv
 RANLIB_2   = $(RANLIB)
-CCFLAGS_2  = -I. -O2 -Wpedantic -Wextra -Wformat -Werror=format-security -Wdate-time -D_FORTIFY_SOURCE=2 $(CFLAGS) $(CPPFLAGS) $(CCDEF)  
+CCFLAGS_2  = -I. -O3 -Wpedantic -Wextra -Wformat -Werror=format-security -Wdate-time -D_FORTIFY_SOURCE=2 $(CFLAGS) $(CPPFLAGS) $(CCDEF)  
 LDFLAGS_2  = $(LDFLAGS) $(LDDEF) 
 DEPFLAGS_2 = 
 ARFLAGS_2  = 
@@ -158,11 +158,11 @@ link-wstring.a: .OBJ.wstring.a $(OBJ_2)
 
 ### TARGET 3: test #############################################################
 
-CC_3       = g++
-LD_3       = g++
+CC_3       = $(CXX)
+LD_3       = $(CXX)
 AR_3       = ar rv
 RANLIB_3   = $(RANLIB)
-CCFLAGS_3  = -I. -O2 -g -Wpedantic -Wextra -Wformat -Werror=format-security -Wdate-time -D_FORTIFY_SOURCE=2 $(CFLAGS) $(CPPFLAGS) $(CCDEF)  
+CCFLAGS_3  = -I. -O3 -g -Wpedantic -Wextra -Wformat -Werror=format-security -Wdate-time -D_FORTIFY_SOURCE=2 $(CFLAGS) $(CPPFLAGS) $(CCDEF)  
 LDFLAGS_3  = -L. -lvstring -lpcre2-8 -lpcre2-32 $(LDFLAGS) $(LDDEF) 
 DEPFLAGS_3 = 
 ARFLAGS_3  = 
@@ -222,11 +222,11 @@ link-test: .OBJ.test $(OBJ_3)
 
 ### TARGET 4: wtest ############################################################
 
-CC_4       = g++
-LD_4       = g++
+CC_4       = $(CXX)
+LD_4       = $(CXX)
 AR_4       = ar rv
 RANLIB_4   = $(RANLIB)
-CCFLAGS_4  = -I. -O2 -g -Wpedantic -Wextra -Wformat -Werror=format-security -Wdate-time -D_FORTIFY_SOURCE=2 $(CFLAGS) $(CPPFLAGS) $(CCDEF)  
+CCFLAGS_4  = -I. -O3 -g -Wpedantic -Wextra -Wformat -Werror=format-security -Wdate-time -D_FORTIFY_SOURCE=2 $(CFLAGS) $(CPPFLAGS) $(CCDEF)  
 LDFLAGS_4  = -L. -lwstring -lvstring -lpcre2-8 -lpcre2-32 $(LDFLAGS) $(LDDEF) 
 DEPFLAGS_4 = 
 ARFLAGS_4  = 
