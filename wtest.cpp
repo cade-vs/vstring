@@ -25,8 +25,9 @@
 
 #include <stdio.h>
 #include <locale.h>
-#include "wstring.h"
 #include "vstring.h"
+#include "wstring.h"
+#include "vstrlib.h"
 #include "wstrlib.h"
 
 typedef VString VPath;
@@ -507,6 +508,15 @@ void test10()
   str_dot_reduce( ww, 16 );
 }
 
+void test11()
+{
+
+  ASSERT( sfn_match( "vf*", "vfudir"      ) == 0 );
+  ASSERT( sfn_match( "vf*r", "vfudir"     ) == 0 );
+  ASSERT( sfn_match( "vf*t", "vfudir"     ) != 0 );
+  ASSERT( sfn_match( "vf[you]*", "vfudir" ) == 0 );
+
+}
 
 int main( int argc, char* argv[] )
 {
@@ -575,6 +585,7 @@ int main( int argc, char* argv[] )
   test9();
   /**/
   test10();
+  test11();
 
   //*/
   return 0;

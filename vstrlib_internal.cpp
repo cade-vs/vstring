@@ -89,6 +89,90 @@
 
 /*****************************************************************************
 **
+** sfn_match function provides simplified pattern matching for the common
+** 
+*****************************************************************************/
+
+int __sfn_match_charset( const VS_CHAR* &cs, const VS_CHAR c, int flags )
+{
+  VS_STRING_CLASS charset_str;
+  int e = 0; // escape flag
+  while( *cs && ( *cs != VS_CHAR_L(']') ) )
+    {
+    if( *cs == VS_CHAR_L('\\') )
+      {
+      e = 1;
+      continue;
+      }
+    if( ! e and cs[1] == VS_CHAR_L('-') )
+      {
+      if( ! cs[2] ) 
+        {
+        cs += 2;
+        return 3;
+        }
+      str_add_ch_range( charset_str, cs[0], cs[2] );
+      }
+    else
+      {
+      str_add_ch( charset_str, cs[0] );
+      }  
+    e = 0;
+    cs++;  
+    }
+  if( str_len( charset_str ) == 0 ) return 2;
+
+  VS_CHAR cc = c;
+  if( flags & SFN_CASEFOLD )
+    {
+    str_up( charset_str );
+    cc = VS_FN_TOUPPER( cc );
+    }
+  if( str_find( charset_str, cc ) > 0 ) return 0;
+  return 1;
+}
+
+int sfn_match( const VS_CHAR* pattern, const VS_CHAR* string, int flags )
+{
+  const VS_CHAR* ps = pattern;
+  const VS_CHAR* ss = string;
+
+  if( ! *ps ) return 1; // empty pattern, will not match
+  
+  while( *ps )
+    {
+    if( *ps == VS_CHAR_L('?') )
+      {
+      if( ! *ss ) return 2;
+      }
+    else if( *ps == VS_CHAR_L('*') )
+      {
+      ps++;
+      if( ! *ps ) return 0; // pattern ends with *, will match anything
+      while( *ss && *ps != *ss ) ss++;
+      if( ! *ss ) return 3; // no found string char after *
+      // char after * matched, continue
+      }
+    else if( *ps == VS_CHAR_L('[') )
+      {
+      ps++;
+      int r = __sfn_match_charset( ps, *ss, flags );
+      if( r != 0 ) return 4;
+      }
+    else
+      {
+      if( *ps != *ss ) return 5;
+      }  
+    
+    ps++;
+    ss++;
+    }
+  
+  return 0;
+}
+
+/*****************************************************************************
+**
 ** Knuth-Morris-Pratt search
 **
 *****************************************************************************/

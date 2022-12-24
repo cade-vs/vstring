@@ -73,6 +73,33 @@ time_t str2time( const VS_CHAR* timstr );
 
 /*****************************************************************************
 **
+** sfn_match function provides simplified pattern matching for the common
+** shell expansion. supported rules are:
+**     *      -- any nuber of characters
+**     ?      -- any single character
+**     [...]  -- single position of any of the enclosed chars
+**               (supports ranges in the form [A-Z], [0-7], etc.
+**     [!...] -- single range of any different chars than enclosed
+**     [^...] -- the same
+**     \x     -- will escape and treat 'x' as non-special char (like *,?,etc.)
+** 
+** supported flags, should be OR'd ( flag1 | flag2 ... )
+**     SFN_NOESCAPE -- disables escaping with '\'
+**     SFN_CASEFOLD -- case-insesitive matching
+**
+** returns 0 for matched pattern or other for error
+*****************************************************************************/
+
+#ifndef __SFN_FLAGS__
+#define __SFN_FLAGS__
+#define SFN_NOESCAPE  (1 << 1)
+#define SFN_CASEFOLD  (1 << 4)
+#endif
+
+int sfn_match( const VS_CHAR* pattern, const VS_CHAR* string, int flags = 0 );
+
+/*****************************************************************************
+**
 ** Next mem* search functions are used to find pattern into memory block
 ** p is pattern, ps is pattern size, d is data searched and ds is its size
 ** return found pttern position or -1 for not found
