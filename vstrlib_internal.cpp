@@ -93,30 +93,30 @@
 ** 
 *****************************************************************************/
 
-int __sfn_match_charset( const VS_CHAR* &cs, const VS_CHAR c, int flags )
+int __sfn_match_charset( const VS_CHAR* charset, const VS_CHAR c, int flags, int *advance = NULL )
 {
   VS_STRING_CLASS charset_str;
-  int e = 0; // escape flag
+  const VS_CHAR* cs = charset;
   while( *cs && ( *cs != VS_CHAR_L(']') ) )
     {
     if( *cs == VS_CHAR_L('\\') )
       {
-      e = 1;
-      continue;
+      if( ! *++cs ) return 4;
+      str_add_ch( charset_str, *cs );
       }
-    if( ! e and cs[1] == VS_CHAR_L('-') )
+    if( cs[1] == VS_CHAR_L('-') )
       {
-      cs += 2;
       if( ! cs[2] ) return 3;
       str_add_ch_range( charset_str, cs[0], cs[2] );
+      cs += 2;
       }
     else
       {
       str_add_ch( charset_str, cs[0] );
       }  
-    e = 0;
     cs++;  
     }
+  if( advance ) *advance = cs - charset;
   if( str_len( charset_str ) == 0 ) return 2;
 
   VS_CHAR cc = c;
@@ -138,7 +138,12 @@ int sfn_match( const VS_CHAR* pattern, const VS_CHAR* string, int flags )
   
   while( *ps )
     {
-    if( *ps == VS_CHAR_L('?') )
+    if( *ps == VS_CHAR_L('\\') )
+      {
+      if( ! *++ps ) return 6;
+      if( *ps != *ss ) return 7;
+      }
+    else if( *ps == VS_CHAR_L('?') )
       {
       if( ! *ss ) return 2;
       }
@@ -146,14 +151,20 @@ int sfn_match( const VS_CHAR* pattern, const VS_CHAR* string, int flags )
       {
       ps++;
       if( ! *ps ) return 0; // pattern ends with *, will match anything
-      while( *ss && *ps != *ss ) ss++;
+      if( ( *ps == VS_CHAR_L('*') ) || ( *ps == VS_CHAR_L('?') ) ) continue; // next is special
+      if( *ps == VS_CHAR_L('[') )
+        while( *ss && __sfn_match_charset( ps, *ss, flags ) ) ss++;
+      else
+        while( *ss && *ps != *ss ) ss++;
       if( ! *ss ) return 3; // no found string char after *
       // char after * matched, continue
       }
     else if( *ps == VS_CHAR_L('[') )
       {
       ps++;
-      int r = __sfn_match_charset( ps, *ss, flags );
+      int a;
+      int r = __sfn_match_charset( ps, *ss, flags, &a );
+      ps += a; // advance
       if( r != 0 ) return 4;
       }
     else
