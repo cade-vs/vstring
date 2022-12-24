@@ -518,6 +518,9 @@ void test11()
 
   ASSERT( sfn_match( "vf\\*d[g-k]?z", "vf*dirz" ) == 0 );
   ASSERT( sfn_match( "v*[c-e]*", "vfudirtest.txt" ) == 0 );
+
+  ASSERT( sfn_match( "vf*i*r", "vfudir"     ) == 0 );
+  ASSERT( sfn_match( "vf*x*r", "vfudir"     ) != 0 );
 }
 
 int main( int argc, char* argv[] )
