@@ -437,7 +437,7 @@
   {
     if( fr > to ) return;
     target.resize( target.box->sl + ( to - fr ) + 1 );
-    for( int i = fr; i < to; i++ )
+    for( int i = fr; i <= to; i++ )
       target.box->s[target.box->sl++] = i;
     target.box->s[target.box->sl] = 0;
   }

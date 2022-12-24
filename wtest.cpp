@@ -516,6 +516,7 @@ void test11()
   ASSERT( sfn_match( "vf*t", "vfudir"     ) != 0 );
   ASSERT( sfn_match( "vf[you]*", "vfudir" ) == 0 );
 
+  ASSERT( sfn_match( "vf\*d[g-k]?z", "vf*dirz" ) == 0 );
 }
 
 int main( int argc, char* argv[] )

@@ -106,11 +106,8 @@ int __sfn_match_charset( const VS_CHAR* &cs, const VS_CHAR c, int flags )
       }
     if( ! e and cs[1] == VS_CHAR_L('-') )
       {
-      if( ! cs[2] ) 
-        {
-        cs += 2;
-        return 3;
-        }
+      cs += 2;
+      if( ! cs[2] ) return 3;
       str_add_ch_range( charset_str, cs[0], cs[2] );
       }
     else
