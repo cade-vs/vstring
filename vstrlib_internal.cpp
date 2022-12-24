@@ -93,13 +93,26 @@
 ** 
 *****************************************************************************/
 
+int __sfn_eq( const VS_CHAR c1, const VS_CHAR c2, int flags )
+{
+  int cc1 = flags & SFN_CASEFOLD ? VS_FN_TOUPPER( c1 ) : c1;
+  int cc2 = flags & SFN_CASEFOLD ? VS_FN_TOUPPER( c2 ) : c2;
+  return cc1 == cc2;
+}
+
 int __sfn_match_charset( const VS_CHAR* charset, const VS_CHAR c, int flags, int *advance = NULL )
 {
   VS_STRING_CLASS charset_str;
   const VS_CHAR* cs = charset;
+  int r = 0;
+  if( *cs == VS_CHAR_L('!') || *cs == VS_CHAR_L('^') )
+    {
+    r = 1;
+    cs++;
+    }
   while( *cs && ( *cs != VS_CHAR_L(']') ) )
     {
-    if( *cs == VS_CHAR_L('\\') )
+    if( ! ( flags & SFN_NOESCAPE ) && *cs == VS_CHAR_L('\\') )
       {
       if( ! *++cs ) return 4;
       str_add_ch( charset_str, *cs );
@@ -125,7 +138,7 @@ int __sfn_match_charset( const VS_CHAR* charset, const VS_CHAR c, int flags, int
     str_up( charset_str );
     cc = VS_FN_TOUPPER( cc );
     }
-  if( str_find( charset_str, cc ) > 0 ) return 0;
+  if( str_find( charset_str, cc ) > 0 ) return r ? 1 : 0;
   return 1;
 }
 
@@ -138,7 +151,7 @@ int sfn_match( const VS_CHAR* pattern, const VS_CHAR* string, int flags )
   
   while( *ps )
     {
-    if( *ps == VS_CHAR_L('\\') )
+    if( ! ( flags & SFN_NOESCAPE ) && *ps == VS_CHAR_L('\\') )
       {
       if( ! *++ps ) return 6;
       if( *ps != *ss ) return 7;
@@ -160,8 +173,8 @@ int sfn_match( const VS_CHAR* pattern, const VS_CHAR* string, int flags )
         }
       else
         {
-        if( *ps && *ps == VS_CHAR_L('\\') ) ps++; // found escape, right after *
-        while( *ss && *ps != *ss ) ss++;
+        if( ! ( flags & SFN_NOESCAPE ) && *ps && *ps == VS_CHAR_L('\\') ) ps++; // found escape, right after *
+        while( *ss && ! __sfn_eq( *ps, *ss, flags ) ) ss++;
         }
       if( ! *ss ) return 3; // no found string char after *
       // char after * matched, continue
@@ -176,7 +189,7 @@ int sfn_match( const VS_CHAR* pattern, const VS_CHAR* string, int flags )
       }
     else
       {
-      if( *ps != *ss ) return 5;
+      if( ! __sfn_eq( *ps, *ss, flags ) ) return 5;
       }  
     
     ps++;

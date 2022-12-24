@@ -530,6 +530,14 @@ void test11()
   ASSERT( sfn_match( "??*", "vf"       ) == 0 );
   ASSERT( sfn_match( "??*", "v"        ) != 0 );
 
+  ASSERT( sfn_match( "vf[^you]*", "vfudir" ) != 0 );
+
+  ASSERT( sfn_match( "vf\\u*", "vfudir", SFN_NOESCAPE ) != 0 );
+  ASSERT( sfn_match( "vf\\u*", "vf\\udir", SFN_NOESCAPE ) == 0 );
+
+  ASSERT( sfn_match( "vf\\U*", "Vf\\udir", SFN_NOESCAPE ) != 0 );
+  ASSERT( sfn_match( "vf\\U*", "Vf\\udir", SFN_NOESCAPE | SFN_CASEFOLD ) == 0 );
+  ASSERT( sfn_match( "vF\\*d[g-k]?z", "Vf*dIrz", SFN_CASEFOLD ) == 0 );
 }
 
 int main( int argc, char* argv[] )
