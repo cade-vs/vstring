@@ -233,12 +233,18 @@
     box->s[ box->sl ] = 0;
   }
 
-  const VS_STRING_CLASS& VS_STRING_CLASS::operator  = ( VS_STRING_CLASS_R& rs   ) 
+  const VS_STRING_CLASS& VS_STRING_CLASS::operator  = ( const VS_STRING_CLASS_R& rs   ) 
   { 
     set( rs.data() ); 
     return *this; 
   }
 
+  const VS_STRING_CLASS& VS_STRING_CLASS::operator  = ( const VS_CHAR_R* prs   )
+  { 
+    set( prs ); 
+    return *this; 
+  }
+  
 /****************************************************************************
 **
 ** VS_STRING_CLASS Functions (for class VS_STRING_CLASS)

@@ -146,41 +146,25 @@ public:
   const VS_STRING_CLASS& operator  = ( const int      n    ) { i(n);    return *this; };
   const VS_STRING_CLASS& operator  = ( const long     n    ) { l(n);    return *this; };
   const VS_STRING_CLASS& operator  = ( const double   n    ) { f(n);    return *this; };
-  const VS_STRING_CLASS& operator  = ( VS_STRING_CLASS_R& rs   );
 
-  const VS_STRING_CLASS& operator += ( const VS_STRING_CLASS& str )
-        { cat( str.box->s ); return *this; };
-  const VS_STRING_CLASS& operator += ( const VS_CHAR*  ps    )
-        { cat( ps ); return *this; };
-  const VS_STRING_CLASS& operator += ( const int    n     )
-        { VS_STRING_CLASS tmp = n; cat(tmp); return *this; };
-  const VS_STRING_CLASS& operator += ( const long   n     )
-        { VS_STRING_CLASS tmp = n; cat(tmp); return *this; };
-  const VS_STRING_CLASS& operator += ( const double n     )
-        { VS_STRING_CLASS tmp = n; cat(tmp); return *this; };
+  const VS_STRING_CLASS& operator += ( const VS_STRING_CLASS& str )  { cat( str.box->s ); return *this; };
+  const VS_STRING_CLASS& operator += ( const VS_CHAR*  ps    )       { cat( ps ); return *this; };
+  const VS_STRING_CLASS& operator += ( const int    n     )          { VS_STRING_CLASS tmp = n; cat(tmp); return *this; };
+  const VS_STRING_CLASS& operator += ( const long   n     )          { VS_STRING_CLASS tmp = n; cat(tmp); return *this; };
+  const VS_STRING_CLASS& operator += ( const double n     )          { VS_STRING_CLASS tmp = n; cat(tmp); return *this; };
 
-  const VS_STRING_CLASS& operator *= ( const int    n     )
-        { return str_mul( *this, n ); };
+  const VS_STRING_CLASS& operator *= ( const int    n     )          { return str_mul( *this, n ); };
 
-  friend VS_STRING_CLASS operator + ( const VS_STRING_CLASS& str1, const VS_STRING_CLASS& str2 )
-         { VS_STRING_CLASS res = str1; res += str2; return res; };
-  friend VS_STRING_CLASS operator + ( const VS_STRING_CLASS& str1, const VS_CHAR* ps )
-         { VS_STRING_CLASS res = str1; res += ps; return res; };
-  friend VS_STRING_CLASS operator + ( const VS_CHAR* ps, const VS_STRING_CLASS& str2 )
-         { VS_STRING_CLASS res = ps; res += str2; return res; };
+  friend VS_STRING_CLASS operator + ( const VS_STRING_CLASS& str1, const VS_STRING_CLASS& str2 ) { VS_STRING_CLASS res = str1; res += str2; return res; };
+  friend VS_STRING_CLASS operator + ( const VS_STRING_CLASS& str1, const VS_CHAR* ps )           { VS_STRING_CLASS res = str1; res += ps;   return res; };
+  friend VS_STRING_CLASS operator + ( const VS_CHAR* ps, const VS_STRING_CLASS& str2 )           { VS_STRING_CLASS res = ps;   res += str2; return res; };
 
-  friend VS_STRING_CLASS operator + ( const VS_STRING_CLASS& str1, const int    n )
-         { VS_STRING_CLASS res = str1; res +=    n; return res; };
-  friend VS_STRING_CLASS operator + ( const int    n, const VS_STRING_CLASS& str2 )
-         { VS_STRING_CLASS res =    n; res += str2; return res; };
-  friend VS_STRING_CLASS operator + ( const VS_STRING_CLASS& str1, const long   n )
-         { VS_STRING_CLASS res = str1; res +=    n; return res; };
-  friend VS_STRING_CLASS operator + ( const long   n, const VS_STRING_CLASS& str2 )
-         { VS_STRING_CLASS res =    n; res += str2; return res; };
-  friend VS_STRING_CLASS operator + ( const VS_STRING_CLASS& str1, const double n )
-         { VS_STRING_CLASS res = str1; res +=    n; return res; };
-  friend VS_STRING_CLASS operator + ( const double n, const VS_STRING_CLASS& str2 )
-         { VS_STRING_CLASS res =    n; res += str2; return res; };
+  friend VS_STRING_CLASS operator + ( const VS_STRING_CLASS& str1, const int    n )              { VS_STRING_CLASS res = str1; res +=    n; return res; };
+  friend VS_STRING_CLASS operator + ( const int    n, const VS_STRING_CLASS& str2 )              { VS_STRING_CLASS res =    n; res += str2; return res; };
+  friend VS_STRING_CLASS operator + ( const VS_STRING_CLASS& str1, const long   n )              { VS_STRING_CLASS res = str1; res +=    n; return res; };
+  friend VS_STRING_CLASS operator + ( const long   n, const VS_STRING_CLASS& str2 )              { VS_STRING_CLASS res =    n; res += str2; return res; };
+  friend VS_STRING_CLASS operator + ( const VS_STRING_CLASS& str1, const double n )              { VS_STRING_CLASS res = str1; res +=    n; return res; };
+  friend VS_STRING_CLASS operator + ( const double n, const VS_STRING_CLASS& str2 )              { VS_STRING_CLASS res =    n; res += str2; return res; };
 
   friend int operator == ( const VS_STRING_CLASS& s1, const VS_STRING_CLASS& s2 ) { return VS_FN_STRCMP( s1, s2 ) == 0; };
   friend int operator == ( const VS_CHAR*    s1, const VS_STRING_CLASS& s2 ) { return VS_FN_STRCMP( s1, s2 ) == 0; };
@@ -207,7 +191,7 @@ public:
   friend int operator <= ( const VS_STRING_CLASS& s1, const VS_CHAR*    s2 ) { return VS_FN_STRCMP( s1, s2 ) <= 0; };
 
   operator const VS_CHAR* ( ) const { return (const VS_CHAR*)box->s; }
-  const VS_CHAR* data()             { return (const VS_CHAR*)box->s; }
+  const VS_CHAR* data() const       { return (const VS_CHAR*)box->s; }
 
   VS_CHAR& operator [] ( int n )
       {
@@ -316,7 +300,8 @@ public:
   
   VS_STRING_CLASS( const VS_CHAR_R* prs  )  {  box = new VS_STRING_BOX(); set( prs );  };
 
-  const VS_STRING_CLASS& operator  = ( const VS_CHAR_R* prs   ) { set(prs); return *this; };
+  const VS_STRING_CLASS& operator  = ( const VS_STRING_CLASS_R& rs  );
+  const VS_STRING_CLASS& operator  = ( const VS_CHAR_R* prs   );
 
   void   set(  const VS_CHAR_R* prs );
 
