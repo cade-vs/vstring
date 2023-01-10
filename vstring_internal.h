@@ -238,7 +238,7 @@ public:
   ** VS_STRING_CLASS Friend Functions (for class VS_STRING_CLASS)
   ****************************************************************************/
 
-  inline friend int str_len( VS_STRING_CLASS& target ) { return target.box->sl; };
+  inline friend ssize_t str_len( VS_STRING_CLASS& target ) { return target.box->sl; };
   inline friend VS_STRING_CLASS& str_set( VS_STRING_CLASS& target, const VS_CHAR* ps ) { target.set( ps ); return target; };
 
   friend VS_STRING_CLASS& str_mul    ( VS_STRING_CLASS& target, int n                  ); // multiplies the VS_STRING_CLASS n times, i.e. "1"*5 = "11111"
@@ -687,7 +687,7 @@ VS_STRING_CLASS str_dot_reduce( const VS_CHAR* s, int width );
 
 // adds trailing '/' if not exist
 VS_CHAR* str_fix_path( VS_CHAR* s, int slashtype = VS_CHAR_L('/') );
-const VS_CHAR* str_fix_path( VS_STRING_CLASS& s, int slashtype = VS_CHAR_L('/') );
+const VS_STRING_CLASS& str_fix_path( VS_STRING_CLASS& s, int slashtype = VS_CHAR_L('/') );
 
 VS_STRING_CLASS str_file_ext(      const VS_CHAR *ps ); // `ext'
 VS_STRING_CLASS str_file_name(     const VS_CHAR *ps ); // `filename'

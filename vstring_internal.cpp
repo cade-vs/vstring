@@ -433,10 +433,10 @@
   void str_add_ch( VS_STRING_CLASS &target, const VS_CHAR ch ) // adds `ch' at the end
   {
     int sl = target.box->sl;
-    target.resize( sl+1 );
+    if( sl + 1 >= target.box->size ) target.resize( sl + 1 );
     target.box->s[sl] = ch;
     target.box->s[sl+1] = 0;
-    target.fix();
+    target.box->sl++;
   }
 
   void str_add_ch_range( VS_STRING_CLASS &target, const VS_CHAR fr, const VS_CHAR to ) // adds all from `fr' to 'to' at the end
@@ -1838,12 +1838,12 @@ VS_CHAR* str_fix_path( VS_CHAR* s, int slashtype )
   return s;
 }
 
-const VS_CHAR* str_fix_path( VS_STRING_CLASS &s, int slashtype )
+const VS_STRING_CLASS& str_fix_path( VS_STRING_CLASS &s, int slashtype )
 {
   size_t sl = str_len( s );
   if ( s[sl-1] != slashtype )
     str_add_ch( s, slashtype );
-  return (const VS_CHAR*)s;
+  return s;
 }
 
 VS_STRING_CLASS str_file_ext( const VS_CHAR *ps )

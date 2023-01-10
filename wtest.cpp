@@ -59,6 +59,13 @@ void test1()
   wprintf( L"************************ test 1 result is: %ls\n", str.data() ); // this should print `hello world'
 
   ASSERT( str == L"hello world" );
+  
+  str.compact( 1 );
+  str.fix();
+  
+  str_add_ch( str, '!' );
+  str_add_ch( str, '?' );
+  str_add_ch( str, '*' );
 }
 
 void test2()
@@ -544,6 +551,8 @@ void test11()
   ASSERT( sfn_match( L"vf\\*d[g-k]?z", L"vf*dirz"  ) == 0 );
   ASSERT( sfn_match( L"vf*\\?*r", L"vfutest?xdir"  ) == 0 );
   ASSERT( sfn_match( L"vF\\*d[g-k]?z", L"Vf*dIrz", SFN_CASEFOLD ) == 0 );
+
+  ASSERT( sfn_match( "*ing*", "vstring.txt"  ) == 0 );
 }
 
 int main( int argc, char* argv[] )
