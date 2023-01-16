@@ -45,7 +45,8 @@
 **
 ****************************************************************************/
 
-#define VARRAY_BLOCK_SIZE 2048
+#define VARRAY_DEFAULT_BLOCK_SIZE   1024
+#define VSTRING_DEFAULT_BLOCK_SIZE   256
 
 /* forward */
 class VS_STRING_CLASS;
@@ -62,7 +63,7 @@ class VS_TRIE_CLASS;
 **
 ****************************************************************************/
 
-  size_t str_len( const VS_CHAR *s );
+  ssize_t str_len( const VS_CHAR *s );
 
 /****************************************************************************
 **
@@ -78,15 +79,17 @@ public:
   int   size; // internal buffer size
   VS_CHAR* s;    // internal buffer
 
+  int   block_size; // current block size
   int   compact;
 
-  VS_STRING_BOX() { s = NULL; sl = size = compact = 0; resize_buf( 0 ); };
-  virtual ~VS_STRING_BOX() { undef(); if ( s ) free( s ); };
+  VS_STRING_BOX() { s = NULL; sl = size = compact = 0; block_size = VSTRING_DEFAULT_BLOCK_SIZE; resize_buf( 0 ); };
+  virtual ~VS_STRING_BOX();
 
   VS_STRING_BOX* clone();
 
   void resize_buf( int new_size );
   void undef() { resize_buf( 0 ); sl = 0; };
+  void set_block_size( int new_block_size );
 };
 
 
@@ -95,8 +98,6 @@ public:
 ** VSTRING
 **
 ****************************************************************************/
-
-#define STR_BLOCK_SIZE    256
 
 VS_STRING_CLASS& str_copy ( VS_STRING_CLASS& target, const VS_CHAR* source, int pos = 0, int len = -1 ); // returns `len' VS_CHARs from `pos'
 VS_STRING_CLASS& str_pad  ( VS_STRING_CLASS& target, int len, VS_CHAR ch = VS_CHAR_L(' ') );
@@ -126,21 +127,24 @@ public:
   ~VS_STRING_CLASS() { box->unref(); };
 
   void compact( int a_compact ) // set this != 0 for compact (memory preserving) behaviour
-       { box->compact = a_compact; }; //FIXME: detach() first?
+        { box->compact = a_compact; }; //FIXME: detach() first?
+
+  void set_block_size( int new_block_size ) 
+        { if ( box ) box->set_block_size( new_block_size ); };
 
   void resize( int new_size )
-       { detach(); box->resize_buf( new_size ); };
+        { detach(); box->resize_buf( new_size ); };
 
   void undef()
-       { box->unref(); box = new VS_STRING_BOX(); };
+        { box->unref(); box = new VS_STRING_BOX(); };
 
   const VS_STRING_CLASS& operator  = ( const VS_STRING_CLASS& str )
-    {
-    box->unref();
-    box = str.box;
-    box->ref();
-    return *this;
-    };
+        {
+        box->unref();
+        box = str.box;
+        box->ref();
+        return *this;
+        };
 
   const VS_STRING_CLASS& operator  = ( const VS_CHAR* ps   ) { set(ps); return *this; };
   const VS_STRING_CLASS& operator  = ( const int      n    ) { i(n);    return *this; };
@@ -232,7 +236,11 @@ public:
   void   catn( const VS_CHAR* ps, int len );
 
   /* for debugging only */
-  int check() { int len = str_len(box->s); return ((len == box->sl)&&(len<box->size)); }
+  int check() 
+      { 
+      int len = str_len(box->s); 
+      return ((len == box->sl)&&(len<box->size)); 
+      }
 
   /****************************************************************************
   ** VS_STRING_CLASS Friend Functions (for class VS_STRING_CLASS)
@@ -332,6 +340,7 @@ public:
   VS_CHAR* str_ins_ch ( VS_CHAR* target, int pos, VS_CHAR ch       ); // inserts `ch' VS_CHAR in position `pos'
   VS_CHAR* str_replace( VS_CHAR* target, const VS_CHAR* out, const VS_CHAR* in ); // replace `out' w. `in'
 
+  inline int __str_copy_calc_offsets( const VS_CHAR* source, int& pos, int& len );
   VS_CHAR* str_copy  ( VS_CHAR* target, const VS_CHAR* source, int pos = 0, int len = -1 ); // returns `len' VS_CHARs from `pos'
   VS_CHAR* str_left  ( VS_CHAR* target, const VS_CHAR* source, int len ); // returns `len' VS_CHARs from the left
   VS_CHAR* str_right ( VS_CHAR* target, const VS_CHAR* source, int len ); // returns `len' VS_CHARs from the right
@@ -422,13 +431,16 @@ public:
   int       _size;
   int       _count;
 
-  VS_ARRAY_BOX() { _data = NULL; _size = 0; _count = 0; };
+  int   block_size; // current block size
+
+  VS_ARRAY_BOX() { _data = NULL; _size = 0; _count = 0; block_size = VARRAY_DEFAULT_BLOCK_SIZE; };
   ~VS_ARRAY_BOX() { undef(); };
 
   VS_ARRAY_BOX* clone();
 
   void resize( int new_size );
   void undef() { resize( 0 ); };
+  void set_block_size( int new_block_size );
 };
 
 /***************************************************************************
@@ -459,6 +471,7 @@ class VS_ARRAY_CLASS
   ~VS_ARRAY_CLASS();
 
   int count() { return box->_count; } // return element count
+  void set_block_size( int new_block_size ) { if ( box ) box->set_block_size( new_block_size ); };
 
   void ins( int n, const VS_CHAR* s ); // insert at position `n'
   void del( int n                ); // delete at position `n'

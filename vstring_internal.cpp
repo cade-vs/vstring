@@ -67,7 +67,7 @@
 
 #include "vstring_internal.h"
 
-  size_t str_len( const VS_CHAR *s )
+  ssize_t str_len( const VS_CHAR *s )
   {
     return VS_FN_STRLEN( s );
   }
@@ -101,10 +101,10 @@
       }
     */
     new_size++; /* for the trailing 0 */
-    if ( !compact )
+    if ( ! compact )
       {
-      new_size = new_size / STR_BLOCK_SIZE  + ( new_size % STR_BLOCK_SIZE != 0 );
-      new_size *= STR_BLOCK_SIZE;
+      new_size = new_size / block_size  + ( new_size % block_size != 0 );
+      new_size *= block_size;
       }
     if( s == NULL )
       { /* first time alloc */
@@ -121,6 +121,22 @@
       s[ size - 1 ] = 0;
       if ( sl > size - 1 ) sl = size - 1;
       }
+  }
+
+  void VS_STRING_BOX::set_block_size( int new_block_size )
+  {
+    block_size = new_block_size < 1 ? VSTRING_DEFAULT_BLOCK_SIZE : new_block_size;
+  }
+
+  VS_STRING_BOX::~VS_STRING_BOX() 
+  { 
+    undef(); 
+    if ( s ) free( s );
+/*
+    FILE* fo = fopen( "/tmp/vstrboxstats.txt", "a" );
+    fprintf( fo, "cbs=%d  sbs=%d  sbc=%d  sbg=%f\n", cbs, sbs, sbc, sbg );
+    fclose( fo );
+*/    
   }
 
 /****************************************************************************
@@ -255,7 +271,7 @@
   {
     target.resize( target.box->sl * n );
     str_mul( target.box->s, n );
-    target.fix();
+    target.box->sl *= n;
     return target;
   }
 
@@ -264,16 +280,20 @@
     if ( pos > target.box->sl || pos < 0 ) return target;
     target.detach();
     str_del( target.box->s, pos, len );
-    target.fix();
+    if ( pos + len < target.box->sl )
+      target.box->sl -= len;
+    else
+      target.box->sl = pos;  
     return target;
   }
 
   VS_STRING_CLASS &str_ins( VS_STRING_CLASS &target, int pos, const VS_CHAR* s ) // inserts `s' in position `pos'
   {
     if ( pos > target.box->sl || pos < 0 ) return target;
-    target.resize( target.box->sl + str_len(s) );
+    int ssl = str_len(s);
+    target.resize( target.box->sl + ssl );
     str_ins( target.box->s, pos, s );
-    target.fixlen();
+    target.box->sl += ssl;
     return target;
   }
 
@@ -282,7 +302,7 @@
     if ( pos > target.box->sl || pos < 0 ) return target;
     target.resize( target.box->sl + 1 );
     str_ins_ch( target.box->s, pos, ch );
-    target.fixlen();
+    target.box->sl++;
     return target;
   }
 
@@ -303,22 +323,12 @@
 
   VS_STRING_CLASS &str_copy( VS_STRING_CLASS &target, const VS_CHAR* source, int pos, int len ) // returns `len' VS_CHARs from `pos'
   {
-    //FIXME: too many str_len()'s...
-    if ( pos < 0 )
-      {
-      pos = str_len( source ) + pos;
-      if ( pos < 0 ) pos = 0;
-      }
-    if ( len == -1 ) len = str_len( source ) - pos;
-    if ( len < 1 )
-      {
-      target = VS_CHAR_L("");
-      return target;
-      }
+    target.undef();
+    if( __str_copy_calc_offsets( source, pos, len ) ) return target;
     target.resize( len );
-    str_copy( target.box->s, source, pos, len );
-    target.fix();
-    ASSERT( target.check() );
+    vs_memmove( target.box->s, source + pos, len );
+    target[ len ] = 0;
+    target.box->sl = len;
     return target;
   }
 
@@ -550,6 +560,9 @@
       resize( 0 );
     else
       {
+      #ifdef _VSTRING_WIDE_
+      set_failsafe( prs );
+      #else
       int rz = VS_FN_CONVERT( NULL, prs, 0 ); // calc required "result size"
       if( rz == -1 )
         return resize( 0 );
@@ -557,6 +570,7 @@
       VS_FN_CONVERT( box->s, prs, rz );
       box->s[rz] = 0;
       box->sl = rz;
+      #endif
       }
   }
 
@@ -717,7 +731,7 @@
     return target;
   }
 
-  VS_CHAR* str_copy( VS_CHAR* target, const VS_CHAR* source, int pos, int len ) // returns `len' VS_CHARs from `pos'
+  inline int __str_copy_calc_offsets( const VS_CHAR* source, int& pos, int& len )
   {
     ASSERT( len >= -1 );
     int sl = str_len( source );
@@ -726,11 +740,17 @@
       pos = sl + pos;
       if ( pos < 0 ) pos = 0;
       }
-    if ( pos < 0 || pos >= sl ) return target;
+    if ( pos < 0 || pos >= sl ) return 1;
     if ( len == -1 ) len = sl - pos; // untill the end of the string (default arg)
-    if ( len < 1 ) return target;
+    if ( len < 1 ) return 1;
     if ( pos + len >= sl ) len = sl - pos;
+    return 0;
+  }
 
+  VS_CHAR* str_copy( VS_CHAR* target, const VS_CHAR* source, int pos, int len ) // returns `len' VS_CHARs from `pos'
+  {
+    target[ 0 ] = 0;
+    if( __str_copy_calc_offsets( source, pos, len ) ) return target;
     vs_memmove( target, source + pos, len );
     target[ len ] = 0;
     return target;
@@ -748,7 +768,7 @@
 
   VS_CHAR* str_sleft( VS_CHAR* target, int len ) // SelfLeft -- just as 'Left' but works on `this'
   {
-    if ( (size_t)len < str_len(target) && len >= 0 ) target[len] = 0;
+    if ( len < str_len(target) && len >= 0 ) target[len] = 0;
     return target;
   }
 
@@ -1137,8 +1157,8 @@
       _count = 0;
       return;
       }
-    new_size  = new_size / VARRAY_BLOCK_SIZE + (new_size % VARRAY_BLOCK_SIZE != 0);
-    new_size *= VARRAY_BLOCK_SIZE;
+    new_size  = new_size / block_size + (new_size % block_size != 0);
+    new_size *= block_size;
     if ( new_size == _size ) return;
     VS_STRING_CLASS** new_data = new VS_STRING_CLASS*[ new_size ];
     ASSERT( new_data );
@@ -1151,6 +1171,11 @@
       }
     _size = new_size;
     _data = new_data;
+  }
+
+  void VS_ARRAY_BOX::set_block_size( int new_block_size )
+  {
+    block_size = new_block_size < 1 ? VARRAY_DEFAULT_BLOCK_SIZE : new_block_size;
   }
 
 /***************************************************************************
@@ -1217,7 +1242,7 @@
              &box->_data[0] + n + 1,
              ( box->_count - n ) * sizeof(VS_STRING_CLASS*) );
     box->_count--;
-    if ( box->_size - box->_count > VARRAY_BLOCK_SIZE ) box->resize( box->_count );
+    if ( box->_size - box->_count > box->block_size ) box->resize( box->_count );
   }
 
   void VS_ARRAY_CLASS::set( int n, const VS_CHAR* s )

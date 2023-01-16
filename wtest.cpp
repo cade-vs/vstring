@@ -89,6 +89,14 @@ void test2()
 
   wprintf( L"************************ test 2 result is: %ls\n", str.data() ); // this should print `hello world'
   ASSERT( str == L"hello world" );
+  
+  WString res1;
+  str_copy( res1, str, 3, 5 );
+  ASSERT( res1 == L"lo wo" );
+
+  WString res2;
+  str_copy( res2, str, 8, 9 );
+  ASSERT( res2 == L"rld" );
 }
 
 void test3()
@@ -232,7 +240,6 @@ void test3()
   wprintf( L"************************ test 3 ends here\n" );
 }
 
-/*
 void test4()
 {
   // this is regression test, please ignore it...
@@ -245,7 +252,8 @@ void test4()
   i = ii;
   while( i-- )
     {
-    va = str_split( ",", "this is, just a simple. but fixed, nonsense test, voila :)" );
+    va = str_split( L",", L"this is, just a simple. but fixed, nonsense test, voila :)" );
+    ASSERT( va.count() == 4 );
     printf( "%d%% va count = %d\n", (100*i)/ii, va.count() );
     }
 
@@ -260,13 +268,13 @@ void test4()
 
   while( i-- )
     {
-    set.set( "this is, just a simple. but fixed, nonsense test, voila :)" );
-    cat.cat( "this is, just a simple. but fixed, nonsense test, voila :)" );
-    setn.setn( "this is, just a simple. but fixed, nonsense test, voila :)", 20 );
-    catn.catn( "this is, just a simple. but fixed, nonsense test, voila :)", 20 );
+    set.set( L"this is, just a simple. but fixed, nonsense test, voila :)" );
+    cat.cat( L"this is, just a simple. but fixed, nonsense test, voila :)" );
+    setn.setn( L"this is, just a simple. but fixed, nonsense test, voila :)", 20 );
+    catn.catn( L"this is, just a simple. but fixed, nonsense test, voila :)", 20 );
 
-    sete = "this is, just a simple. but fixed, nonsense test, voila :)";
-    setp += "this is, just a simple. but fixed, nonsense test, voila :)";
+    sete = L"this is, just a simple. but fixed, nonsense test, voila :)";
+    setp += L"this is, just a simple. but fixed, nonsense test, voila :)";
     }
 
   printf( "set  = %d\n", str_len( set  ) );
@@ -281,18 +289,23 @@ void test4()
   i = 2000;
   while( i-- )
     {
-    set = "this is, just a simple. but fixed, nonsense test, voila :)";
+    set = L"this is, just a simple. but fixed, nonsense test, voila :)";
     setn = set;
     str_del( set, 20, 10 );
-    str_ins( set, 30, "***opa***" );
-    str_replace( setn, "i", "[I]" );
+    str_ins( set, 30, L"***opa***" );
+    str_del( set, 40, 100 );
+    str_replace( setn, L"i", L"[I]" );
+    ASSERT( set == L"this is, just a simpxed, nonse***opa***n" );
+    ASSERT( str_len(set) == str_len(L"this is, just a simpxed, nonse***opa***n") );
+    ASSERT( setn == L"th[I]s [I]s, just a s[I]mple. but f[I]xed, nonsense test, vo[I]la :)" );
+    ASSERT( str_len(setn) == str_len(L"th[I]s [I]s, just a s[I]mple. but f[I]xed, nonsense test, vo[I]la :)") );
     }
   printf( "set  = %ls\n", set.data() );
   printf( "setn = %ls\n", setn.data() );
 
   printf( "---array sort-------\n" );
   va.undef();
-  va = str_split( "[, \t]+", "this is, just a simple. but fixed, nonsense test, voila :)" );
+  va = str_split( L"[, \t]+", L"this is, just a simple. but fixed, nonsense test, voila :)" );
   va.sort();
   va.print();
   printf( "--------------------\n" );
@@ -302,6 +315,7 @@ void test4()
 
 }
 
+/*
 void test5()
 {
   WTrie tr; // hash-like
@@ -596,8 +610,12 @@ int main( int argc, char* argv[] )
   ASSERT( wcscmp( t, L"this is good" ) == 0 );
 
   str_set( t, L"more" );
-  str_mul( t, 3 );
-  ASSERT( wcscmp( t, L"moremoremore" ) == 0 );
+  str_mul( t, 6 );
+  ASSERT( wcscmp( t, L"moremoremoremoremoremore" ) == 0 );
+  WString s = L"more";
+  str_mul( s, 6 );
+  ASSERT( s == L"moremoremoremoremoremore" );
+  ASSERT( str_len( s ) == str_len((const wchar_t*)s) );
 
   str_copy( t+10, t,    0, 15 ); // check for overlapping borders, begin of str
   str_copy( t+10, t+20, 0, 15 ); // check for overlapping borders, end   of str
@@ -613,8 +631,8 @@ int main( int argc, char* argv[] )
   test1();
   test2();
   test3();
-  /*
   test4();
+  /*
   test5();
   test6();
   test7();
