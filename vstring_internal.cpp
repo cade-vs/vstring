@@ -327,7 +327,7 @@
     if( __str_copy_calc_offsets( source, pos, len ) ) return target;
     target.resize( len );
     vs_memmove( target.box->s, source + pos, len );
-    target[ len ] = 0;
+    target.box->s[ len ] = 0;
     target.box->sl = len;
     return target;
   }

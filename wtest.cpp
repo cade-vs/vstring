@@ -277,12 +277,12 @@ void test4()
     setp += L"this is, just a simple. but fixed, nonsense test, voila :)";
     }
 
-  printf( "set  = %d\n", str_len( set  ) );
-  printf( "cat  = %d\n", str_len( cat  ) );
-  printf( "setn = %d\n", str_len( setn ) );
-  printf( "catn = %d\n", str_len( catn ) );
-  printf( "sete = %d\n", str_len( sete ) );
-  printf( "setp = %d\n", str_len( setp ) );
+  printf( "set  = %ld\n", str_len( set  ) );
+  printf( "cat  = %ld\n", str_len( cat  ) );
+  printf( "setn = %ld\n", str_len( setn ) );
+  printf( "catn = %ld\n", str_len( catn ) );
+  printf( "sete = %ld\n", str_len( sete ) );
+  printf( "setp = %ld\n", str_len( setp ) );
 
   printf( "--------------------\n" );
 
