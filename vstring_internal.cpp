@@ -323,8 +323,11 @@
 
   VS_STRING_CLASS &str_copy( VS_STRING_CLASS &target, const VS_CHAR* source, int pos, int len ) // returns `len' VS_CHARs from `pos'
   {
-    target.undef();
-    if( __str_copy_calc_offsets( source, pos, len ) ) return target;
+    if( __str_copy_calc_offsets( source, pos, len ) ) 
+      {
+      target.undef();
+      return target;
+      }
     target.resize( len );
     vs_memmove( target.box->s, source + pos, len );
     target.box->s[ len ] = 0;
@@ -749,8 +752,11 @@
 
   VS_CHAR* str_copy( VS_CHAR* target, const VS_CHAR* source, int pos, int len ) // returns `len' VS_CHARs from `pos'
   {
-    target[ 0 ] = 0;
-    if( __str_copy_calc_offsets( source, pos, len ) ) return target;
+    if( __str_copy_calc_offsets( source, pos, len ) ) 
+      {
+      target[ 0 ] = 0;
+      return target;
+      }
     vs_memmove( target, source + pos, len );
     target[ len ] = 0;
     return target;
