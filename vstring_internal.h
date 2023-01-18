@@ -433,13 +433,13 @@ public:
 
   int   block_size; // current block size
 
-  VS_ARRAY_BOX() { _data = NULL; _size = 0; _count = 0; block_size = VARRAY_DEFAULT_BLOCK_SIZE; };
-  ~VS_ARRAY_BOX() { undef(); };
+  VS_ARRAY_BOX();
+  ~VS_ARRAY_BOX();
 
   VS_ARRAY_BOX* clone();
 
   void resize( int new_size );
-  void undef() { resize( 0 ); };
+  void undef();
   void set_block_size( int new_block_size );
 };
 
@@ -461,6 +461,9 @@ class VS_ARRAY_CLASS
   void detach();
   void q_sort( int lo, int hi, int (*q_strcmp)(const VS_CHAR *, const VS_CHAR *) );
 
+  void new_pos( int n );
+  void del_pos( int n );
+
   public:
 
   int compact;
@@ -474,8 +477,8 @@ class VS_ARRAY_CLASS
   void set_block_size( int new_block_size ) { if ( box ) box->set_block_size( new_block_size ); };
 
   void ins( int n, const VS_CHAR* s ); // insert at position `n'
-  void del( int n                ); // delete at position `n'
   void set( int n, const VS_CHAR* s ); // set/replace at position `n'
+  void del( int n                   ); // delete at position `n'
   const VS_CHAR* get( int n ); // get at position `n'
 
   void undef() // clear the array (frees all elements)
@@ -490,6 +493,11 @@ class VS_ARRAY_CLASS
   int unshift( VS_TRIE_CLASS *tr     ); // add to the beginning of the array
   int unshift( VS_ARRAY_CLASS *arr   ); // add to the beginning of the array
   const VS_CHAR* shift(); // get and remove the first element
+
+  void ins( int n, const VS_STRING_CLASS& vs ); // insert at position `n'
+  void set( int n, const VS_STRING_CLASS& vs ); // set/replace at position `n'
+  int push( const VS_STRING_CLASS& vs ); // add to the end of the array
+  int unshift( const VS_STRING_CLASS& vs ); // add to the beginning of the array
 
   void sort( int rev = 0, int (*q_strcmp)(const VS_CHAR *, const VS_CHAR *) = NULL ); // sort (optional reverse order)
   void reverse(); // reverse elements order

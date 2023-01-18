@@ -1131,6 +1131,24 @@
 **
 ****************************************************************************/
 
+  VS_ARRAY_BOX::VS_ARRAY_BOX() 
+  { 
+    _data      = NULL; 
+    _size      = 0; 
+    _count     = 0; 
+    block_size = VARRAY_DEFAULT_BLOCK_SIZE; 
+  }
+  
+  VS_ARRAY_BOX::~VS_ARRAY_BOX() 
+  { 
+    undef(); 
+  }
+
+  void VS_ARRAY_BOX::undef() 
+  { 
+    resize( 0 ); 
+  }
+
   VS_ARRAY_BOX* VS_ARRAY_BOX::clone()
   {
     VS_ARRAY_BOX *new_box = new VS_ARRAY_BOX();
@@ -1190,6 +1208,45 @@
 **
 ****************************************************************************/
 
+  void VS_ARRAY_CLASS::new_pos( int n )
+  {
+    if( n < 0 ) return;
+    detach();
+    if ( n >= box->_count )
+      {
+      if ( n + 1 > box->_size ) box->resize( n + 1 );
+      for( int i = box->_count; i < n + 1; i++ )
+        {
+        box->_data[i] = new VS_STRING_CLASS;
+        if( compact ) box->_data[i]->compact( compact );
+        }
+      box->_count = n + 1;
+      }
+    else
+      {
+      if ( box->_count == box->_size ) box->resize( box->_size + 1 );
+      memmove( &box->_data[0] + n + 1,
+               &box->_data[0] + n,
+               ( box->_count - n ) * sizeof(VS_STRING_CLASS*) );
+      box->_count++;
+
+      box->_data[n] = new VS_STRING_CLASS;
+      if( compact ) box->_data[n]->compact( compact );
+      }  
+  }
+  
+  void VS_ARRAY_CLASS::del_pos( int n )
+  {
+    if ( n < 0 || n >= box->_count ) return;
+    detach();
+    delete box->_data[n];
+    memmove( &box->_data[0] + n,
+             &box->_data[0] + n + 1,
+             ( box->_count - n ) * sizeof(VS_STRING_CLASS*) );
+    box->_count--;
+    if ( box->_size - box->_count > box->block_size ) box->resize( box->_count );
+  }
+
   VS_ARRAY_CLASS::VS_ARRAY_CLASS()
   {
     box = new VS_ARRAY_BOX();
@@ -1225,42 +1282,18 @@
 
   void VS_ARRAY_CLASS::ins( int n, const VS_CHAR* s )
   {
-    detach();
-    ASSERT( n >= 0 && n <= box->_count );
-    if ( box->_count == box->_size ) box->resize( box->_size + 1 );
-    memmove( &box->_data[0] + n + 1,
-             &box->_data[0] + n,
-             ( box->_count - n ) * sizeof(VS_STRING_CLASS*) );
-    box->_count++;
-
-    VS_STRING_CLASS* ne = new VS_STRING_CLASS;
-    ne->compact( compact );
-    ne->set( s );
-    box->_data[n] = ne;
+    new_pos( n );
+    box->_data[n]->set( s );
   }
 
   void VS_ARRAY_CLASS::del( int n )
   {
-    detach();
-    if ( n < 0 || n >= box->_count ) return;
-    delete box->_data[n];
-    memmove( &box->_data[0] + n,
-             &box->_data[0] + n + 1,
-             ( box->_count - n ) * sizeof(VS_STRING_CLASS*) );
-    box->_count--;
-    if ( box->_size - box->_count > box->block_size ) box->resize( box->_count );
+    del_pos( n );
   }
 
   void VS_ARRAY_CLASS::set( int n, const VS_CHAR* s )
   {
-    detach();
-    ASSERT( n >= 0 );
-    if ( n >= box->_count )
-      {
-      int i = n - box->_count + 1;
-      while ( i-- ) push( VS_CHAR_L("") );
-      }
-    ASSERT( n < box->_count );
+    if( n >= box->_count ) new_pos( n );
     box->_data[n]->set( s );
   }
 
@@ -1331,6 +1364,30 @@
     _ret_str = get( 0 );
     del( 0 );
     return _ret_str.data();
+  }
+
+  void VS_ARRAY_CLASS::ins( int n, const VS_STRING_CLASS& vs )
+  {
+    new_pos( n );
+    *box->_data[n] = vs;
+  }
+  
+  void VS_ARRAY_CLASS::set( int n, const VS_STRING_CLASS& vs )
+  {
+    if( n >= box->_count ) new_pos( n );
+    *box->_data[n] = vs;
+  }
+
+  int VS_ARRAY_CLASS::push( const VS_STRING_CLASS& vs )
+  {
+    ins( box->_count, vs );
+    return box->_count;
+  }
+
+  int VS_ARRAY_CLASS::unshift( const VS_STRING_CLASS& vs )
+  {
+    ins( 0, vs );
+    return box->_count;
   }
 
   int VS_ARRAY_CLASS::fload( const char* fname )

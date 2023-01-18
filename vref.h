@@ -71,7 +71,7 @@ public:
   virtual ~VRef() { ASSERT( _ref == 0 ); }
 
   void ref() { _ref++; }
-  void unref() { ASSERT( _ref > 0 ); _ref--; if ( _ref == 0 ) delete this; }
+  void unref() { ASSERT( _ref > 0 ); _ref--; if ( _ref < 1 ) delete this; }
 
   int refs() { return _ref; }
 };
