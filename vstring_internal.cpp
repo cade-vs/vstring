@@ -609,6 +609,11 @@
   }
   #endif
 
+/****************************************************************************
+**
+** VS_STRING_CLASS Functions (for class VS_STRING_CLASS)
+**
+****************************************************************************/
 
 /****************************************************************************
 **
@@ -926,8 +931,13 @@
     int sl = str_len( target );
     int _len;
     _len = (len >= 0) ? len : - len;
-    if ( _len <= sl ) return target;
+    if ( _len <= sl ) 
+      {
+      target[_len] = 0;
+      return target;
+      }
 
+    // FIXME: do it without new mem
     VS_CHAR *tmp = new VS_CHAR[_len + 1]; // result buffer -- need len + 1
     tmp[0] = ch;
     tmp[1] = 0;
@@ -967,8 +977,8 @@
   // length of `from' MUST be equal to length of `to'
   VS_CHAR* str_tr( VS_CHAR* target, const VS_CHAR *from, const VS_CHAR *to )
   {
-    ASSERT(str_len( from ) == str_len( to ));
-    if (str_len( from ) != str_len( to )) return target;
+    ASSERT( str_len( from ) == str_len( to ) );
+    if ( str_len( from ) != str_len( to ) ) return target;
     int z = 0;
     int sl = str_len( target );
     for( z = 0; z < sl; z++ )
@@ -1418,7 +1428,7 @@
       {
       vstr += buf;
       if ( str_get_ch( vstr, -1 ) != '\n' && !feof(f) ) continue;
-      while ( str_get_ch( vstr, -1 ) == '\n' ) str_trim_right( vstr, 1 );
+      while ( str_get_ch( vstr, -1 ) == '\r' || str_get_ch( vstr, -1 ) == '\n' ) str_trim_right( vstr, 1 );
       #ifdef _VSTRING_WIDE_
       push( WString( vstr ) );
       #else

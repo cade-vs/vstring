@@ -2,7 +2,7 @@
 ### MAKEMAKE STARTS HERE #######################################################
 
 
-### Created by makemake.pl on Fri Dec 16 00:45:34 2022 #########################
+### Created by makemake.pl on Sun Jan 29 19:00:56 2023 #########################
 
 
 ### GLOBAL TARGETS #############################################################
@@ -13,20 +13,20 @@ re: mm_update rebuild
 
 li: mm_update link
 
-all: mm_update vstring.a wstring.a test wtest 
+all: mm_update vstring.a test wtest 
 
-clean: mm_update clean-vstring.a clean-wstring.a clean-test clean-wtest 
+clean: mm_update clean-vstring.a clean-test clean-wtest 
 
-rebuild: mm_update rebuild-vstring.a rebuild-wstring.a rebuild-test rebuild-wtest 
+rebuild: mm_update rebuild-vstring.a rebuild-test rebuild-wtest 
 
-link: mm_update link-vstring.a link-wstring.a link-test link-wtest 
+link: mm_update link-vstring.a link-test link-wtest 
 
 ### GLOBAL (AND USER) DEFS #####################################################
 
 
 AR = ar rv
-CC = $(CXX)
-LD = $(CXX)
+CC = g++
+LD = g++
 MKDIR = mkdir -p
 RANLIB = ranlib
 RMDIR = rm -rf
@@ -36,10 +36,10 @@ SRC = *.c *.cpp *.cc *.cxx
 
 ### TARGET 1: libvstring.a #####################################################
 
-CC_1       = $(CXX)
-LD_1       = $(CXX)
+CC_1       = g++
+LD_1       = g++
 AR_1       = ar rv
-RANLIB_1   = $(RANLIB)
+RANLIB_1   = ranlib
 CCFLAGS_1  = -I. -O3 -Wpedantic -Wextra -Wformat -Werror=format-security -Wdate-time -D_FORTIFY_SOURCE=2 $(CFLAGS) $(CPPFLAGS) $(CCDEF)  
 LDFLAGS_1  = $(LDFLAGS) $(LDDEF) 
 DEPFLAGS_1 = 
@@ -49,16 +49,22 @@ TARGET_1   = libvstring.a
 ### SOURCES FOR TARGET 1: libvstring.a #########################################
 
 SRC_1= \
+     vref.cpp \
      vstring.cpp \
      vstrlib.cpp \
-     vref.cpp \
+     wstring.cpp \
+     wstrlib.cpp \
+     vstruti.cpp \
 
 #### OBJECTS FOR TARGET 1: libvstring.a ########################################
 
 OBJ_1= \
+     .OBJ.vstring.a/vref.o \
      .OBJ.vstring.a/vstring.o \
      .OBJ.vstring.a/vstrlib.o \
-     .OBJ.vstring.a/vref.o \
+     .OBJ.vstring.a/wstring.o \
+     .OBJ.vstring.a/wstrlib.o \
+     .OBJ.vstring.a/vstruti.o \
 
 ### TARGET DEFINITION FOR TARGET 1: libvstring.a ###############################
 
@@ -85,203 +91,152 @@ link-vstring.a: .OBJ.vstring.a $(OBJ_1)
 
 ### TARGET OBJECTS FOR TARGET 1: libvstring.a ##################################
 
-.OBJ.vstring.a/vstring.o: vstring.cpp  vstring.cpp vdef.h vref.h vstring_internal.cpp \
- vstring_internal.h
+.OBJ.vstring.a/vref.o: vref.cpp  vref.cpp vdef.h vref.h
+	$(CC_1) $(CFLAGS_1) $(CCFLAGS_1) -c vref.cpp             -o .OBJ.vstring.a/vref.o
+.OBJ.vstring.a/vstring.o: vstring.cpp  vstring.cpp vref.h vdef.h vstring_internal.h \
+ vstring_internal.cpp
 	$(CC_1) $(CFLAGS_1) $(CCFLAGS_1) -c vstring.cpp          -o .OBJ.vstring.a/vstring.o
 .OBJ.vstring.a/vstrlib.o: vstrlib.cpp  vstrlib.cpp vdef.h vref.h vstring_internal.h \
  vstrlib_internal.cpp vstrlib_internal.h
 	$(CC_1) $(CFLAGS_1) $(CCFLAGS_1) -c vstrlib.cpp          -o .OBJ.vstring.a/vstrlib.o
-.OBJ.vstring.a/vref.o: vref.cpp  vref.cpp vdef.h vref.h
-	$(CC_1) $(CFLAGS_1) $(CCFLAGS_1) -c vref.cpp             -o .OBJ.vstring.a/vref.o
+.OBJ.vstring.a/wstring.o: wstring.cpp  wstring.cpp vref.h vdef.h vstring_internal.h \
+ vstring_internal.cpp
+	$(CC_1) $(CFLAGS_1) $(CCFLAGS_1) -c wstring.cpp          -o .OBJ.vstring.a/wstring.o
+.OBJ.vstring.a/wstrlib.o: wstrlib.cpp  wstrlib.cpp vdef.h vref.h vstring_internal.h \
+ vstrlib_internal.cpp vstrlib_internal.h
+	$(CC_1) $(CFLAGS_1) $(CCFLAGS_1) -c wstrlib.cpp          -o .OBJ.vstring.a/wstrlib.o
+.OBJ.vstring.a/vstruti.o: vstruti.cpp  vstruti.cpp vstruti.h vstring.h vdef.h vref.h \
+ vstring_internal.h wstring.h
+	$(CC_1) $(CFLAGS_1) $(CCFLAGS_1) -c vstruti.cpp          -o .OBJ.vstring.a/vstruti.o
 
 
-### TARGET 2: libwstring.a #####################################################
+### TARGET 2: test #############################################################
 
-CC_2       = $(CXX)
-LD_2       = $(CXX)
+CC_2       = g++
+LD_2       = g++
 AR_2       = ar rv
-RANLIB_2   = $(RANLIB)
-CCFLAGS_2  = -I. -O3 -Wpedantic -Wextra -Wformat -Werror=format-security -Wdate-time -D_FORTIFY_SOURCE=2 $(CFLAGS) $(CPPFLAGS) $(CCDEF)  
-LDFLAGS_2  = $(LDFLAGS) $(LDDEF) 
+RANLIB_2   = ranlib
+CCFLAGS_2  = -I. -O3 -g -Wpedantic -Wextra -Wformat -Werror=format-security -Wdate-time -D_FORTIFY_SOURCE=2 $(CFLAGS) $(CPPFLAGS) $(CCDEF)  
+LDFLAGS_2  = -L. -lvstring -lpcre2-8 -lpcre2-32 $(LDFLAGS) $(LDDEF) 
 DEPFLAGS_2 = 
 ARFLAGS_2  = 
-TARGET_2   = libwstring.a
+TARGET_2   = test
 
-### SOURCES FOR TARGET 2: libwstring.a #########################################
+### SOURCES FOR TARGET 2: test #################################################
 
 SRC_2= \
-     wstring.cpp \
-     wstrlib.cpp \
      vref.cpp \
-
-#### OBJECTS FOR TARGET 2: libwstring.a ########################################
-
-OBJ_2= \
-     .OBJ.wstring.a/wstring.o \
-     .OBJ.wstring.a/wstrlib.o \
-     .OBJ.wstring.a/vref.o \
-
-### TARGET DEFINITION FOR TARGET 2: libwstring.a ###############################
-
-.OBJ.wstring.a: 
-	$(MKDIR) .OBJ.wstring.a
-
-wstring.a:   .OBJ.wstring.a $(OBJ_2)
-	$(AR_2) $(ARFLAGS_2) $(TARGET_2) $(OBJ_2)
-	$(RANLIB_2) $(TARGET_2)
-
-clean-wstring.a: 
-	$(RMFILE) $(TARGET_2)
-	$(RMDIR) .OBJ.wstring.a
-
-rebuild-wstring.a: clean-wstring.a wstring.a
-
-re-wstring.a: rebuild-wstring.a
-
-link-wstring.a: .OBJ.wstring.a $(OBJ_2)
-	$(RMFILE) libwstring.a
-	$(AR_2) $(ARFLAGS_2) $(TARGET_2) $(OBJ_2)
-	$(RANLIB_2) $(TARGET_2)
-
-
-### TARGET OBJECTS FOR TARGET 2: libwstring.a ##################################
-
-.OBJ.wstring.a/wstring.o: wstring.cpp  wstring.cpp vdef.h vref.h vstring_internal.cpp \
- vstring_internal.h
-	$(CC_2) $(CFLAGS_2) $(CCFLAGS_2) -c wstring.cpp          -o .OBJ.wstring.a/wstring.o
-.OBJ.wstring.a/wstrlib.o: wstrlib.cpp  wstrlib.cpp vdef.h vref.h vstring_internal.h \
- vstrlib_internal.cpp vstrlib_internal.h
-	$(CC_2) $(CFLAGS_2) $(CCFLAGS_2) -c wstrlib.cpp          -o .OBJ.wstring.a/wstrlib.o
-.OBJ.wstring.a/vref.o: vref.cpp  vref.cpp vdef.h vref.h
-	$(CC_2) $(CFLAGS_2) $(CCFLAGS_2) -c vref.cpp             -o .OBJ.wstring.a/vref.o
-
-
-### TARGET 3: test #############################################################
-
-CC_3       = $(CXX)
-LD_3       = $(CXX)
-AR_3       = ar rv
-RANLIB_3   = $(RANLIB)
-CCFLAGS_3  = -I. -O3 -g -Wpedantic -Wextra -Wformat -Werror=format-security -Wdate-time -D_FORTIFY_SOURCE=2 $(CFLAGS) $(CPPFLAGS) $(CCDEF)  
-LDFLAGS_3  = -L. -lvstring -lpcre2-8 -lpcre2-32 $(LDFLAGS) $(LDDEF) 
-DEPFLAGS_3 = 
-ARFLAGS_3  = 
-TARGET_3   = test
-
-### SOURCES FOR TARGET 3: test #################################################
-
-SRC_3= \
      vstring.cpp \
      vstrlib.cpp \
-     vref.cpp \
+     wstring.cpp \
+     wstrlib.cpp \
+     vstruti.cpp \
      test.cpp \
 
-#### OBJECTS FOR TARGET 3: test ################################################
+#### OBJECTS FOR TARGET 2: test ################################################
 
-OBJ_3= \
+OBJ_2= \
+     .OBJ.test/vref.o \
      .OBJ.test/vstring.o \
      .OBJ.test/vstrlib.o \
-     .OBJ.test/vref.o \
+     .OBJ.test/wstring.o \
+     .OBJ.test/wstrlib.o \
+     .OBJ.test/vstruti.o \
      .OBJ.test/test.o \
 
-### TARGET DEFINITION FOR TARGET 3: test #######################################
+### TARGET DEFINITION FOR TARGET 2: test #######################################
 
 .OBJ.test: 
 	$(MKDIR) .OBJ.test
 
-test:   .OBJ.test $(OBJ_3)
-	$(LD_3) $(OBJ_3) $(LDFLAGS_3) -o $(TARGET_3)
+test:   .OBJ.test $(OBJ_2)
+	$(LD_2) $(OBJ_2) $(LDFLAGS_2) -o $(TARGET_2)
 
 clean-test: 
-	$(RMFILE) $(TARGET_3)
+	$(RMFILE) $(TARGET_2)
 	$(RMDIR) .OBJ.test
 
 rebuild-test: clean-test test
 
 re-test: rebuild-test
 
-link-test: .OBJ.test $(OBJ_3)
+link-test: .OBJ.test $(OBJ_2)
 	$(RMFILE) test
-	$(LD_3) $(OBJ_3) $(LDFLAGS_3) -o $(TARGET_3)
+	$(LD_2) $(OBJ_2) $(LDFLAGS_2) -o $(TARGET_2)
 
 
-### TARGET OBJECTS FOR TARGET 3: test ##########################################
+### TARGET OBJECTS FOR TARGET 2: test ##########################################
 
-.OBJ.test/vstring.o: vstring.cpp  vstring.cpp vdef.h vref.h vstring_internal.cpp \
- vstring_internal.h
-	$(CC_3) $(CFLAGS_3) $(CCFLAGS_3) -c vstring.cpp          -o .OBJ.test/vstring.o
+.OBJ.test/vref.o: vref.cpp  vref.cpp vdef.h vref.h
+	$(CC_2) $(CFLAGS_2) $(CCFLAGS_2) -c vref.cpp             -o .OBJ.test/vref.o
+.OBJ.test/vstring.o: vstring.cpp  vstring.cpp vref.h vdef.h vstring_internal.h \
+ vstring_internal.cpp
+	$(CC_2) $(CFLAGS_2) $(CCFLAGS_2) -c vstring.cpp          -o .OBJ.test/vstring.o
 .OBJ.test/vstrlib.o: vstrlib.cpp  vstrlib.cpp vdef.h vref.h vstring_internal.h \
  vstrlib_internal.cpp vstrlib_internal.h
-	$(CC_3) $(CFLAGS_3) $(CCFLAGS_3) -c vstrlib.cpp          -o .OBJ.test/vstrlib.o
-.OBJ.test/vref.o: vref.cpp  vref.cpp vdef.h vref.h
-	$(CC_3) $(CFLAGS_3) $(CCFLAGS_3) -c vref.cpp             -o .OBJ.test/vref.o
+	$(CC_2) $(CFLAGS_2) $(CCFLAGS_2) -c vstrlib.cpp          -o .OBJ.test/vstrlib.o
+.OBJ.test/wstring.o: wstring.cpp  wstring.cpp vref.h vdef.h vstring_internal.h \
+ vstring_internal.cpp
+	$(CC_2) $(CFLAGS_2) $(CCFLAGS_2) -c wstring.cpp          -o .OBJ.test/wstring.o
+.OBJ.test/wstrlib.o: wstrlib.cpp  wstrlib.cpp vdef.h vref.h vstring_internal.h \
+ vstrlib_internal.cpp vstrlib_internal.h
+	$(CC_2) $(CFLAGS_2) $(CCFLAGS_2) -c wstrlib.cpp          -o .OBJ.test/wstrlib.o
+.OBJ.test/vstruti.o: vstruti.cpp  vstruti.cpp vstruti.h vstring.h vdef.h vref.h \
+ vstring_internal.h wstring.h
+	$(CC_2) $(CFLAGS_2) $(CCFLAGS_2) -c vstruti.cpp          -o .OBJ.test/vstruti.o
 .OBJ.test/test.o: test.cpp  test.cpp vstring.h vdef.h vref.h vstring_internal.h vstrlib.h \
  vstrlib_internal.h
-	$(CC_3) $(CFLAGS_3) $(CCFLAGS_3) -c test.cpp             -o .OBJ.test/test.o
+	$(CC_2) $(CFLAGS_2) $(CCFLAGS_2) -c test.cpp             -o .OBJ.test/test.o
 
 
-### TARGET 4: wtest ############################################################
+### TARGET 3: wtest ############################################################
 
-CC_4       = $(CXX)
-LD_4       = $(CXX)
-AR_4       = ar rv
-RANLIB_4   = $(RANLIB)
-CCFLAGS_4  = -I. -O3 -g -Wpedantic -Wextra -Wformat -Werror=format-security -Wdate-time -D_FORTIFY_SOURCE=2 $(CFLAGS) $(CPPFLAGS) $(CCDEF)  
-LDFLAGS_4  = -L. -lwstring -lvstring -lpcre2-8 -lpcre2-32 $(LDFLAGS) $(LDDEF) 
-DEPFLAGS_4 = 
-ARFLAGS_4  = 
-TARGET_4   = wtest
+CC_3       = g++
+LD_3       = 
+AR_3       = 
+RANLIB_3   = 
+CCFLAGS_3  = -I. -O3 -g -Wpedantic -Wextra -Wformat -Werror=format-security -Wdate-time -D_FORTIFY_SOURCE=2 $(CFLAGS) $(CPPFLAGS) $(CCDEF)  
+LDFLAGS_3  = -L. -lvstring -lpcre2-8 -lpcre2-32 $(LDFLAGS) $(LDDEF) 
+DEPFLAGS_3 = 
+ARFLAGS_3  = 
+TARGET_3   = wtest
 
-### SOURCES FOR TARGET 4: wtest ################################################
+### SOURCES FOR TARGET 3: wtest ################################################
 
-SRC_4= \
-     wstring.cpp \
-     wstrlib.cpp \
-     vref.cpp \
+SRC_3= \
      wtest.cpp \
 
-#### OBJECTS FOR TARGET 4: wtest ###############################################
+#### OBJECTS FOR TARGET 3: wtest ###############################################
 
-OBJ_4= \
-     .OBJ.wtest/wstring.o \
-     .OBJ.wtest/wstrlib.o \
-     .OBJ.wtest/vref.o \
+OBJ_3= \
      .OBJ.wtest/wtest.o \
 
-### TARGET DEFINITION FOR TARGET 4: wtest ######################################
+### TARGET DEFINITION FOR TARGET 3: wtest ######################################
 
 .OBJ.wtest: 
 	$(MKDIR) .OBJ.wtest
 
-wtest:   .OBJ.wtest $(OBJ_4)
-	$(LD_4) $(OBJ_4) $(LDFLAGS_4) -o $(TARGET_4)
+wtest:   .OBJ.wtest $(OBJ_3)
+	$(LD_3) $(OBJ_3) $(LDFLAGS_3) -o $(TARGET_3)
 
 clean-wtest: 
-	$(RMFILE) $(TARGET_4)
+	$(RMFILE) $(TARGET_3)
 	$(RMDIR) .OBJ.wtest
 
 rebuild-wtest: clean-wtest wtest
 
 re-wtest: rebuild-wtest
 
-link-wtest: .OBJ.wtest $(OBJ_4)
+link-wtest: .OBJ.wtest $(OBJ_3)
 	$(RMFILE) wtest
-	$(LD_4) $(OBJ_4) $(LDFLAGS_4) -o $(TARGET_4)
+	$(LD_3) $(OBJ_3) $(LDFLAGS_3) -o $(TARGET_3)
 
 
-### TARGET OBJECTS FOR TARGET 4: wtest #########################################
+### TARGET OBJECTS FOR TARGET 3: wtest #########################################
 
-.OBJ.wtest/wstring.o: wstring.cpp  wstring.cpp vdef.h vref.h vstring_internal.cpp \
- vstring_internal.h
-	$(CC_4) $(CFLAGS_4) $(CCFLAGS_4) -c wstring.cpp          -o .OBJ.wtest/wstring.o
-.OBJ.wtest/wstrlib.o: wstrlib.cpp  wstrlib.cpp vdef.h vref.h vstring_internal.h \
- vstrlib_internal.cpp vstrlib_internal.h
-	$(CC_4) $(CFLAGS_4) $(CCFLAGS_4) -c wstrlib.cpp          -o .OBJ.wtest/wstrlib.o
-.OBJ.wtest/vref.o: vref.cpp  vref.cpp vdef.h vref.h
-	$(CC_4) $(CFLAGS_4) $(CCFLAGS_4) -c vref.cpp             -o .OBJ.wtest/vref.o
-.OBJ.wtest/wtest.o: wtest.cpp  wtest.cpp wstring.h vdef.h vref.h vstring_internal.h vstring.h \
- wstrlib.h vstrlib_internal.h
-	$(CC_4) $(CFLAGS_4) $(CCFLAGS_4) -c wtest.cpp            -o .OBJ.wtest/wtest.o
+.OBJ.wtest/wtest.o: wtest.cpp  wtest.cpp vstring.h vdef.h vref.h vstring_internal.h wstring.h \
+ vstrlib.h vstrlib_internal.h wstrlib.h
+	$(CC_3) $(CFLAGS_3) $(CCFLAGS_3) -c wtest.cpp            -o .OBJ.wtest/wtest.o
 
 
 mm_update:
