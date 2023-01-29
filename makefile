@@ -2,7 +2,7 @@
 ### MAKEMAKE STARTS HERE #######################################################
 
 
-### Created by makemake.pl on Sun Jan 29 19:00:56 2023 #########################
+### Created by makemake.pl on Mon Jan 30 00:58:24 2023 #########################
 
 
 ### GLOBAL TARGETS #############################################################
@@ -25,8 +25,8 @@ link: mm_update link-vstring.a link-test link-wtest
 
 
 AR = ar rv
-CC = g++
-LD = g++
+CC = $(CXX)
+LD = $(CXX)
 MKDIR = mkdir -p
 RANLIB = ranlib
 RMDIR = rm -rf
@@ -36,8 +36,8 @@ SRC = *.c *.cpp *.cc *.cxx
 
 ### TARGET 1: libvstring.a #####################################################
 
-CC_1       = g++
-LD_1       = g++
+CC_1       = $(CXX)
+LD_1       = $(CXX)
 AR_1       = ar rv
 RANLIB_1   = ranlib
 CCFLAGS_1  = -I. -O3 -Wpedantic -Wextra -Wformat -Werror=format-security -Wdate-time -D_FORTIFY_SOURCE=2 $(CFLAGS) $(CPPFLAGS) $(CCDEF)  
@@ -112,8 +112,8 @@ link-vstring.a: .OBJ.vstring.a $(OBJ_1)
 
 ### TARGET 2: test #############################################################
 
-CC_2       = g++
-LD_2       = g++
+CC_2       = $(CXX)
+LD_2       = $(CXX)
 AR_2       = ar rv
 RANLIB_2   = ranlib
 CCFLAGS_2  = -I. -O3 -g -Wpedantic -Wextra -Wformat -Werror=format-security -Wdate-time -D_FORTIFY_SOURCE=2 $(CFLAGS) $(CPPFLAGS) $(CCDEF)  
@@ -191,8 +191,8 @@ link-test: .OBJ.test $(OBJ_2)
 
 ### TARGET 3: wtest ############################################################
 
-CC_3       = g++
-LD_3       = 
+CC_3       = $(CXX)
+LD_3       = $(CXX)
 AR_3       = 
 RANLIB_3   = 
 CCFLAGS_3  = -I. -O3 -g -Wpedantic -Wextra -Wformat -Werror=format-security -Wdate-time -D_FORTIFY_SOURCE=2 $(CFLAGS) $(CPPFLAGS) $(CCDEF)  
