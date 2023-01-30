@@ -1,4 +1,4 @@
-libvstring.a
+*.a
 *.d
 *.o
 test
