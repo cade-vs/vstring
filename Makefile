@@ -47,7 +47,7 @@ PCRE08_LD?=$(shell $(PKG_CONFIG) --libs libpcre2-8)
 PCRE32_CC?=$(shell $(PKG_CONFIG) --cflags libpcre2-32)
 PCRE32_LD?=$(shell $(PKG_CONFIG) --libs libpcre2-32)
 
-MYLDFLAGS:=$(CPPFLAGS) $(CXXFLAGS) $(LDFLAGS) -fPIE -pie $(PCRE08_CC) $(PCRE32_CC)
+MYLDFLAGS:=$(MYCXXFLAGS) $(LDFLAGS) -fPIE -pie $(PCRE08_CC) $(PCRE32_CC)
 MYLIBS:=$(LIBS) $(PCRE08_LD) $(PCRE32_LD)
 
 ifeq ("$(V)","1")
