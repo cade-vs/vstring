@@ -9,9 +9,15 @@ RANLIB?=ranlib
 
 all: libvstring.a
 
-SRCS:=$(wildcard *.cpp)
-SRCS:=$(filter-out vstring_internal.cpp,$(SRCS))
-SRCS:=$(filter-out vstrlib_internal.cpp,$(SRCS))
+SRCS:=\
+	test.cpp \
+	vref.cpp \
+	vstring.cpp \
+	vstrlib.cpp \
+	vstruti.cpp \
+	wstring.cpp \
+	wstrlib.cpp \
+	wtest.cpp
 OBJS:=$(SRCS:.cpp=.o)
 DEPS:=$(OBJS:.o=.d)
 
@@ -35,7 +41,6 @@ ifeq ("$(HAVEWDTI)","no")
 MYCXXFLAGS:=$(filter-out -Wdate-time,$(MYCXXFLAGS))
 endif
 
-MYLIBS:=
 MYLDFLAGS:=$(CPPFLAGS) $(CXXFLAGS) $(LDFLAGS) -fPIE -pie
 
 ifeq ("$(V)","1")
