@@ -84,7 +84,7 @@ wtest: wtest.o libvstring.a
 
 clean:
 	$(E) CLEAN
-	$(Q) rm -f libstring.a *.o *.d
+	$(Q) rm -f *.a *.o *.d test wtest
 
 re:
 	$(Q)$(MAKE) --no-print-directory clean
