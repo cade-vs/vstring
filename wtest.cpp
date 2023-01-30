@@ -569,10 +569,10 @@ void test11()
   ASSERT( sfn_match( "*ing*", "vstring.txt"  ) == 0 );
 }
 
-int main( int argc, char* argv[] )
+int main( void )
 {
   setlocale( LC_ALL, "" );
-  /*
+  #if 0
   char t[256] = "123456----------------------------------------9999999999999";
   char T[256] = "123456----------------------------------------9999999999999";
   str_trim_left( t, 3 );
@@ -586,7 +586,7 @@ int main( int argc, char* argv[] )
   //memcpy( T, t, 222 );
   //str_copy( T, t, 0, 222 ); // check for overlapping borders, begin of str
   }
-  /**/
+  #endif
 
   wchar_t t[92] = L"this is simple test";
   wchar_t r[92] = L"1111111111111111111";
@@ -627,21 +627,21 @@ int main( int argc, char* argv[] )
   ASSERT( wcscmp( r, L"me" ) == 0 );
   ASSERT( t[0] == 0 );
 
-  /**/
+  #if 1
   test1();
   test2();
   test3();
   test4();
-  /*
+  #if 0
   test5();
   test6();
   test7();
   test8();
   test9();
-  /**/
+  #endif
   test10();
   test11();
 
-  //*/
+  #endif
   return 0;
 }

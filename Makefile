@@ -6,8 +6,9 @@
 AR?=gcc-ar
 STRIP?=strip
 RANLIB?=ranlib
+PKG_CONFIG?=pkg-config
 
-all: libvstring.a
+all: libvstring.a test wtest
 
 SRCS:=\
 	test.cpp \
@@ -41,7 +42,13 @@ ifeq ("$(HAVEWDTI)","no")
 MYCXXFLAGS:=$(filter-out -Wdate-time,$(MYCXXFLAGS))
 endif
 
-MYLDFLAGS:=$(CPPFLAGS) $(CXXFLAGS) $(LDFLAGS) -fPIE -pie
+PCRE08_CC?=$(shell $(PKG_CONFIG) --cflags libpcre2-8)
+PCRE08_LD?=$(shell $(PKG_CONFIG) --libs libpcre2-8)
+PCRE32_CC?=$(shell $(PKG_CONFIG) --cflags libpcre2-32)
+PCRE32_LD?=$(shell $(PKG_CONFIG) --libs libpcre2-32)
+
+MYLDFLAGS:=$(MYCXXFLAGS) $(LDFLAGS) -fPIE -pie $(PCRE08_CC) $(PCRE32_CC)
+MYLIBS:=$(LIBS) $(PCRE08_LD) $(PCRE32_LD)
 
 ifeq ("$(V)","1")
 Q:=
@@ -66,6 +73,14 @@ libvstring.a: $(LIBOBJ)
 	$(Q)$(AR) rv $@ $+
 	$(E) RANLIB $@
 	$(Q)$(RANLIB) $@
+
+test: test.o libvstring.a
+	$(E) LD $@
+	$(Q)$(CXX) -o $@ $(MYLDFLAGS) $< $(MYLIBS) -L. -lvstring
+
+wtest: wtest.o libvstring.a
+	$(E) LD $@
+	$(Q)$(CXX) -o $@ $(MYLDFLAGS) $< $(MYLIBS) -L. -lvstring
 
 clean:
 	$(E) CLEAN

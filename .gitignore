@@ -1,3 +1,5 @@
 libvstring.a
 *.d
 *.o
+test
+wtest

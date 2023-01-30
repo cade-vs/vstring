@@ -445,10 +445,10 @@ void test9()
   
 }
 
-int main( int argc, char* argv[] )
+int main( void )
 {
 
-  /*
+  #if 0
   char t[256] = "123456----------------------------------------9999999999999";
   char T[256] = "123456----------------------------------------9999999999999";
   str_trim_left( t, 3 );
@@ -462,7 +462,7 @@ int main( int argc, char* argv[] )
   //memcpy( T, t, 222 );
   //str_copy( T, t, 0, 222 ); // check for overlapping borders, begin of str
   }
-  /**/
+  #endif
 
   char t[92] = "this is simple test";
   char r[92] = "1111111111111111111";
