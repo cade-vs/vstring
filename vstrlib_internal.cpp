@@ -258,7 +258,7 @@ void __qs_preprocess( const VS_CHAR* p, int ps, int* badc )
 {
    int i;
    for (i = 0; i < QS_ASIZE; i++) badc[i] = ps + 1;
-   for (i = 0; i < ps; i++) badc[(VS_CHAR)p[i]] = ps - i;
+   for (i = 0; i < ps; i++) badc[(unsigned)(VS_CHAR)p[i]] = ps - i;
 }
 
 int mem_quick_search( const VS_CHAR *p, int ps, const VS_CHAR *d, int ds )
@@ -272,7 +272,7 @@ int mem_quick_search( const VS_CHAR *p, int ps, const VS_CHAR *d, int ds )
       int i;
       for ( i = ps - 1; i >= 0 && p[i] == d[i + j]; --i );
       if ( i < 0 ) return j;
-      j += badc[(VS_CHAR)d[j + ps]];
+      j += badc[(unsigned)(VS_CHAR)d[j + ps]];
    }
    return -1;
 }
@@ -430,7 +430,7 @@ long file_grep( const VS_CHAR *re_string, const char* file_name, int nocase, off
 int file_grep_max_line   = MAX_GREP_LINE;
 int file_grep_lines_read = 0;
 */
-long file_grep( const VS_CHAR *re_string, FILE* f, int nocase, off_t spos )
+long file_grep( const VS_CHAR *re_string __attribute__((unused)), FILE* f __attribute__((unused)), int nocase __attribute__((unused)), off_t spos  __attribute__((unused)))
 {
   /*
   if ( str_len(re_string) >= (size_t)file_grep_max_line ) return -2; // just in case, and for now...
