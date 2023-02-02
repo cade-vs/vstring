@@ -43,9 +43,9 @@ All classes (VString, VArray, Vtrie and their counterparts WString, WArray,
 WTrie) implementation provide shallow copy and copy-on-write functionality 
 so assignment operators like:
 
-  str1  = str2
-  arr1  = arr2
-  trie1 = tri2
+    str1  = str2
+    arr1  = arr2
+    trie1 = tri2
   
 are cheap and fast!
 
@@ -133,6 +133,47 @@ or VString.
       
     re.comp( "^[a-z]+[0-9]*" ); // reuse/recompile new regexp in the same obj
     re.study(); // takes extra time to speed multiple matchings with m()
+
+# W-CLASSES
+
+All WVString, WArray, WTrie classes behave the same way as V-ones. The only
+difference is that they hold wider-data (wchar_t) and keys.
+
+Conversions between the two are implicit:
+
+    VString str;
+    WString wide;
+    
+    str  = "проста проба едно";
+    wide = str;
+    wide = L"две прости проби";
+    str  = wide;
+
+VString always hold byte string, it has no knowledge if the string is UTF8 or
+not. It does not have functions to manage characers in UTF8-encoded string.
+To do so it is needed that VString be converted to WString, which always works
+on Unicode Level 1 characters. 
+
+Conversion from VString to WString is safe, i.e. if VString holds incorrectly
+encoded UTF8, all incorrect chars will be replaced by 0xFFFD (unknown char)
+symbol and the rest will be converted properly.
+
+Conversion from WString to VString is always correct.
+
+If it is needed to check the result of the conversion from VString to WString,
+there is explicit function "set_failsafe()" which returns the count of the
+incorrect chars in the string:
+
+    VString str;
+    WString wide;
+    
+    str  = "ще се видим на славейков";
+    int err = wide.set_failsafe( str );
+    if( err )
+      {
+      // there were errors, reset string or whatever...
+      // wide.undef();
+      }
 
 # FEEDBACK
 
