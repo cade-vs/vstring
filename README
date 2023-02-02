@@ -1,21 +1,23 @@
 
   VSTRING Library
 
-  Copyright (c) 1996-2022 Vladi Belperchinov-Shabanski "Cade" 
+  Copyright (c) 1996-2023 Vladi Belperchinov-Shabanski "Cade" 
   http://cade.noxrun.com/  <cade@noxrun.com> <cade@bis.bg> <cade@cpan.org>
 
   Distributed under the GPL license, you should receive copy of GPLv2!
 
-  SEE `README',`LICENSE' OR `COPYING' FILE FOR LICENSE AND OTHER DETAILS!
+  SEE 'README', 'LICENSE' OR 'COPYING' FILE FOR LICENSE AND OTHER DETAILS!
 
   VSTRING library provides wide set of string manipulation features
   including dynamic string object that can be freely exchanged with
-  standard VS_CHAR* type, so there is no need to change function calls
-  nor the implementation when you change from VS_CHAR* to VString (and
-  vice versa). The main difference from other similar libs is that
-  the dynamic VString class has no visible methods (except operators)
-  so you will use it as a plain VS_CHAR* but it will expand/shrink as
-  needed.
+  standard char* (or wchar_t*) type, so there is no need to change 
+  function calls nor the implementation when you change from 
+  char* to VString (and from wchar_t* to WString). 
+  
+  The main difference from other similar libs is that the dynamic 
+  VString/WString class has no visible methods (except operators)
+  so you will use it as a plain char*/wchar_t* but it will 
+  expand/shrink as needed.
 
   If you find bug or you have note about vstring lib, please feel
   free to contact me.
@@ -23,19 +25,24 @@
   VSTRING part (vstring.h and vstring.cpp) implements plain string-only
   manipulations:
 
-  VS_CHAR* functions to manipulate in-memory string buffers
-  VString -- dynamic char* string, which resizes automatically
-  WString -- same but for wide char (wchar_t*)
+      char*    -- functions to manipulate in-memory string buffers
+      VString  -- dynamic char* string, which resizes automatically
 
-  VSTRLIB part (vstrlib.h and vstrlib.cpp) provides string data 
-  structures which mimic Perl's. There are several classes:
+  WSTRING part (wstring.h and wstring.cpp) implements wide char (wchar_t*) 
+  string manipulations:
 
-  VArray  -- array of VString elements
-  WArray  -- array of WString elements
-  VTrie   -- associative array (hash) of VString elements
-  WTrie   -- associative array (hash) of WString elements
-  VRegexp -- regular expression helper class
-  WRegexp -- regular expression helper class (wide VS_CHAR)
+      wchar_t* -- functions to manipulate in-memory string buffers
+      WString  -- wide char (wchar_t*) unicode strings
+
+  VSTRLIB/WSTRLIB part (vstrlib.h and vstrlib.cpp, wstrlib.h and wstrlib.cpp) 
+  provide string data structures which mimic Perl's. There are several classes:
+
+  VArray   -- array of VString elements
+  WArray   -- array of WString elements
+  VTrie    -- associative array (hash) of VString elements
+  WTrie    -- associative array (hash) of WString elements
+  VRegexp  -- regular expression helper class
+  WRegexp  -- regular expression helper class (wide VS_CHAR)
 
   All classes use shallow copy and copy-on-write functionality,
   so things like str1 = str2, varray1 = varray2 etc. are cheap and fast :)
@@ -51,8 +58,8 @@
             #include <wstrlib.h>
 
   include both char* and wchar_t* support:
-            #include <wstring.h>
-            #include <wstrlib.h>
+            #include <vstring.h>
+            #include <vstrlib.h>
             #include <wstring.h>
             #include <wstrlib.h>
   usage:
@@ -60,7 +67,7 @@
   compile & link:
 
             g++ -I/path/to/vstring ...
-            ld  -L/path/to/vstring -lvstring -lwstring
+            ld  -L/path/to/vstring -lvstring
 
   If you find bug or you have note about vstring lib, please feel
   free to contact me at: 
