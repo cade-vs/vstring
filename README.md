@@ -134,10 +134,10 @@ or VString.
     re.comp( "^[a-z]+[0-9]*" ); // reuse/recompile new regexp in the same obj
     re.study(); // takes extra time to speed multiple matchings with m()
 
-# W-CLASSES
+# W-CLASSES AND wchar_t* FUNCTIONS
 
-All WVString, WArray, WTrie classes behave the same way as V-ones. The only
-difference is that they hold wider-data (wchar_t) and keys.
+All WString, WArray, WTrie classes and functions behave the same way as 
+V-ones. The only difference is that they hold wider-data (wchar_t) and keys.
 
 Conversions between the two are implicit:
 
@@ -148,8 +148,11 @@ Conversions between the two are implicit:
     wide = str;
     wide = L"две прости проби";
     str  = wide;
+    
+    int f1 = str_find( str,  "проб" ); // returns  7
+    int f2 = str_find( wide, "проб" ); // returns 11
 
-VString always hold byte string, it has no knowledge if the string is UTF8 or
+VString always holds byte string, it has no knowledge if the string is UTF8 or
 not. It does not have functions to manage characers in UTF8-encoded string.
 To do so it is needed that VString be converted to WString, which always works
 on Unicode Level 1 characters. 
