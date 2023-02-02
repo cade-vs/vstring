@@ -57,8 +57,9 @@ the .h files.
 
 # BASE char*/wchar_t* AND VString/WString FUNCTIONS NOTES
 
-All functions for char* handling may overflow! If you need safe strings, use
-the same functions but with VString instead of char*.
+All functions for char*/wchar_t* handling may overflow! If you need safe 
+strings, use the same functions but with VString instead of char* 
+(and WString instead of wchar_t*).
 
 Functions common for char* and VString:
 
