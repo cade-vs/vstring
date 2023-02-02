@@ -1,7 +1,7 @@
 
 # NAME
 
-VSTRING is C++ string manipulation and handling library.
+VSTRING is C++ string manipulation and handling library with Unicode support.
 
 # SYNOPSIS
 
