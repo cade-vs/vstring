@@ -458,6 +458,12 @@ int main( void )
   }
   #endif
 
+  /*
+  VString nu = "is not null";
+  nu = NULL;
+  ASSERT( nu == "" );
+  */
+
   char t[92] = "this is simple test";
   char r[92] = "1111111111111111111";
   str_word( t, " ", r );

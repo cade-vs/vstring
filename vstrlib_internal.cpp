@@ -126,8 +126,9 @@ int sfn_match( const VS_CHAR* pattern, const VS_CHAR* string, int flags )
   const VS_CHAR* ss = string;
 
   if( ! *ps ) return 1; // empty pattern, will not match
+  if( ! *ss ) return 1; // empty string,  will not match
   
-  while( *ps )
+  while(4)
     {
     if( ! ( flags & SFN_NOESCAPE ) && *ps == VS_CHAR_L('\\') )
       {
@@ -169,6 +170,8 @@ int sfn_match( const VS_CHAR* pattern, const VS_CHAR* string, int flags )
       {
       if( ! __sfn_eq( *ps, *ss, flags ) ) return 5;
       }  
+    
+    if( ! *ps ) return 0; // end of pattern and string reached, matched so far, return ok
     
     ps++;
     ss++;

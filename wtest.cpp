@@ -561,6 +561,8 @@ void test11()
   ASSERT( sfn_match( L"vF\\*d[g-k]?z", L"Vf*dIrz", SFN_CASEFOLD ) == 0 );
 
   ASSERT( sfn_match( "*ing*", "vstring.txt"  ) == 0 );
+
+  ASSERT( sfn_match( "*.deb", "vfu.debug"  ) != 0 );
 }
 
 int main( void )

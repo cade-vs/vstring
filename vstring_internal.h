@@ -97,7 +97,8 @@ public:
     };
 
   VS_STRING_CLASS()                      {  box = new VS_STRING_BOX(); };
-  VS_STRING_CLASS( const VS_CHAR* ps  )  {  box = new VS_STRING_BOX(); set( ps);  };
+  VS_STRING_CLASS( const void*    nu  )  {  box = new VS_STRING_BOX(); nu = nu;  };
+  VS_STRING_CLASS( const VS_CHAR* ps  )  {  box = new VS_STRING_BOX(); set( ps); };
   VS_STRING_CLASS( const int      n   )  {  box = new VS_STRING_BOX(); i(n);     };
   VS_STRING_CLASS( const long     n   )  {  box = new VS_STRING_BOX(); l(n);     };
   VS_STRING_CLASS( const double   n   )  {  box = new VS_STRING_BOX(); f(n);     };
@@ -124,6 +125,7 @@ public:
         return *this;
         };
 
+  const VS_STRING_CLASS& operator  = ( const void*    nu   ) { nu = nu; undef(); return *this; };
   const VS_STRING_CLASS& operator  = ( const VS_CHAR* ps   ) { set(ps); return *this; };
   const VS_STRING_CLASS& operator  = ( const int      n    ) { i(n);    return *this; };
   const VS_STRING_CLASS& operator  = ( const long     n    ) { l(n);    return *this; };
