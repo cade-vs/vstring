@@ -1,0 +1,60 @@
+name: C/C++ CI
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
+on:
+  push:
+    branches: master
+  pull_request:
+    branches: master
+
+jobs:
+  build:
+    name: ${{ matrix.build.name }}
+    strategy:
+      fail-fast: false
+      matrix:
+        build:
+          - name: ubuntu-20.04-gcc
+            os: ubuntu-20.04
+            cc: gcc
+          - name: ubuntu-20.04-clang
+            os: ubuntu-20.04
+            cc: clang
+          - name: ubuntu-22.04-gcc
+            os: ubuntu-22.04
+            cc: gcc
+          - name: ubuntu-22.04-clang
+            os: ubuntu-22.04
+            cc: clang
+          - name: Slackware
+            os: ubuntu-20.04
+            container: 'andy5995/slackware-build-essential:15.0'
+          - name: macos-latest
+            os: macos-latest
+
+    runs-on: ${{ matrix.build.os }}
+    container: ${{ matrix.build.container }}
+    env:
+      CC: '${{ matrix.build.cc }}'
+    steps:
+
+    - uses: actions/checkout@v3
+
+    - if: ${{ env.CC }}
+      run: |
+        if [ "$CC" = "gcc" ]; then
+          CXX=g++
+        else
+          CXX=clang++
+        fi
+        echo "CXX=${CXX}" >> $GITHUB_ENV
+
+    - name: Show info
+      run: |
+        export -p
+        echo '${{ toJSON(matrix) }}'
+
+    - name: Build
+      run: make
