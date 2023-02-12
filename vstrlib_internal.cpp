@@ -116,7 +116,7 @@ int __sfn_match_charset( const VS_CHAR* charset, const VS_CHAR c, int flags, int
     str_up( charset_str );
     cc = VS_FN_TOUPPER( cc );
     }
-  if( str_find( charset_str, cc ) > 0 ) return r ? 1 : 0;
+  if( str_find( charset_str, cc ) >= 0 ) return r ? 1 : 0;
   return 1;
 }
 
@@ -141,27 +141,20 @@ int sfn_match( const VS_CHAR* pattern, const VS_CHAR* string, int flags )
       }
     else if( *ps == VS_CHAR_L('*') )
       {
-      ps++;
+      while( *ps == VS_CHAR_L('*') ) ps++;
       if( ! *ps ) return 0; // pattern ends with *, will match anything
-      if( ( *ps == VS_CHAR_L('*') ) || ( *ps == VS_CHAR_L('?') ) ) continue; // next is special
-      if( *ps == VS_CHAR_L('[') )
+
+      while( *ss )
         {
-        int a;
-        while( *ss && __sfn_match_charset( ps, *ss, flags, &a ) ) ss++;
-        if( *ss ) ps += a; // found, advance data position
+        if( sfn_match( ps, ss++, flags ) ) continue;
+        return 0;
         }
-      else
-        {
-        if( ! ( flags & SFN_NOESCAPE ) && *ps && *ps == VS_CHAR_L('\\') ) ps++; // found escape, right after *
-        while( *ss && ! __sfn_eq( *ps, *ss, flags ) ) ss++;
-        }
-      if( ! *ss ) return 3; // no found string char after *
-      // char after * matched, continue
+      return 11;
       }
     else if( *ps == VS_CHAR_L('[') )
       {
       ps++;
-      int a;
+      int a = 0;
       int r = __sfn_match_charset( ps, *ss, flags, &a );
       ps += a; // advance data position
       if( r != 0 ) return 4;
@@ -171,7 +164,7 @@ int sfn_match( const VS_CHAR* pattern, const VS_CHAR* string, int flags )
       if( ! __sfn_eq( *ps, *ss, flags ) ) return 5;
       }  
     
-    if( ! *ps ) return 0; // end of pattern and string reached, matched so far, return ok
+    if( ! *ps && ! *ss ) return 0; // end of pattern and string reached, matched so far, return ok
     
     ps++;
     ss++;

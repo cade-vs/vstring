@@ -563,6 +563,19 @@ void test11()
   ASSERT( sfn_match( "*ing*", "vstring.txt"  ) == 0 );
 
   ASSERT( sfn_match( "*.deb", "vfu.debug"  ) != 0 );
+
+  ASSERT( sfn_match( "*.tar.gz", "vfu-5.02.tar.gz" ) == 0 );
+
+  ASSERT( sfn_match( "*.tar*z", "vfu-5.02.tar.xz" ) == 0 );
+  ASSERT( sfn_match( "*.tar*z", "vfu-5.02_tar.xz" ) != 0 );
+  ASSERT( sfn_match( "*.tar*z", "vfu-5.tar.tar.xz" ) == 0 );
+  ASSERT( sfn_match( "*.tar*m*z", "vfu-5.tar.tar.xz" ) != 0 );
+
+  ASSERT( sfn_match( "*tar*", "vfu tar tar.xz" ) == 0 );
+
+  ASSERT( sfn_match( "vf*u*xz", "vfu tar tar.xz" ) == 0 );
+  ASSERT( sfn_match( "vf*[u]*xz", "vfu tar tar.xz" ) == 0 );
+  ASSERT( sfn_match( "vf*[u*xz", "vfu tar tar.xz" ) != 0 );
 }
 
 int main( void )
