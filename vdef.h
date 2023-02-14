@@ -108,7 +108,7 @@
 
   #define VS_CHAR           char
   #define VS_CHAR_R         wchar_t
-  #define VS_CHAR_L 
+  #define VS_CHAR_L
   #define VS_SFMT           "%s"
 
   #define VS_STRING_CLASS   VString
