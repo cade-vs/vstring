@@ -57,4 +57,6 @@ jobs:
         echo '${{ toJSON(matrix) }}'
 
     - name: Build
-      run: make
+      run: |
+           g++ --version
+           make
