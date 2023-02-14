@@ -125,6 +125,13 @@
     set( tmp );
   }
 
+  void VS_STRING_CLASS::ll( const long long n )
+  {
+    VS_CHAR tmp[64];
+    VS_FN_SPRINTF( tmp, LENOF_VS_CHAR(tmp), VS_CHAR_L("%lld"), n );
+    set( tmp );
+  }
+
   void VS_STRING_CLASS::f( const double d )
   {
     VS_CHAR tmp[64];
