@@ -49,6 +49,7 @@
   #undef VS_FN_STRSTR     
   #undef VS_FN_STRDUP     
   #undef VS_FN_STRTOL
+  #undef VS_FN_STRTOLL
   #undef VS_FN_STRTOD
   #undef VS_FN_TOUPPER    
   #undef VS_FN_TOLOWER    
@@ -94,6 +95,7 @@
   #define VS_FN_STRSTR      wcsstr
   #define VS_FN_STRDUP      wcsdup
   #define VS_FN_STRTOL(s)   wcstol(s,NULL,10)
+  #define VS_FN_STRTOLL(s)  wcstoll(s,NULL,10)
   #define VS_FN_STRTOD(s)   wcstod(s,NULL)
   #define VS_FN_TOUPPER     towupper
   #define VS_FN_TOLOWER     towlower
@@ -134,6 +136,7 @@
   #define VS_FN_STRSTR      strstr
   #define VS_FN_STRDUP      strdup
   #define VS_FN_STRTOL(s)   strtol(s,NULL,10)
+  #define VS_FN_STRTOLL(s)  strtoll(s,NULL,10)
   #define VS_FN_STRTOD(s)   strtod(s,NULL)
   #define VS_FN_TOUPPER     toupper
   #define VS_FN_TOLOWER     tolower
