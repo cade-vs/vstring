@@ -97,11 +97,12 @@ public:
     };
 
   VS_STRING_CLASS()                      {  box = new VS_STRING_BOX(); };
-  VS_STRING_CLASS( const void*    nu  )  {  box = new VS_STRING_BOX(); nu = nu;  };
-  VS_STRING_CLASS( const VS_CHAR* ps  )  {  box = new VS_STRING_BOX(); set( ps); };
-  VS_STRING_CLASS( const int      n   )  {  box = new VS_STRING_BOX(); i(n);     };
-  VS_STRING_CLASS( const long     n   )  {  box = new VS_STRING_BOX(); l(n);     };
-  VS_STRING_CLASS( const double   n   )  {  box = new VS_STRING_BOX(); f(n);     };
+  VS_STRING_CLASS( const void*     nu )  {  box = new VS_STRING_BOX(); nu = nu;  };
+  VS_STRING_CLASS( const VS_CHAR*  ps )  {  box = new VS_STRING_BOX(); set( ps); };
+  VS_STRING_CLASS( const int       n  )  {  box = new VS_STRING_BOX(); i(n);     };
+  VS_STRING_CLASS( const long      n  )  {  box = new VS_STRING_BOX(); l(n);     };
+  VS_STRING_CLASS( const long long n  )  {  box = new VS_STRING_BOX(); ll(n);    };
+  VS_STRING_CLASS( const double    n  )  {  box = new VS_STRING_BOX(); f(n);     };
   VS_STRING_CLASS( VS_STRING_CLASS_R  rs  );
   ~VS_STRING_CLASS() { box->unref(); };
 
@@ -125,19 +126,21 @@ public:
         return *this;
         };
 
-  const VS_STRING_CLASS& operator  = ( const void*    nu   ) { nu = nu; undef(); return *this; };
-  const VS_STRING_CLASS& operator  = ( const VS_CHAR* ps   ) { set(ps); return *this; };
-  const VS_STRING_CLASS& operator  = ( const int      n    ) { i(n);    return *this; };
-  const VS_STRING_CLASS& operator  = ( const long     n    ) { l(n);    return *this; };
-  const VS_STRING_CLASS& operator  = ( const double   n    ) { f(n);    return *this; };
+  const VS_STRING_CLASS& operator  = ( const void*     nu  ) { nu = nu; undef(); return *this; };
+  const VS_STRING_CLASS& operator  = ( const VS_CHAR*  ps  ) { set(ps); return *this; };
+  const VS_STRING_CLASS& operator  = ( const int       n   ) { i(n);    return *this; };
+  const VS_STRING_CLASS& operator  = ( const long      n   ) { l(n);    return *this; };
+  const VS_STRING_CLASS& operator  = ( const long long n   ) { ll(n);   return *this; };
+  const VS_STRING_CLASS& operator  = ( const double    n   ) { f(n);    return *this; };
 
   const VS_STRING_CLASS& operator += ( const VS_STRING_CLASS& str )  { cat( str.box->s ); return *this; };
-  const VS_STRING_CLASS& operator += ( const VS_CHAR*  ps    )       { cat( ps ); return *this; };
-  const VS_STRING_CLASS& operator += ( const int    n     )          { VS_STRING_CLASS tmp = n; cat(tmp); return *this; };
-  const VS_STRING_CLASS& operator += ( const long   n     )          { VS_STRING_CLASS tmp = n; cat(tmp); return *this; };
-  const VS_STRING_CLASS& operator += ( const double n     )          { VS_STRING_CLASS tmp = n; cat(tmp); return *this; };
+  const VS_STRING_CLASS& operator += ( const VS_CHAR*  ps )          { cat( ps ); return *this; };
+  const VS_STRING_CLASS& operator += ( const int       n  )          { VS_STRING_CLASS tmp = n; cat(tmp); return *this; };
+  const VS_STRING_CLASS& operator += ( const long      n  )          { VS_STRING_CLASS tmp = n; cat(tmp); return *this; };
+  const VS_STRING_CLASS& operator += ( const long long n  )          { VS_STRING_CLASS tmp = n; cat(tmp); return *this; };
+  const VS_STRING_CLASS& operator += ( const double    n  )          { VS_STRING_CLASS tmp = n; cat(tmp); return *this; };
 
-  const VS_STRING_CLASS& operator *= ( const int    n     )          { return str_mul( *this, n ); };
+  const VS_STRING_CLASS& operator *= ( const int       n  )          { return str_mul( *this, n ); };
 
   friend VS_STRING_CLASS operator + ( const VS_STRING_CLASS& str1, const VS_STRING_CLASS& str2 ) { VS_STRING_CLASS res = str1; res += str2; return res; };
   friend VS_STRING_CLASS operator + ( const VS_STRING_CLASS& str1, const VS_CHAR* ps )           { VS_STRING_CLASS res = str1; res += ps;   return res; };
@@ -202,11 +205,13 @@ public:
 
   void   i( const int n );
   void   l( const long n );
+  void   ll( const long long n );
   void   f( const double d );
   void   fi( const double d ); // sets double as int (w/o frac)
 
   int    i()  { return VS_FN_STRTOL( box->s ); }
   long   l()  { return VS_FN_STRTOL( box->s ); }
+  long long ll()  { return VS_FN_STRTOLL( box->s ); }
   double f()  { return VS_FN_STRTOD( box->s ); }
   double fi() { return VS_FN_STRTOD( box->s ); }
 
