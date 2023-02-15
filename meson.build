@@ -47,7 +47,10 @@ buildtarget = library(
 
 # How to use in a superproject and other info
 # https://mesonbuild.com/Subprojects.html
-dep_vstring = declare_dependency(link_with : buildtarget)
+dep_vstring = declare_dependency(
+  link_with : buildtarget,
+  include_directories('.')
+)
 
 if not meson.is_subproject()
   pkg = import('pkgconfig')
@@ -68,14 +71,14 @@ if not meson.is_subproject()
 endif
 
 test_cases = [
-  'test.cpp',
-  'wtest.cpp',
+  'test',
+  'wtest',
   ]
 
 foreach case : test_cases
   exe = executable(
-    'test_' + case,
     case,
+    case + '.cpp',
     dependencies: [dep_vstring]
     )
   test('test_' + case, exe)
