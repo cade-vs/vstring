@@ -21,11 +21,7 @@ extra_flags = [
   '-DVSTRING_VERSION="@0@"'.format(meson.project_version())
 ]
 
-foreach cxxflag : extra_flags
-  if cxx.has_argument(cxxflag)
-    add_project_arguments(cxxflag, language: 'cpp')
-  endif
-endforeach
+add_project_arguments(cxx.get_supported_arguments(extra_flags), language: 'cpp')
 
 src = [
   'vref.cpp',
