@@ -71,4 +71,18 @@ if not meson.is_subproject()
     install_dir : get_option('docdir'))
 endif
 
+test_cases = [
+  'test.cpp',
+  'wtest.cpp',
+  ]
+
+foreach case : test_cases
+  exe = executable(
+    'test_' + case,
+    case,
+    dependencies: [dep_vstring]
+    )
+  test('test_' + case, exe)
+endforeach
+
 

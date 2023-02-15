@@ -127,3 +127,8 @@ jobs:
            meson setup builddir
            cd builddir
            ninja -v
+
+    - name: Test
+      run: |
+           cd builddir
+           meson test -v
