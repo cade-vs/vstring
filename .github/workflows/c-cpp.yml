@@ -132,3 +132,8 @@ jobs:
       run: |
            cd builddir
            meson test -v
+
+    - name: Test Install
+      run: |
+           cd builddir
+           DESTDIR=$PWD/install_test ninja install
