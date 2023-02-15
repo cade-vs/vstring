@@ -61,7 +61,6 @@ jobs:
            g++ --version
            make
 
-
   meson-build:
     name: meson-${{ matrix.build.name }}
     strategy:
@@ -107,17 +106,6 @@ jobs:
       run: |
         export -p
         echo '${{ toJSON(matrix) }}'
-
-    - if: ${{ contains(matrix.build.os, 'ubuntu') && matrix.build.container == null }}
-      run: |
-        # sudo apt-get update -qq
-        # sudo apt-get upgrade -y -qq
-        sudo apt-get install -y \
-          libpcre2-8-0 \
-          libpcre2-32-0 \
-          python3-pip \
-          python3-setuptools
-        sudo -H python3 -m pip install meson ninja
 
     - if: ${{ contains(matrix.build.os, 'macos') }}
       run: pip3 install meson ninja
