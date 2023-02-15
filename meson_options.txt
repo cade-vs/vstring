@@ -1,2 +1,2 @@
-option('docdir', type : 'string', value : 'share/doc/vfu',
+option('docdir', type : 'string', value : 'share/doc/vstring',
        description : 'directory where the documentation should be installed to')
