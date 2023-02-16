@@ -60,3 +60,77 @@ jobs:
       run: |
            g++ --version
            make
+
+
+  meson-build:
+    name: meson-${{ matrix.build.name }}
+    strategy:
+      fail-fast: false
+      matrix:
+        build:
+          - name: ubuntu-20.04-gcc
+            os: ubuntu-20.04
+            cc: gcc
+          - name: ubuntu-20.04-clang
+            os: ubuntu-20.04
+            cc: clang
+          - name: ubuntu-22.04-gcc
+            os: ubuntu-22.04
+            cc: gcc
+          - name: ubuntu-22.04-clang
+            os: ubuntu-22.04
+            cc: clang
+          - name: Slackware
+            os: ubuntu-20.04
+            container: 'andy5995/slackware-build-essential:15.0'
+          - name: macos-latest
+            os: macos-latest
+
+    runs-on: ${{ matrix.build.os }}
+    container: ${{ matrix.build.container }}
+    env:
+      CC: '${{ matrix.build.cc }}'
+    steps:
+
+    - uses: actions/checkout@v3
+
+    - if: ${{ env.CC }}
+      run: |
+        if [ "$CC" = "gcc" ]; then
+          CXX=g++
+        else
+          CXX=clang++
+        fi
+        echo "CXX=${CXX}" >> $GITHUB_ENV
+
+    - name: Show info
+      run: |
+        export -p
+        echo '${{ toJSON(matrix) }}'
+
+    - if: ${{ contains(matrix.build.os, 'ubuntu') && matrix.build.container == null }}
+      run: |
+        # sudo apt-get update -qq
+        # sudo apt-get upgrade -y -qq
+        sudo apt-get install -y \
+          meson \
+          ninja-build
+
+    - if: ${{ contains(matrix.build.os, 'macos') }}
+      run: pip3 install meson ninja
+
+    - name: Build
+      run: |
+           meson setup builddir
+           cd builddir
+           ninja -v
+
+    - name: Test
+      run: |
+           cd builddir
+           meson test -v
+
+    - name: Test Install
+      run: |
+           cd builddir
+           DESTDIR=$PWD/install_test ninja install
