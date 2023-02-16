@@ -77,7 +77,7 @@ test_cases = [
 
 foreach case : test_cases
   exe = executable(
-    case,
+    'test_' + case,
     case + '.cpp',
     dependencies: [dep_vstring]
     )
