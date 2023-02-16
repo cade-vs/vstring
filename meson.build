@@ -42,7 +42,6 @@ buildtarget = library(
   src,
   dependencies : deps,
   version : meson.project_version(),
-  soversion : '0',
   install: not meson.is_subproject())
 
 # How to use in a superproject and other info
