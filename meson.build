@@ -49,7 +49,7 @@ buildtarget = library(
 # https://mesonbuild.com/Subprojects.html
 dep_vstring = declare_dependency(
   link_with : buildtarget,
-  include_directories('.')
+  include_directories: include_directories('.')
 )
 
 if not meson.is_subproject()
