@@ -392,9 +392,9 @@ public:
 ****************************************************************************/
 
   int str_find ( const VS_CHAR* target, const VS_CHAR  c, int startpos = 0 ); // returns first zero-based position of VS_CHAR, or -1 if not found
-  int str_rfind( const VS_CHAR* target, const VS_CHAR  c                   ); // returns last  zero-based position of VS_CHAR, or -1 if not found
+  int str_rfind( const VS_CHAR* target, const VS_CHAR  c, int startpos = 0 ); // returns last  zero-based position of VS_CHAR, or -1 if not found. if startpos is negative, will be skipped from the end, if positive will be absolute post to start from.
   int str_find ( const VS_CHAR* target, const VS_CHAR* s, int startpos = 0 ); // returns first zero-based position of VS_STRING_CLASS, or -1 if not found
-  int str_rfind( const VS_CHAR* target, const VS_CHAR* s                   ); // returns last  zero-based position of VS_STRING_CLASS, or -1 if not found
+  int str_rfind( const VS_CHAR* target, const VS_CHAR* s, int startpos = 0 ); // returns last  zero-based position of VS_STRING_CLASS, or -1 if not found. if startpos is negative, will be skipped from the end, if positive will be absolute post to start from.
 
   int str_count(     const VS_CHAR* target, const VS_CHAR* charlist, int startpos = 0 ); // returns match count of all VS_CHARs from `charlist'
   int str_str_count( const VS_CHAR* target, const VS_CHAR* s,        int startpos = 0 ); // returns match count of `s' VS_STRING_CLASS into target

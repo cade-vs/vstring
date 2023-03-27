@@ -618,12 +618,28 @@
     return  pc - target;
   }
 
-  int str_rfind( const VS_CHAR* target, const VS_CHAR c ) // returns last zero-based position of VS_CHAR, or -1 if not found
+  int str_rfind( const VS_CHAR* target, const VS_CHAR c, int startpos ) // returns last zero-based position of VS_CHAR, or -1 if not found
   {
-    const VS_CHAR* pc = VS_FN_STRRCHR( target, c );
-    if( ! pc )
-      return -1;
-    return  pc - target;
+    if( startpos == 0 )
+      {
+      const VS_CHAR* pc = VS_FN_STRRCHR( target, c );
+      if( ! pc )
+        return -1;
+      return  pc - target;
+      }
+    else
+      {
+      int sl = str_len( target );
+      int pos = startpos > 0 ? startpos : sl + startpos;
+      if( pos < 0 ) return -1;
+      if( pos >= sl ) pos = sl - 1;
+      while( pos > -1 )
+        {
+        if( target[pos] == c ) return pos;
+        pos--;
+        }
+      return pos;
+      }
   }
 
   int str_find( const VS_CHAR* target, const VS_CHAR* s, int startpos ) // returns first zero-based position of VS_STRING_CLASS, or -1 if not found
@@ -637,11 +653,22 @@
     return  pc - target;
   }
 
-  int str_rfind( const VS_CHAR* target, const VS_CHAR* s ) // returns last zero-based position of VS_STRING_CLASS, or -1 if not found
+  int str_rfind( const VS_CHAR* target, const VS_CHAR* s, int startpos ) // returns last zero-based position of VS_STRING_CLASS, or -1 if not found
   {
     int sl = str_len( target );
     int sls = str_len( s );
     int z = sl - sls;
+    if( startpos < 0 )
+      {
+      z += startpos;
+      if( z < 0 ) return -1;
+      }
+    else if( startpos > 0 )
+      {
+      if( startpos > z ) return -1;
+      z = startpos;
+      }  
+      
     while ( z > 0 )
       {
       if ( VS_FN_STRNCMP( target + z, s, sls ) == 0 ) return z;

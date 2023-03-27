@@ -53,6 +53,17 @@ void test1()
   wprintf( L"************************ test 1 result is: %ls\n", str.data() ); // this should print `hello world'
 
   ASSERT( str == L"hello world" );
+
+  ASSERT( str_rfind( str, L'l'     ) == 9 );
+  ASSERT( str_rfind( str, L'l', -3 ) == 3 );
+  ASSERT( str_rfind( str, L'o',  7 ) == 7 );
+  ASSERT( str_rfind( str, L'o',  6 ) == 4 );
+
+  str = L"hello mello tello start!";
+
+  ASSERT( str_rfind( str, L"llo"      ) == 14 );
+  ASSERT( str_rfind( str, L"llo", -12 ) ==  8 );
+  ASSERT( str_rfind( str, L"llo",   7 ) ==  2 );
   
   str.compact( 1 );
   str.fix();
