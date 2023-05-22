@@ -1565,6 +1565,8 @@
     if ( data ) delete data;
   }
 
+/*
+
   void VS_TRIE_NODE::del_node( const VS_CHAR *key, int branch )
   {
     if ( !key ) return;
@@ -1581,6 +1583,7 @@
         if ( branch )
           {
           delete down; // delete all keys below
+          down = NULL;
           c = 0; // mark current as `not used'
           }
         }
@@ -1613,7 +1616,7 @@
           {
           next->del_node( key, branch );
           if ( next->c == 0 )
-            { // down node is not used--remove it
+            { // next node is not used--remove it
             ASSERT( next->down == NULL );
             VS_TRIE_NODE *tmp = next;
             next = next->next;
@@ -1661,6 +1664,7 @@
         return NULL; // not found
       }
   }
+*/
 
   VS_TRIE_NODE *VS_TRIE_NODE::clone()
   {
@@ -1694,8 +1698,66 @@
   {
     VS_TRIE_BOX *new_box = new VS_TRIE_BOX();
     delete new_box->root;
-    new_box->root = root->clone();
+    new_box->root   = root->clone();
     return new_box;
+  }
+
+  VS_TRIE_NODE* VS_TRIE_BOX::find_node( VS_TRIE_NODE* node, const VS_CHAR* key, int create )
+  {
+    if ( !key || !key[0] ) return NULL;
+    if ( key[0] == node->c )
+      { // VS_CHAR in the current key
+      if ( key[1] == 0 )
+        { // last VS_CHAR and is in the key--found!
+        return node;
+        }
+      else
+        { // not last VS_CHAR...
+        if ( ! node->down && create )
+          { // nothing below but should create
+          node->down = new VS_TRIE_NODE();
+          node->down->c = key[1];
+          }
+        if ( node->down )
+          return find_node( node->down, key + 1, create ); // search below
+        else
+          return NULL; // not found
+        }
+      }
+    else
+      { // VS_CHAR not in the current key--try next
+      if ( ! node->next && create )
+        { // no next but should create
+        node->next = new VS_TRIE_NODE();
+        node->next->c = key[0];
+        }
+      if ( node->next )
+        return find_node( node->next, key, create ); // search next
+      else
+        return NULL; // not found
+      }
+  }
+
+  int VS_TRIE_BOX::count_data_nodes( VS_TRIE_NODE* node )
+  {
+    if( ! node ) return 0;
+    return ( node->data ? 1 : 0 ) + count_data_nodes( node->next ) + count_data_nodes( node->down );
+  }
+
+  void VS_TRIE_BOX::del_node( VS_TRIE_NODE* node, const VS_CHAR *key, int branch )
+  {
+    VS_TRIE_NODE* del_node = find_node( node, key );
+    if( ! del_node ) return;
+    if( del_node->data )
+      {
+      delete del_node->data;
+      del_node->data = NULL;
+      }
+    if( branch && del_node->down )
+      {
+      delete del_node->down;
+      del_node->down = NULL;
+      }
   }
 
 /***************************************************************************
@@ -1727,6 +1789,11 @@
     box->unref();
   }
 
+  int VS_TRIE_CLASS::count( const VS_CHAR* key ) 
+  { 
+    return box->count_data_nodes( key ? box->find_node( box->root, key ) : box->root ); 
+  };
+
   void VS_TRIE_CLASS::detach()
   {
     if ( box->refs() == 1 ) return;
@@ -1753,7 +1820,7 @@
   {
     if ( !value || !key || !key[0] ) return;
     detach();
-    VS_TRIE_NODE *node = box->root->find_node( key, 1 );
+    VS_TRIE_NODE *node = box->find_node( box->root, key, 1 );
     ASSERT( node );
     if ( ! node->data )
       node->data = new VS_STRING_CLASS();
@@ -1763,23 +1830,23 @@
   const VS_CHAR* VS_TRIE_CLASS::get( const VS_CHAR* key )
   {
     if ( !key || !key[0] ) return NULL;
-    VS_TRIE_NODE *node = box->root->find_node( key );
+    VS_TRIE_NODE *node = box->find_node( box->root, key );
     if ( node && node->data )
       return node->data->data();
     else
       return NULL;
   }
 
-  void VS_TRIE_CLASS::del( const VS_CHAR* key )
+  void VS_TRIE_CLASS::del( const VS_CHAR* key, int branch )
   {
     if ( !key || !key[0] ) return;
     detach();
-    box->root->del_node( key );
+    box->del_node( box->root, key, branch );
   }
 
   int VS_TRIE_CLASS::exists( const VS_CHAR* key ) // return != 0 if key exist (with data)
   {
-    VS_TRIE_NODE *node = box->root->find_node( key );
+    VS_TRIE_NODE *node = box->find_node( box->root, key );
     if ( node && node->data )
       return 1;
     else

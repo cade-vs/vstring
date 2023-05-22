@@ -76,6 +76,9 @@ void test3()
   tr[ "opala"   ] = "data2";
   tr[ "keynext" ] =  "data3";
 
+  printf( "VTrie items count = %d\n", tr.count() );
+  ASSERT( tr.count() == 3 );
+
   // inserting elements into the array
   va.push( "this" );
   va.push( "just" );
@@ -89,6 +92,7 @@ void test3()
 
   // the array is converted to trie (hash) and merged into `tr'
   tr += va; // same as: tr.merge( &va );
+  ASSERT( tr.count() == 5 );
 
   // clear the array--remove all elements
   va.undef();
@@ -99,6 +103,23 @@ void test3()
   va = tr.keys();
 
   printf( "keys count = %d\n", va.count() );
+
+  tr.del( "test" );
+  ASSERT( tr.count() == 4 );
+
+  tr.del( "t", 1 );
+  printf( "--------------------\n" );
+  tr.print();
+  printf( "--------------------\n" );
+  ASSERT( tr.count() == 2 );
+
+  tr["thisistest"] = "123";
+  tr["thisisnottest"] = "456";
+
+  ASSERT( tr.count( "this" ) == 2 );
+  ASSERT( tr.count( "that" ) == 0 );
+  ASSERT( tr.count( "opa"  ) == 1 );
+  ASSERT( tr.count( ) == 4 );
 
   // printing the array and trie data
   for( i = 0; i < va.count(); i++ )

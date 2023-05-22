@@ -566,8 +566,6 @@ public:
   VS_STRING_CLASS   *data;
 
   void detach() { next = down = NULL; }
-  void del_node( const VS_CHAR *key, int branch = 0 );
-  VS_TRIE_NODE* find_node( const VS_CHAR* key, int create = 0 );
 
   VS_TRIE_NODE *clone();
   void print();
@@ -587,6 +585,11 @@ public:
 
   VS_TRIE_BOX()  { root = new VS_TRIE_NODE(); }
   ~VS_TRIE_BOX() { ASSERT( root ); delete root; }
+
+  VS_TRIE_NODE* find_node( VS_TRIE_NODE* node, const VS_CHAR* key, int create = 0 );
+  void del_node( VS_TRIE_NODE* node, const VS_CHAR *key, int branch = 0 );
+
+  int count_data_nodes( VS_TRIE_NODE* node );
 
   VS_TRIE_BOX* clone();
   void undef() { ASSERT( root ); delete root; root = new VS_TRIE_NODE(); };
@@ -616,8 +619,10 @@ class VS_TRIE_CLASS
   VS_TRIE_CLASS( const VS_TRIE_CLASS& tr );
   ~VS_TRIE_CLASS();
 
+  int count( const VS_CHAR* key = NULL );
+
   void set( const VS_CHAR* key, const VS_CHAR* data ); // set data, same as []=
-  void del( const VS_CHAR* key                   ); // remove data associated with `key'
+  void del( const VS_CHAR* key, int branch = 0      ); // remove data associated with `key' or all data below this branch
   const VS_CHAR* get( const VS_CHAR* key            ); // get data by `key', same as []
 
   int exists( const VS_CHAR* key ); // return != 0 if key exist (i.e. is used)
@@ -646,7 +651,7 @@ class VS_TRIE_CLASS
   VS_STRING_CLASS& operator []( const VS_CHAR* key )
     {
     detach(); // I don't know if user will change returned VS_STRING_CLASS?!
-    VS_TRIE_NODE *node = box->root->find_node( key, 1 );
+    VS_TRIE_NODE *node = box->find_node( box->root, key, 1 );
     ASSERT( node );
     if ( ! node->data )
       node->data = new VS_STRING_CLASS();
