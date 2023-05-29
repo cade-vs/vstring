@@ -593,6 +593,9 @@ public:
 
   VS_TRIE_BOX* clone();
   void undef() { ASSERT( root ); delete root; root = new VS_TRIE_NODE(); };
+
+  int vacuum_node( VS_TRIE_NODE* node );
+  int vacuum();
 };
 
 /***************************************************************************
@@ -607,6 +610,7 @@ class VS_TRIE_CLASS
 
   void detach();
   void trace_node( VS_TRIE_NODE *node, VS_ARRAY_CLASS* keys, VS_ARRAY_CLASS *vals );
+  void print_trace_node( VS_TRIE_NODE *node, int level );
 
   VS_STRING_CLASS temp_key;
 
@@ -618,6 +622,8 @@ class VS_TRIE_CLASS
   VS_TRIE_CLASS( const VS_ARRAY_CLASS& arr );
   VS_TRIE_CLASS( const VS_TRIE_CLASS& tr );
   ~VS_TRIE_CLASS();
+
+  int vacuum() { return box->vacuum(); };
 
   int count( const VS_CHAR* key = NULL );
 
@@ -642,6 +648,7 @@ class VS_TRIE_CLASS
 
   //void print_nodes() { print_node( root ); }; // for debug only
   void print(); // print trie data to stdout (console)
+  void print_trace(); // print trie data structure details
 
   int fload( const char* fname ); // return 0 for ok
   int fsave( const char* fname ); // return 0 for ok

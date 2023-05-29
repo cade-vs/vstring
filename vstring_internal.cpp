@@ -1560,6 +1560,7 @@
 
   VS_TRIE_NODE::~VS_TRIE_NODE()
   {
+    //printf( "             ~DELETE: %p [%c]  ---> next: %p    down %p    data %p\n", this, c, next, down, data );
     if ( next ) delete next;
     if ( down ) delete down;
     if ( data ) delete data;
@@ -1603,8 +1604,8 @@
 
   VS_TRIE_NODE* VS_TRIE_BOX::find_node( VS_TRIE_NODE* node, const VS_CHAR* key, int create )
   {
-    if ( !key || !key[0] ) return NULL;
-    if ( key[0] == node->c )
+    if( ! key || ! key[0] ) return NULL;
+    if( key[0] == node->c )
       { // VS_CHAR in the current key
       if ( key[1] == 0 )
         { // last VS_CHAR and is in the key--found!
@@ -1642,7 +1643,7 @@
     if( ! node ) return 0;
     return ( node->data ? 1 : 0 ) + count_data_nodes( node->next ) + count_data_nodes( node->down );
   }
-
+/*
   void VS_TRIE_BOX::del_node( VS_TRIE_NODE* node, const VS_CHAR *key, int branch )
   {
     VS_TRIE_NODE* del_node = find_node( node, key );
@@ -1658,6 +1659,97 @@
       del_node->down = NULL;
       }
   }
+*/
+  void VS_TRIE_BOX::del_node( VS_TRIE_NODE* node, const VS_CHAR *key, int branch )
+  {
+    //printf( "%p --> [%c] data: %p    next: %p    down: %p    <-- key: %s\n", node, node->c, node->data, node->next, node->down, key );
+    if( ! key || ! key[0] ) return;
+    if( key[0] == node->c )
+      { // VS_CHAR in the current key
+      if ( key[1] == 0 )
+        { // last VS_CHAR and is in the key--found!
+        //printf( "FOUND: %p --> [%c] data: %p    next: %p    down: %p    <-- key: %s\n", node, node->c, node->data, node->next, node->down, key );
+        if( node->data )
+          {
+          delete node->data;
+          node->data = NULL;
+          }
+        if( branch && node->down )
+          {
+          //printf( "       DELETE: DOWN: %p [%c] -> %p\n", node, node->c, node->down );
+          delete node->down;
+          node->down = NULL;
+          }
+        }
+      else
+        { // not last VS_CHAR...
+        if ( node->down )
+          {
+          del_node( node->down, key + 1, branch ); // search below
+          if( ! node->down->data && ! node->down->down )
+            {
+            //printf( "       DELETE: AFTER DOWN: %p [%c] -> %p\n", node, node->c, node->down );
+            VS_TRIE_NODE* tmp = node->down;
+            node->down = node->down->next;
+            tmp->next = NULL;
+            delete tmp;
+            }
+          }
+        }
+      }
+    else
+      { // VS_CHAR not in the current key--try next
+      if ( node->next )
+        {
+        del_node( node->next, key, branch ); // search next
+        if( ! node->next->data && ! node->next->down )
+          {
+          //printf( "       DELETE: NEXT: %p [%c] -> %p\n", node, node->c, node->next );
+          VS_TRIE_NODE* tmp = node->next;
+          node->next = node->next->next;
+          tmp->next = NULL;
+          delete tmp;
+          }
+        }
+      }
+  }
+
+  int VS_TRIE_BOX::vacuum_node( VS_TRIE_NODE* node )
+  {
+    int vc = 0; // vacuum count
+    if( node->down ) 
+      {
+      vc += vacuum_node( node->down );
+      if( ! node->down->data && ! node->down->down )
+        {
+        VS_TRIE_NODE* tmp = node->down;
+        node->down = node->down->next;
+        delete tmp;
+        vc++;
+        }
+      }
+    
+    if( node->next ) 
+      {
+      vc += vacuum_node( node->next );
+      if( ! node->next->data && ! node->next->down )
+        {
+        VS_TRIE_NODE* tmp = node->next;
+        node->next = node->next->next;
+        delete tmp;
+        vc++;
+        }
+      }
+  
+    return vc;
+  }
+
+  int VS_TRIE_BOX::vacuum()
+  {
+    return vacuum_node( root );
+  }
+
+
 
 /***************************************************************************
 **
@@ -1691,7 +1783,7 @@
   int VS_TRIE_CLASS::count( const VS_CHAR* key ) 
   { 
     return box->count_data_nodes( key ? box->find_node( box->root, key ) : box->root ); 
-  };
+  }
 
   void VS_TRIE_CLASS::detach()
   {
@@ -1713,6 +1805,14 @@
     if ( node->down ) trace_node( node->down, keys, vals );
     str_sleft( temp_key, kl );
     if ( node->next ) trace_node( node->next, keys, vals );
+  }
+
+  void VS_TRIE_CLASS::print_trace_node( VS_TRIE_NODE *node, int level )
+  {
+    for( int i = 0; i < level*8; i++ ) printf( " " );
+    printf( "%p --> [%c] data: %p    next: %p    down: %p\n", (void*)node, node->c, (void*)(node->data), (void*)(node->next), (void*)(node->down) );
+    if ( node->down ) print_trace_node( node->down, level + 1 );
+    if ( node->next ) print_trace_node( node->next, level );
   }
 
   void VS_TRIE_CLASS::set( const VS_CHAR* key, const VS_CHAR* value )
@@ -1850,6 +1950,11 @@
       {
       VS_FN_PRINTF( VS_CHAR_L( "" VS_SFMT "=" VS_SFMT "\n"), ka.pop(), va.pop() );
       }
+  }
+
+  void VS_TRIE_CLASS::print_trace()
+  {
+    print_trace_node( box->root, 0 );
   }
 
 /****************************************************************************

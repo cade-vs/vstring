@@ -120,7 +120,14 @@ void test3()
   ASSERT( tr.count( "that" ) == 0 );
   ASSERT( tr.count( "opa"  ) == 1 );
   ASSERT( tr.count( ) == 4 );
-
+  
+  tr.undef();
+  tr["thisisnottest"] = "456";
+  tr["thisistest"] = "456";
+  tr.del("thisistest");
+  int vc = tr.vacuum();
+  printf( "vacuum count = %d\n", vc );
+  
   // printing the array and trie data
   for( i = 0; i < va.count(); i++ )
     {
@@ -460,14 +467,38 @@ void test9()
   
 }
 
+
+void test0()
+{
+  VTrie tr;
+  
+  tr["testone"] = "1";
+  tr["testwo"]  = "2";
+  tr["tree"]  = "3";
+
+  tr.print_trace();
+
+  printf( "\n-------------------------------------------------------------------\n\n" );
+  tr.del( "test", 1 );
+  tr.print();
+  
+  printf( "\n-------------------------------------------------------------------\n\n" );
+  tr.print_trace();
+}
+
 int main( void )
 {
+
+  test0();
 
   #if 0
   char t[256] = "123456----------------------------------------9999999999999";
   char T[256] = "123456----------------------------------------9999999999999";
   str_trim_left( t, 3 );
   printf( "%s\n", t );
+
+
+
 
   for( long z; z < 300000000; z++ )
   {
