@@ -584,7 +584,7 @@ int mem_string_search( const VS_CHAR *p, const VS_CHAR* d, const VS_CHAR* opt )
   void VS_CHARSET_CLASS::push( VS_CHAR n, int val )
   {
     if ( n < 0 ) return;
-    if ( n >= _size * (int)sizeof(VS_CHAR) ) resize( n + 1 );
+    if ( (int)n >= _size * (int)sizeof(VS_CHAR) ) resize( n + 1 );
     if ( val )
       _data[ n / sizeof(VS_CHAR) ] |= 1 << (n % sizeof(VS_CHAR));
     else
@@ -603,7 +603,7 @@ int mem_string_search( const VS_CHAR *p, const VS_CHAR* d, const VS_CHAR* opt )
 
   int VS_CHARSET_CLASS::in( VS_CHAR n )
   {
-    if ( n < 0 || n >= _size * (int)sizeof(VS_CHAR) ) return 0;
+    if ( n < 0 || (int)n >= _size * (int)sizeof(VS_CHAR) ) return 0;
     return ( _data[ n / sizeof(VS_CHAR) ] & ( 1 << ( n % sizeof(VS_CHAR) ) ) ) != 0;
   }
 
