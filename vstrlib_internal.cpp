@@ -564,12 +564,12 @@ int mem_string_search( const VS_CHAR *p, const VS_CHAR* d, const VS_CHAR* opt )
       return;
       }
     // calc required mem size in chars (bytes?)
-    new_size = new_size / sizeof(VS_CHAR) + (new_size % sizeof(VS_CHAR) != 0);
+    new_size = new_size / sizeof(unsigned) + (new_size % sizeof(unsigned) != 0);
     // pad mem size in blocks of VCHARSET_BLOCK_SIZE
     new_size = new_size / VCHARSET_BLOCK_SIZE + (new_size % VCHARSET_BLOCK_SIZE != 0);
     // calc size back to chars (bytes?)
     new_size *= VCHARSET_BLOCK_SIZE;
-    VS_CHAR *new_data = new VS_CHAR[ new_size ];
+    unsigned *new_data = new unsigned[ new_size ];
     memset( new_data, 0, new_size );
     if ( _data )
       {
@@ -583,12 +583,12 @@ int mem_string_search( const VS_CHAR *p, const VS_CHAR* d, const VS_CHAR* opt )
 
   void VS_CHARSET_CLASS::push( VS_CHAR n, int val )
   {
-    if ( n < 0 ) return;
-    if ( (int)n >= _size * (int)sizeof(VS_CHAR) ) resize( n + 1 );
+    if ( n <= 0 ) return;
+    if ( (int)n >= _size * (int)sizeof(unsigned) ) resize( n + 1 );
     if ( val )
-      _data[ n / sizeof(VS_CHAR) ] |= 1 << (n % sizeof(VS_CHAR));
+      _data[ n / sizeof(unsigned) ] |= 1 << (n % sizeof(unsigned));
     else
-      _data[ n / sizeof(VS_CHAR) ] &= ~(1 << (n % sizeof(VS_CHAR)));
+      _data[ n / sizeof(unsigned) ] &= ~(1 << (n % sizeof(unsigned)));
   }
 
   void VS_CHARSET_CLASS::undef( VS_CHAR n )
@@ -603,8 +603,8 @@ int mem_string_search( const VS_CHAR *p, const VS_CHAR* d, const VS_CHAR* opt )
 
   int VS_CHARSET_CLASS::in( VS_CHAR n )
   {
-    if ( n < 0 || (int)n >= _size * (int)sizeof(VS_CHAR) ) return 0;
-    return ( _data[ n / sizeof(VS_CHAR) ] & ( 1 << ( n % sizeof(VS_CHAR) ) ) ) != 0;
+    if ( n <= 0 || (int)n >= _size * (int)sizeof(unsigned) ) return 0;
+    return ( _data[ n / sizeof(unsigned) ] & ( 1 << ( n % sizeof(unsigned) ) ) ) != 0;
   }
 
 
