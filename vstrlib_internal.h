@@ -145,8 +145,8 @@ long file_string_search( const VS_CHAR *p, FILE *f,          const VS_CHAR* opt 
 
 class VS_CHARSET_CLASS
   {
-    VS_CHAR* _data;
-    int      _size;  // size (in bytes)
+    unsigned* _data;
+    int       _size;  // size (in bytes)
 
     void resize( int new_size );
 

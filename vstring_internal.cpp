@@ -415,7 +415,7 @@
   {
     if( fr > to ) return;
     target.resize( target.box->sl + ( to - fr ) + 1 );
-    for( int i = fr; i <= to; i++ )
+    for( VS_CHAR i = fr; i <= to; i++ )
       target.box->s[target.box->sl++] = i;
     target.box->s[target.box->sl] = 0;
   }
@@ -838,7 +838,7 @@
   {
     if( fr > to ) return;
     int sl = str_len( target );
-    for( int i = fr; i < to; i++ )
+    for( VS_CHAR i = fr; i < to; i++ )
       target[sl++] = i;
     target[sl] = 0;
   }
@@ -1027,11 +1027,11 @@
       rc = target[pos];
       pos++;
       }
-    else if ( rc != -1 && target[pos] == rc )
+    else if ( rc != -1 && (int)target[pos] == rc )
       {
       str_del( target, pos, 1 );
       }
-    else if ( rc != -1 && target[pos] != rc )
+    else if ( rc != -1 && (int)target[pos] != rc )
       {
       rc = -1;
       }
@@ -1985,7 +1985,7 @@
 VS_CHAR* str_fix_path( VS_CHAR* s, int slashtype )
 {
   size_t sl = str_len( s );
-  if ( s[sl-1] != slashtype )
+  if ( s[sl-1] != (VS_CHAR)slashtype )
     {
     s[sl] = slashtype;
     s[sl+1] = 0;
@@ -1996,7 +1996,7 @@ VS_CHAR* str_fix_path( VS_CHAR* s, int slashtype )
 const VS_STRING_CLASS& str_fix_path( VS_STRING_CLASS &s, int slashtype )
 {
   size_t sl = str_len( s );
-  if ( s[sl-1] != slashtype )
+  if ( s[sl-1] != (VS_CHAR)slashtype )
     str_add_ch( s, slashtype );
   return s;
 }
