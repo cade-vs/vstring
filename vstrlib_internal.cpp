@@ -540,6 +540,8 @@ int mem_string_search( const VS_CHAR *p, const VS_CHAR* d, const VS_CHAR* opt )
 **
 ** VCHARSET
 **
+** TODO: rename to BITSET
+**
 ****************************************************************************/
 
   VS_CHARSET_CLASS::VS_CHARSET_CLASS()
@@ -583,7 +585,9 @@ int mem_string_search( const VS_CHAR *p, const VS_CHAR* d, const VS_CHAR* opt )
 
   void VS_CHARSET_CLASS::push( VS_CHAR n, int val )
   {
-    if ( CHAR_MIN < 0 and n < 0 ) return;
+    #if CHAR_MIN < 0
+    if ( n < 0 ) return;
+    #endif
     if ( n >= _size * (int)sizeof(VS_CHAR) ) resize( n + 1 );
     if ( val )
       _data[ n / sizeof(VS_CHAR) ] |= 1 << (n % sizeof(VS_CHAR));
@@ -603,10 +607,12 @@ int mem_string_search( const VS_CHAR *p, const VS_CHAR* d, const VS_CHAR* opt )
 
   int VS_CHARSET_CLASS::in( VS_CHAR n )
   {
-    if ( n < 0 || n >= _size * (int)sizeof(VS_CHAR) ) return 0;
+    #if CHAR_MIN < 0
+    if ( n < 0 ) return 0;
+    #endif
+    if( n >= _size * (int)sizeof(VS_CHAR) ) return 0;
     return ( _data[ n / sizeof(VS_CHAR) ] & ( 1 << ( n % sizeof(VS_CHAR) ) ) ) != 0;
   }
-
 
 /*
   int VCharSet::get( int pn )
