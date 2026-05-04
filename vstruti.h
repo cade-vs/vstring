@@ -23,6 +23,9 @@
 #include "vstring.h"
 #include "wstring.h"
 
+char* strncpyz( char *dst, const char *src, size_t size );
+char* strncatz( char *dst, const char *src, size_t size );
+
 VString& str_padw( VString& target, int len, char ch = ' ' );
 char* str_padw( char* target, int len, char ch = ' ' );
 

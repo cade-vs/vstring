@@ -2,7 +2,7 @@
  #
  #  VSTRING Library
  #
- #  Copyright (c) 1996-2023 Vladi Belperchinov-Shabanski "Cade" 
+ #  Copyright (c) 1996-2026 Vladi Belperchinov-Shabanski "Cade" 
  #  http://cade.noxrun.com/  <cade@noxrun.com> <cade@bis.bg> <cade@cpan.org>
  #
  #  Distributed under the GPL license, you should receive copy of GPLv2!
@@ -935,6 +935,7 @@
       }
     else
       {
+      // TODO: optimize, 2 memcpy-s
       VS_FN_STRCAT( tmp, target );
       VS_FN_STRCPY( target, tmp );
       }
