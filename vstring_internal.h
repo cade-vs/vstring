@@ -717,12 +717,12 @@ VS_STRING_CLASS str_dot_reduce( const VS_CHAR* s, int width );
 ****************************************************************************/
 
 // adds trailing '/' if not exist
-VS_CHAR* str_fix_path( VS_CHAR* s, int slashtype, int target_size );
-const VS_STRING_CLASS& str_fix_path( VS_STRING_CLASS& s, int slashtype );
+VS_CHAR* str_fix_path( VS_CHAR* target, size_t target_size );
+const VS_STRING_CLASS& str_fix_path( VS_STRING_CLASS &target );
 
 // WARNING: str_fix_path_buf() works only for array dst's, not for pointers!!!
-#define str_fix_path_buf(  s,   slashtype ) \
-            str_fix_path( (s), (slashtype), sizeof(s) )
+#define str_fix_path_buf(  s ) \
+            str_fix_path( (s), (sizeof(s)/sizeof(VS_CHAR)) )
 
 VS_STRING_CLASS str_file_ext(      const VS_CHAR *ps ); // `ext'
 VS_STRING_CLASS str_file_name(     const VS_CHAR *ps ); // `filename'

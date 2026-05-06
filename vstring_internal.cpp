@@ -2001,21 +2001,21 @@
 **
 ****************************************************************************/
 
-VS_CHAR* str_fix_path( VS_CHAR* target, int slashtype, size_t target_size )
+VS_CHAR* str_fix_path( VS_CHAR* target, size_t target_size )
 { //!ok
   size_t sl = str_len( target );
   ASSERT( target_size > sl );
-  if( sl == 0 || sl >= target_size - 1 || target[sl-1] == slashtype ) return target;
-  target[sl] = slashtype;
+  if( sl == 0 || sl >= target_size - 1 || target[sl-1] == VS_CHAR_L('/') ) return target;
+  target[sl] = VS_CHAR_L('/');
   target[sl+1] = 0;
   return target;
 }
 
-const VS_STRING_CLASS& str_fix_path( VS_STRING_CLASS &s, int slashtype )
+const VS_STRING_CLASS& str_fix_path( VS_STRING_CLASS &target )
 {
-  if ( s[-1] != slashtype )
-    str_add_ch( s, slashtype );
-  return s;
+  if ( target[-1] != VS_CHAR_L('/') )
+    str_add_ch( target, VS_CHAR_L('/') );
+  return target;
 }
 
 VS_STRING_CLASS str_file_ext( const VS_CHAR *ps )
