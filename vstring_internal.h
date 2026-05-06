@@ -143,6 +143,7 @@ public:
 
   const VS_STRING_CLASS& operator += ( const VS_STRING_CLASS& str )  { cat( str.box->s ); return *this; };
   const VS_STRING_CLASS& operator += ( const VS_CHAR*  ps )          { cat( ps ); return *this; };
+  const VS_STRING_CLASS& operator += ( const VS_CHAR   pc )          { str_add_ch( *this, pc ); return *this; };
   const VS_STRING_CLASS& operator += ( const int       n  )          { VS_STRING_CLASS tmp = n; cat(tmp); return *this; };
   const VS_STRING_CLASS& operator += ( const long      n  )          { VS_STRING_CLASS tmp = n; cat(tmp); return *this; };
   const VS_STRING_CLASS& operator += ( const long long n  )          { VS_STRING_CLASS tmp = n; cat(tmp); return *this; };
@@ -716,8 +717,12 @@ VS_STRING_CLASS str_dot_reduce( const VS_CHAR* s, int width );
 ****************************************************************************/
 
 // adds trailing '/' if not exist
-VS_CHAR* str_fix_path( VS_CHAR* s, int slashtype = VS_CHAR_L('/') );
-const VS_STRING_CLASS& str_fix_path( VS_STRING_CLASS& s, int slashtype = VS_CHAR_L('/') );
+VS_CHAR* str_fix_path( VS_CHAR* s, int slashtype, int target_size );
+const VS_STRING_CLASS& str_fix_path( VS_STRING_CLASS& s, int slashtype );
+
+// WARNING: str_fix_path_buf() works only for array dst's, not for pointers!!!
+#define str_fix_path_buf(  s,   slashtype ) \
+            str_fix_path( (s), (slashtype), sizeof(s) )
 
 VS_STRING_CLASS str_file_ext(      const VS_CHAR *ps ); // `ext'
 VS_STRING_CLASS str_file_name(     const VS_CHAR *ps ); // `filename'

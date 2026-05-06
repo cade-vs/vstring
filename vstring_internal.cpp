@@ -2001,21 +2001,19 @@
 **
 ****************************************************************************/
 
-VS_CHAR* str_fix_path( VS_CHAR* s, int slashtype )
-{
-  size_t sl = str_len( s );
-  if ( s[sl-1] != slashtype )
-    {
-    s[sl] = slashtype;
-    s[sl+1] = 0;
-    }
-  return s;
+VS_CHAR* str_fix_path( VS_CHAR* target, int slashtype, size_t target_size )
+{ //!ok
+  size_t sl = str_len( target );
+  ASSERT( target_size > sl );
+  if( sl == 0 || sl >= target_size - 1 || target[sl-1] == slashtype ) return target;
+  target[sl] = slashtype;
+  target[sl+1] = 0;
+  return target;
 }
 
 const VS_STRING_CLASS& str_fix_path( VS_STRING_CLASS &s, int slashtype )
 {
-  size_t sl = str_len( s );
-  if ( s[sl-1] != slashtype )
+  if ( s[-1] != slashtype )
     str_add_ch( s, slashtype );
   return s;
 }

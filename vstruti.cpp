@@ -19,27 +19,27 @@
 
 #include "vstruti.h"
 
-char* strncpyz( char *dst, const char *src, size_t size )
+char* strncpyz( char *dst, const char *src, size_t dst_size )
 {
-    if( size == 0 )
+    if( dst_size == 0 )
       return dst;
 
     size_t len = strlen( src );
-    size_t cz  = len < size ? len : size - 1;
+    size_t cz  = len < dst_size ? len : dst_size - 1;
     memmove( dst, src, cz );
     dst[cz] = '\0';
 
     return dst;
 }
 
-char* strncatz( char *dst, const char *src, size_t size )
+char* strncatz( char *dst, const char *src, size_t dst_size )
 {
-    if( size == 0 ) return dst;
+    if( dst_size == 0 ) return dst;
 
-    size_t dlen = strnlen( dst, size );
-    if( dlen >= size - 1 ) return dst;
+    size_t dlen = strnlen( dst, dst_size );
+    if( dlen >= dst_size - 1 ) return dst;
 
-    return strncat( dst, src, size - 1 - dlen );
+    return strncat( dst, src, dst_size - 1 - dlen );
 }
 
 VString& str_padw( VString& target, int len, char ch )
