@@ -2,7 +2,7 @@
  #
  #  VSTRING Library
  #
- #  Copyright (c) 1996-2026 Vladi Belperchinov-Shabanski "Cade" 
+ #  Copyright (c) 1996-2026 Vladi Belperchinov-Shabanski "Cade"
  #  http://cade.noxrun.com/  <cade@noxrun.com> <cade@bis.bg> <cade@cpan.org>
  #
  #  Distributed under the GPL license, you should receive copy of GPLv2!
@@ -11,10 +11,10 @@
  #
  #  VSTRING library provides wide set of string manipulation features
  #  including dynamic string object that can be freely exchanged with
- #  standard char* (or wchar_t*) type, so there is no need to change 
- #  function calls nor the implementation when you change from 
- #  char* to VString (and from wchar_t* to WString). 
- # 
+ #  standard char* (or wchar_t*) type, so there is no need to change
+ #  function calls nor the implementation when you change from
+ #  char* to VString (and from wchar_t* to WString).
+ #
  ***************************************************************************/
 
 #include "vstring_internal.h"
@@ -80,15 +80,15 @@
     block_size = new_block_size < 1 ? VSTRING_DEFAULT_BLOCK_SIZE : new_block_size;
   }
 
-  VS_STRING_BOX::~VS_STRING_BOX() 
-  { 
-    undef(); 
+  VS_STRING_BOX::~VS_STRING_BOX()
+  {
+    undef();
     if ( s ) free( s );
 /*
     FILE* fo = fopen( "/tmp/vstrboxstats.txt", "a" );
     fprintf( fo, "cbs=%d  sbs=%d  sbc=%d  sbg=%f\n", cbs, sbs, sbc, sbg );
     fclose( fo );
-*/    
+*/
   }
 
 /****************************************************************************
@@ -208,18 +208,18 @@
     box->s[ box->sl ] = 0;
   }
 
-  const VS_STRING_CLASS& VS_STRING_CLASS::operator  = ( const VS_STRING_CLASS_R& rs   ) 
-  { 
-    set( rs.data() ); 
-    return *this; 
+  const VS_STRING_CLASS& VS_STRING_CLASS::operator  = ( const VS_STRING_CLASS_R& rs   )
+  {
+    set( rs.data() );
+    return *this;
   }
 
   const VS_STRING_CLASS& VS_STRING_CLASS::operator  = ( const VS_CHAR_R* prs   )
-  { 
-    set( prs ); 
-    return *this; 
+  {
+    set( prs );
+    return *this;
   }
-  
+
 /****************************************************************************
 **
 ** VS_STRING_CLASS Functions (for class VS_STRING_CLASS)
@@ -242,7 +242,7 @@
     if ( pos + len < target.box->sl )
       target.box->sl -= len;
     else
-      target.box->sl = pos;  
+      target.box->sl = pos;
     return target;
   }
 
@@ -282,7 +282,7 @@
 
   VS_STRING_CLASS &str_copy( VS_STRING_CLASS &target, const VS_CHAR* source, int pos, int len ) // returns `len' VS_CHARs from `pos'
   {
-    if( __str_copy_calc_offsets( source, pos, len ) ) 
+    if( __str_copy_calc_offsets( source, pos, len ) )
       {
       target.undef();
       return target;
@@ -420,18 +420,18 @@
     target.box->s[target.box->sl] = 0;
   }
 
-  VS_CHAR* str_word( VS_STRING_CLASS &target, const VS_CHAR* delimiters, VS_CHAR* result )
+  VS_CHAR* str_word( VS_STRING_CLASS &target, const VS_CHAR* delimiters, VS_CHAR* result, size_t result_max_count )
   {
     target.detach();
-    str_word( target.box->s, delimiters, result );
+    str_word( target.box->s, delimiters, result, result_max_count );
     target.fix();
     return result[0] ? result : NULL;
   }
 
-  VS_CHAR* str_rword( VS_STRING_CLASS &target, const VS_CHAR* delimiters, VS_CHAR* result )
+  VS_CHAR* str_rword( VS_STRING_CLASS &target, const VS_CHAR* delimiters, VS_CHAR* result, size_t result_max_count )
   {
     target.detach();
-    str_rword( target.box->s, delimiters, result );
+    str_rword( target.box->s, delimiters, result, result_max_count );
     target.fix();
     return result;
   }
@@ -542,7 +542,7 @@
     int err = 0;
     undef();
     mbtowc( NULL, NULL, 0 ); /* reset mbtowc shift state */
-    
+
     wchar_t wch;
     const char* ps = mbs;
     while( ps )
@@ -554,14 +554,14 @@
         wch = 0xFFFD;
         ps++;
         }
-      else if( r > 0 )  
+      else if( r > 0 )
         {
         ps += r;
         }
       else
         {
         return err;
-        }  
+        }
       str_add_ch( *this, wch );
       }
     return err;
@@ -580,12 +580,12 @@
 **
 ****************************************************************************/
 
-  VS_CHAR* str_set( VS_CHAR* target, const VS_CHAR* ps ) 
-  { 
-    target[0] = 0; 
-    if (ps) VS_FN_STRCPY( target, ps ); 
-    VS_FN_STRCPY( target, ps ); 
-    return target; 
+  VS_CHAR* str_set( VS_CHAR* target, const VS_CHAR* ps )
+  {
+    target[0] = 0;
+    if (ps) VS_FN_STRCPY( target, ps );
+    VS_FN_STRCPY( target, ps );
+    return target;
   }
 
   VS_CHAR* str_mul( VS_CHAR* target, int n ) // multiplies the string n times, i.e. "1"*5 = "11111"
@@ -667,8 +667,8 @@
       {
       if( startpos > z ) return -1;
       z = startpos;
-      }  
-      
+      }
+
     while ( z > 0 )
       {
       if ( VS_FN_STRNCMP( target + z, s, sls ) == 0 ) return z;
@@ -743,7 +743,7 @@
 
   VS_CHAR* str_copy( VS_CHAR* target, const VS_CHAR* source, int pos, int len ) // returns `len' VS_CHARs from `pos'
   {
-    if( __str_copy_calc_offsets( source, pos, len ) ) 
+    if( __str_copy_calc_offsets( source, pos, len ) )
       {
       target[ 0 ] = 0;
       return target;
@@ -845,36 +845,54 @@
 
   // return first `word', i.e. from pos 0 to first found delimiter VS_CHAR
   // after that deletes this `word' from the target
-  VS_CHAR* str_word( VS_CHAR* target, const VS_CHAR* delimiters, VS_CHAR* result )
+  VS_CHAR* str_word( VS_CHAR* target, const VS_CHAR* delimiters, VS_CHAR* result, size_t result_max_count )
   {
+    if ( result_max_count == 0 ) return NULL;
+
     int z = 0;
     int sl = str_len( target );
-    while ((VS_FN_STRCHR(delimiters, target[z]) == NULL) && (target[z] != 0)) z++;
-    vs_memmove(result, target, z);
-    result[z] = 0;
+    while ( (VS_FN_STRCHR(delimiters, target[z]) == NULL) && (target[z] != 0) )
+      z++;
+
+    /* copy at most result_max_count - 1 chars/wchars; always NUL-terminate.
+       the full word is still consumed from target. */
+    int cz = z;
+    if ( (size_t)cz > result_max_count - 1 ) cz = (int)(result_max_count - 1);
+    vs_memmove( result, target, cz );
+    result[cz] = 0;
+
     if ( z > 0 )
       {
-      if( z < sl )
-        vs_memmove( target, target + z + 1, sl - z ); // including trailing zero
+      if ( z < sl )
+        vs_memmove( target, target + z + 1, sl - z ); /* including trailing zero */
       else
         target[0] = 0;
       }
+
     return result[0] ? result : NULL;
   }
 
   // ...same but `last' word
-  VS_CHAR* str_rword( VS_CHAR* target, const VS_CHAR* delimiters, VS_CHAR* result )
+  VS_CHAR* str_rword( VS_CHAR* target, const VS_CHAR* delimiters, VS_CHAR* result, size_t result_max_count )
   {
+    if ( result_max_count == 0 ) return NULL;
     result[0] = 0;
+
     int sl = str_len( target );
+    if ( sl == 0 ) return NULL;          /* fixes pre-existing target[-1] OOB read */
+
     int z = sl - 1;
     while ( VS_FN_STRCHR( delimiters, target[z] ) == NULL && z > 0 ) z--;
-    if (z < 0) return NULL;
-    vs_memmove( result, target + z + 1, sl - z );
+    if ( z < 0 ) return NULL;
+
+    int cz = sl - z - 1;
+    if ( (size_t)cz > result_max_count - 1 ) cz = (int)(result_max_count - 1);
+    vs_memmove( result, target + z + 1, cz );
+    result[cz] = 0;
+
     target[z] = 0;
     return result;
   }
-
 
   VS_CHAR* str_cut_left( VS_CHAR* target, const VS_CHAR* charlist ) // remove all VS_CHARs `charlist' from the beginning (i.e. from the left)
   {
@@ -917,7 +935,7 @@
     int sl = str_len( target );
     int _len;
     _len = (len >= 0) ? len : - len;
-    if ( _len <= sl ) 
+    if ( _len <= sl )
       {
       target[_len] = 0;
       return target;
@@ -1128,22 +1146,22 @@
 **
 ****************************************************************************/
 
-  VS_ARRAY_BOX::VS_ARRAY_BOX() 
-  { 
-    _data      = NULL; 
-    _size      = 0; 
-    _count     = 0; 
-    block_size = VARRAY_DEFAULT_BLOCK_SIZE; 
-  }
-  
-  VS_ARRAY_BOX::~VS_ARRAY_BOX() 
-  { 
-    undef(); 
+  VS_ARRAY_BOX::VS_ARRAY_BOX()
+  {
+    _data      = NULL;
+    _size      = 0;
+    _count     = 0;
+    block_size = VARRAY_DEFAULT_BLOCK_SIZE;
   }
 
-  void VS_ARRAY_BOX::undef() 
-  { 
-    resize( 0 ); 
+  VS_ARRAY_BOX::~VS_ARRAY_BOX()
+  {
+    undef();
+  }
+
+  void VS_ARRAY_BOX::undef()
+  {
+    resize( 0 );
   }
 
   VS_ARRAY_BOX* VS_ARRAY_BOX::clone()
@@ -1229,9 +1247,9 @@
 
       box->_data[n] = new VS_STRING_CLASS;
       if( compact ) box->_data[n]->compact( compact );
-      }  
+      }
   }
-  
+
   void VS_ARRAY_CLASS::del_pos( int n )
   {
     if ( n < 0 || n >= box->_count ) return;
@@ -1368,7 +1386,7 @@
     new_pos( n );
     *box->_data[n] = vs;
   }
-  
+
   void VS_ARRAY_CLASS::set( int n, const VS_STRING_CLASS& vs )
   {
     if( n >= box->_count ) new_pos( n );
@@ -1718,7 +1736,7 @@
   int VS_TRIE_BOX::vacuum_node( VS_TRIE_NODE* node )
   {
     int vc = 0; // vacuum count
-    if( node->down ) 
+    if( node->down )
       {
       vc += vacuum_node( node->down );
       if( ! node->down->data && ! node->down->down )
@@ -1729,8 +1747,8 @@
         vc++;
         }
       }
-    
-    if( node->next ) 
+
+    if( node->next )
       {
       vc += vacuum_node( node->next );
       if( ! node->next->data && ! node->next->down )
@@ -1741,7 +1759,7 @@
         vc++;
         }
       }
-  
+
     return vc;
   }
 
@@ -1781,9 +1799,9 @@
     box->unref();
   }
 
-  int VS_TRIE_CLASS::count( const VS_CHAR* key ) 
-  { 
-    return box->count_data_nodes( key ? box->find_node( box->root, key ) : box->root ); 
+  int VS_TRIE_CLASS::count( const VS_CHAR* key )
+  {
+    return box->count_data_nodes( key ? box->find_node( box->root, key ) : box->root );
   }
 
   void VS_TRIE_CLASS::detach()

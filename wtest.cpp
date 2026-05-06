@@ -610,7 +610,7 @@ int main( void )
 
   wchar_t t[92] = L"this is simple test";
   wchar_t r[92] = L"1111111111111111111";
-  str_word( t, L" ", r );
+  str_word_buf( t, L" ", r );
   ASSERT( wcscmp( t, L"is simple test" ) == 0 );
   ASSERT( wcscmp( r, L"this" ) == 0 );
 
@@ -641,9 +641,9 @@ int main( void )
   str_copy( t+10, t+20, 0, 15 ); // check for overlapping borders, end   of str
 
   str_set( t, L"despicable me" );
-  str_word( t, L" ", r );
+  str_word_buf( t, L" ", r );
   ASSERT( wcscmp( r, L"despicable" ) == 0 );
-  str_word( t, L" ", r );
+  str_word_buf( t, L" ", r );
   ASSERT( wcscmp( r, L"me" ) == 0 );
   ASSERT( t[0] == 0 );
 

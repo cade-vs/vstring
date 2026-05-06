@@ -2,7 +2,7 @@
  #
  #  VSTRING Library
  #
- #  Copyright (c) 1996-2023 Vladi Belperchinov-Shabanski "Cade" 
+ #  Copyright (c) 1996-2023 Vladi Belperchinov-Shabanski "Cade"
  #  http://cade.noxrun.com/  <cade@noxrun.com> <cade@bis.bg> <cade@cpan.org>
  #
  #  Distributed under the GPL license, you should receive copy of GPLv2!
@@ -11,10 +11,10 @@
  #
  #  VSTRING library provides wide set of string manipulation features
  #  including dynamic string object that can be freely exchanged with
- #  standard char* (or wchar_t*) type, so there is no need to change 
- #  function calls nor the implementation when you change from 
- #  char* to VString (and from wchar_t* to WString). 
- # 
+ #  standard char* (or wchar_t*) type, so there is no need to change
+ #  function calls nor the implementation when you change from
+ #  char* to VString (and from wchar_t* to WString).
+ #
  ***************************************************************************/
 
 /***************************************************************************
@@ -37,11 +37,19 @@ class VS_TRIE_CLASS;
 
 /****************************************************************************
 **
-** aux functions
+** aux functions and defines
 **
 ****************************************************************************/
 
   ssize_t str_len( const VS_CHAR *s );
+
+  // WARNING: WARNING: WARNING: for result buffer arrays only! not pointers
+  // see str_word()/str_rword() documentation below!
+  #define str_word_buf(target, delimiters, buf) \
+          str_word((target), (delimiters), (buf), sizeof(buf) / sizeof(*(buf)))
+
+  #define str_rword_buf(target, delimiters, buf) \
+          str_rword((target), (delimiters), (buf), sizeof(buf) / sizeof(*(buf)))
 
 /****************************************************************************
 **
@@ -109,7 +117,7 @@ public:
   void compact( int a_compact ) // set this != 0 for compact (memory preserving) behaviour
         { box->compact = a_compact; }; //FIXME: detach() first?
 
-  void set_block_size( int new_block_size ) 
+  void set_block_size( int new_block_size )
         { if ( box ) box->set_block_size( new_block_size ); };
 
   void resize( int new_size )
@@ -221,10 +229,10 @@ public:
   void   catn( const VS_CHAR* ps, int len );
 
   /* for debugging only */
-  int check() 
-      { 
-      int len = str_len(box->s); 
-      return ((len == box->sl)&&(len<box->size)); 
+  int check()
+      {
+      int len = str_len(box->s);
+      return ((len == box->sl)&&(len<box->size));
       }
 
   /****************************************************************************
@@ -263,8 +271,10 @@ public:
   friend void str_add_ch( VS_STRING_CLASS& target, const VS_CHAR ch          ); // adds `ch' at the end
   friend void str_add_ch_range( VS_STRING_CLASS &target, const VS_CHAR fr, const VS_CHAR to ); // adds all from `fr' to 'to' at the end
 
-  friend VS_CHAR*  str_word( VS_STRING_CLASS& target, const VS_CHAR* delimiters, VS_CHAR* result );
-  friend VS_CHAR*  str_rword( VS_STRING_CLASS& target, const VS_CHAR* delimiters, VS_CHAR* result );
+  // WARNING: WARNING: WARNING: result_max_count is in chars, not bytes! for wchar_t it must be sizeof(result)/sizeof(wchar_t)!
+  // WARNING: WARNING: WARNING: for result buffer arrays, not pointers, use str_word_buf()/str_rword_buf()
+  friend VS_CHAR*  str_word( VS_STRING_CLASS& target, const VS_CHAR* delimiters, VS_CHAR* result, size_t result_max_count );
+  friend VS_CHAR*  str_rword( VS_STRING_CLASS& target, const VS_CHAR* delimiters, VS_CHAR* result, size_t result_max_count );
   // check VS_ARRAY_CLASS::split() instead of word() funtions...
 
   //FIXME: TODO: str_sprintf() should return VS_STRING_CLASS!
@@ -290,7 +300,7 @@ public:
   void print(); // print string data to stdout (console)
 
   /* conversions/reversed char type functions */
-  
+
   VS_STRING_CLASS( const VS_CHAR_R* prs  )  {  box = new VS_STRING_BOX(); set( prs );  };
 
   const VS_STRING_CLASS& operator  = ( const VS_STRING_CLASS_R& rs  );
@@ -339,17 +349,19 @@ public:
   // note: that `VS_CHAR*' funcs are slower because of initial strlen() check
   void str_set_ch( VS_CHAR* target, int pos, const VS_CHAR ch ); // sets `ch' VS_CHAR at position `pos'
   VS_CHAR str_get_ch( VS_CHAR* target, int pos                ); // return VS_CHAR at position `pos', -1 for the last VS_CHAR etc...
-  
+
   void str_add_ch( VS_CHAR* target, const VS_CHAR ch          ); // adds `ch' at the end
   void str_add_ch_range( VS_CHAR* target, const VS_CHAR fr, const VS_CHAR to ); // adds all from `fr' to 'to' at the end
 
-  // return first `word' (will be stored to `resolt'), 
+  // return first `word' (will be stored to `resolt'),
   // i.e. from pos 0 to first found delimiter VS_CHAR
-  // after that deletes this `word' from the `target' string. 
+  // after that deletes this `word' from the `target' string.
+  // WARNING: WARNING: WARNING: result_max_count is in chars, not bytes! for wchar_t it must be sizeof(result)/sizeof(wchar_t)!
+  // WARNING: WARNING: WARNING: for result buffer arrays, not pointers, use str_word_buf()/str_rword_buf()
   // returns NULL when no words left
-  VS_CHAR* str_word ( VS_CHAR* target, const VS_CHAR* delimiters, VS_CHAR* result );
+  VS_CHAR* str_word ( VS_CHAR* target, const VS_CHAR* delimiters, VS_CHAR* result, size_t result_max_count );
   // ...same but `last' word reverse/rear
-  VS_CHAR* str_rword( VS_CHAR* target, const VS_CHAR* delimiters, VS_CHAR* result );
+  VS_CHAR* str_rword( VS_CHAR* target, const VS_CHAR* delimiters, VS_CHAR* result, size_t result_max_count );
 
   VS_CHAR* str_cut_left ( VS_CHAR* target, const VS_CHAR* charlist ); // remove all VS_CHARs `charlist' from the beginning (i.e. from the left)
   VS_CHAR* str_cut_right( VS_CHAR* target, const VS_CHAR* charlist ); // remove all VS_CHARs `charlist' from the end (i.e. from the right)
@@ -499,7 +511,7 @@ class VS_ARRAY_CLASS
     }
 
   // FIXME: TODO: verify behaviour!
-  const VS_STRING_CLASS& operator []( int n ) const 
+  const VS_STRING_CLASS& operator []( int n ) const
     {
       if ( n < 0 || n >= box->_count ) { return _ret_empty; }
       return *box->_data[n];

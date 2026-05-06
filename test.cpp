@@ -518,7 +518,7 @@ int main( void )
 
   char t[92] = "this is simple test";
   char r[92] = "1111111111111111111";
-  str_word( t, " ", r );
+  str_word( t, " ", r, sizeof(r) );
   ASSERT( strcmp( t, "is simple test" ) == 0 );
   ASSERT( strcmp( r, "this" ) == 0 );
 
@@ -545,9 +545,9 @@ int main( void )
   str_copy( t+10, t+20, 0, 15 ); // check for overlapping borders, end   of str
 
   strcpy( t, "despicable me" );
-  str_word( t, " ", r );
+  str_word( t, " ", r, sizeof(r) );
   ASSERT( strcmp( r, "despicable" ) == 0 );
-  str_word( t, " ", r );
+  str_word( t, " ", r, sizeof(r) );
   ASSERT( strcmp( r, "me" ) == 0 );
   ASSERT( t[0] == 0 );
 

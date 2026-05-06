@@ -60,6 +60,9 @@ public:
 **
 ****************************************************************************/
 
+  #define  char_array_size(a)  (sizeof(a)/sizeof(char))
+  #define wchar_array_size(a)  (sizeof(a)/sizeof(wchar_t))
+
   void *vs_memcpy(  char    *dest, const char    *src, size_t n );
   void *vs_memmove( char    *dest, const char    *src, size_t n );
   void *vs_memcpy(  wchar_t *dest, const wchar_t *src, size_t n );
