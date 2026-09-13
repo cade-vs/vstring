@@ -1257,7 +1257,7 @@
     delete box->_data[n];
     memmove( &box->_data[0] + n,
              &box->_data[0] + n + 1,
-             ( box->_count - n ) * sizeof(VS_STRING_CLASS*) );
+             ( box->_count - n - 1 ) * sizeof(VS_STRING_CLASS*) );
     box->_count--;
     if ( box->_size - box->_count > box->block_size ) box->resize( box->_count );
   }
