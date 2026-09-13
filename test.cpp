@@ -2,8 +2,8 @@
  #
  #  VSTRING Library
  #
- #  Copyright (c) 1996-2023 Vladi Belperchinov-Shabanski "Cade" 
- #  http://cade.noxrun.com/  <cade@noxrun.com> <cade@bis.bg> <cade@cpan.org>
+ #  Copyright (c) 1996-2026 Vladi Belperchinov-Shabanski "Cade"
+ #  http://cade.noxrun.com/  <cade@noxrun.com>
  #
  #  Distributed under the GPL license, you should receive copy of GPLv2!
  #
@@ -11,10 +11,10 @@
  #
  #  VSTRING library provides wide set of string manipulation features
  #  including dynamic string object that can be freely exchanged with
- #  standard char* (or wchar_t*) type, so there is no need to change 
- #  function calls nor the implementation when you change from 
- #  char* to VString (and from wchar_t* to WString). 
- # 
+ #  standard char* (or wchar_t*) type, so there is no need to change
+ #  function calls nor the implementation when you change from
+ #  char* to VString (and from wchar_t* to WString).
+ #
  ***************************************************************************/
 
 #include <stdio.h>
@@ -120,14 +120,14 @@ void test3()
   ASSERT( tr.count( "that" ) == 0 );
   ASSERT( tr.count( "opa"  ) == 1 );
   ASSERT( tr.count( ) == 4 );
-  
+
   tr.undef();
   tr["thisisnottest"] = "456";
   tr["thisistest"] = "456";
   tr.del("thisistest");
   int vc = tr.vacuum();
   printf( "vacuum count = %d\n", vc );
-  
+
   // printing the array and trie data
   for( i = 0; i < va.count(); i++ )
     {
@@ -437,22 +437,22 @@ void test9()
 {
   VArray va;
   VTrie  tr;
-  
+
   printf( "---9---------------------------------------------------\n" );
-  
+
   va.push( "one" );
   va.push( "two" );
   va.push( "tri" );
   va.push( "pet" );
-  
+
   tr = va;
-  
+
   tr.print();
 
   va.push( &tr );
-  
+
   va.print();
-  
+
   VArray va2;
   va2.push( "1" );
   va2.push( "2" );
@@ -464,14 +464,14 @@ void test9()
   va2.push( &va );
 
   va2.print();
-  
+
 }
 
 
 void test0()
 {
   VTrie tr;
-  
+
   tr["testone"] = "1";
   tr["testwo"]  = "2";
   tr["tree"]  = "3";
@@ -481,7 +481,7 @@ void test0()
   printf( "\n-------------------------------------------------------------------\n\n" );
   tr.del( "test", 1 );
   tr.print();
-  
+
   printf( "\n-------------------------------------------------------------------\n\n" );
   tr.print_trace();
 }

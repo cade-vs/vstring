@@ -3,7 +3,7 @@
  #  VSTRING Library
  #
  #  Copyright (c) 1996-2026 Vladi Belperchinov-Shabanski "Cade"
- #  http://cade.noxrun.com/  <cade@noxrun.com> <cade@bis.bg> <cade@cpan.org>
+ #  http://cade.noxrun.com/  <cade@noxrun.com>
  #
  #  Distributed under the GPL license, you should receive copy of GPLv2!
  #

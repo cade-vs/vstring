@@ -2,8 +2,8 @@
  #
  #  VSTRING Library
  #
- #  Copyright (c) 1996-2023 Vladi Belperchinov-Shabanski "Cade" 
- #  http://cade.noxrun.com/  <cade@noxrun.com> <cade@bis.bg> <cade@cpan.org>
+ #  Copyright (c) 1996-2026 Vladi Belperchinov-Shabanski "Cade"
+ #  http://cade.noxrun.com/  <cade@noxrun.com>
  #
  #  Distributed under the GPL license, you should receive copy of GPLv2!
  #
@@ -11,10 +11,10 @@
  #
  #  VSTRING library provides wide set of string manipulation features
  #  including dynamic string object that can be freely exchanged with
- #  standard char* (or wchar_t*) type, so there is no need to change 
- #  function calls nor the implementation when you change from 
- #  char* to VString (and from wchar_t* to WString). 
- # 
+ #  standard char* (or wchar_t*) type, so there is no need to change
+ #  function calls nor the implementation when you change from
+ #  char* to VString (and from wchar_t* to WString).
+ #
  ***************************************************************************/
 
 #include <stdio.h>
@@ -64,10 +64,10 @@ void test1()
   ASSERT( str_rfind( str, L"llo"      ) == 14 );
   ASSERT( str_rfind( str, L"llo", -12 ) ==  8 );
   ASSERT( str_rfind( str, L"llo",   7 ) ==  2 );
-  
+
   str.compact( 1 );
   str.fix();
-  
+
   str_add_ch( str, '!' );
   str_add_ch( str, '?' );
   str_add_ch( str, '*' );
@@ -94,7 +94,7 @@ void test2()
 
   wprintf( L"************************ test 2 result is: %ls\n", str.data() ); // this should print `hello world'
   ASSERT( str == L"hello world" );
-  
+
   WString res1;
   str_copy( res1, str, 3, 5 );
   ASSERT( res1 == L"lo wo" );
@@ -178,7 +178,7 @@ void test3()
   WString js1 = str_join( v1, L"---" );
   wprintf( L"joined: %ls\n", (const wchar_t*)js1 ); // join the same data back
   ASSERT( js1 == L"*.tralala---opala and another   one" );
-  
+
   WString m1 = v1[0];
   WString m2 = v1[1];
   wprintf( L"1[%ls] 2[%ls]\n", m1.data(), m2.data() );
@@ -334,9 +334,9 @@ void test5()
   tr[ "key5" ] = "data5";
 
   tr.print();
-  
-exit(1);  
-  
+
+exit(1);
+
   tr.reverse();
   tr.print();
   tr.reverse();
@@ -453,26 +453,26 @@ void test9()
 {
   WArray va;
   WTrie  tr;
-  
+
   printf( "---9---------------------------------------------------\n" );
-  
+
   va.push( "one" );
   va.push( "two" );
   va.push( "tri" );
   va.push( "pet" );
 
   va.print();
-  
+
   tr = va;
-  
+
   tr.print();
 
   printf( "\n            ----\n" );
 
   va.push( tr );
-  
+
   va.print();
-  
+
   WArray va2;
   va2.push( "1" );
   va2.push( "2" );
@@ -484,7 +484,7 @@ void test9()
   va2.push( va );
 
   va2.print();
-  
+
 }
 */
 
@@ -497,7 +497,7 @@ void test10()
 {
   WArray va;
   WTrie  tr;
-  
+
     wint_t x = 5;
     wchar_t name[] = L"GEEKS";
     wprintf( L"x = %d \n", x);
@@ -507,17 +507,17 @@ void test10()
   printf( "--- WIDE CHAR TESTS -----------------------------------\n" );
 
   fwide( stdout, 1 );
-  
+
   wchar_t t[256];
   wcscpy( t, L"Това е проста проба щеш не щеш" );
-  
+
   wprintf( L"%ls\n", L"Това е проста проба щеш не щеш" );
-  
+
   printf( "--- test 10 ends --------------------------------------\n" );
 
   WString ws( "щото това е конвертиране" );
   wprintf( L"%ls\n", ws.data() );
-  
+
   ws = "и това е пак също ковертиране";
   wprintf( L"%ls\n", ws.data() );
 
@@ -530,7 +530,7 @@ void test10()
   pp = str_dot_reduce( pp.data(), 11 );
   vv = 123;
   print_vpath( vv );
-  
+
   str_dot_reduce( ww, 16 );
 }
 
