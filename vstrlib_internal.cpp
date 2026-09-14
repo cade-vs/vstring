@@ -2,7 +2,7 @@
  #
  #  VSTRING Library
  #
- #  Copyright (c) 1996-2023 Vladi Belperchinov-Shabanski "Cade" 
+ #  Copyright (c) 1996-2023 Vladi Belperchinov-Shabanski "Cade"
  #  http://cade.noxrun.com/  <cade@noxrun.com> <cade@bis.bg> <cade@cpan.org>
  #
  #  Distributed under the GPL license, you should receive copy of GPLv2!
@@ -11,10 +11,10 @@
  #
  #  VSTRING library provides wide set of string manipulation features
  #  including dynamic string object that can be freely exchanged with
- #  standard char* (or wchar_t*) type, so there is no need to change 
- #  function calls nor the implementation when you change from 
- #  char* to VString (and from wchar_t* to WString). 
- # 
+ #  standard char* (or wchar_t*) type, so there is no need to change
+ #  function calls nor the implementation when you change from
+ #  char* to VString (and from wchar_t* to WString).
+ #
  ***************************************************************************/
 
 #include "vstrlib_internal.h"
@@ -45,7 +45,7 @@
   {
     if ( str_len( timstr ) < 24) return 0;
     VS_CHAR ts[32];
-    struct tm m; 
+    struct tm m;
     memset( &m, 0, sizeof(m) );
 
     VS_FN_STRCPY( ts, timstr );
@@ -68,11 +68,11 @@
 /*****************************************************************************
 **
 ** sfn_match function provides simplified pattern matching for the common
-** 
+**
 *****************************************************************************/
 
 int __sfn_eq( const VS_CHAR c1, const VS_CHAR c2, int flags )
-{
+{ // OK
   int cc1 = flags & SFN_CASEFOLD ? VS_FN_TOUPPER( c1 ) : c1;
   int cc2 = flags & SFN_CASEFOLD ? VS_FN_TOUPPER( c2 ) : c2;
   return cc1 == cc2;
@@ -95,7 +95,7 @@ int __sfn_match_charset( const VS_CHAR* charset, const VS_CHAR c, int flags, int
       if( ! *++cs ) return 4;
       str_add_ch( charset_str, *cs );
       }
-    if( cs[1] == VS_CHAR_L('-') )
+    else if( cs[1] && cs[1] == VS_CHAR_L('-') )
       {
       if( ! cs[2] ) return 3;
       str_add_ch_range( charset_str, cs[0], cs[2] );
@@ -104,9 +104,10 @@ int __sfn_match_charset( const VS_CHAR* charset, const VS_CHAR c, int flags, int
     else
       {
       str_add_ch( charset_str, cs[0] );
-      }  
-    cs++;  
+      }
+    cs++;
     }
+  if( ! *cs ) return 9; // end of charset def reached and no ']' matched
   if( advance ) *advance = cs - charset;
   if( str_len( charset_str ) == 0 ) return 2;
 
@@ -117,7 +118,7 @@ int __sfn_match_charset( const VS_CHAR* charset, const VS_CHAR c, int flags, int
     cc = VS_FN_TOUPPER( cc );
     }
   if( str_find( charset_str, cc ) >= 0 ) return r ? 1 : 0;
-  return 1;
+  return  r ? 0 : 1;
 }
 
 int sfn_match( const VS_CHAR* pattern, const VS_CHAR* string, int flags )
@@ -127,13 +128,13 @@ int sfn_match( const VS_CHAR* pattern, const VS_CHAR* string, int flags )
 
   if( ! *ps ) return 1; // empty pattern, will not match
   if( ! *ss ) return 1; // empty string,  will not match
-  
+
   while(4)
     {
     if( ! ( flags & SFN_NOESCAPE ) && *ps == VS_CHAR_L('\\') )
       {
       if( ! *++ps ) return 6;
-      if( *ps != *ss ) return 7;
+      if( ! __sfn_eq( *ps, *ss, flags ) ) return 7;
       }
     else if( *ps == VS_CHAR_L('?') )
       {
@@ -143,13 +144,22 @@ int sfn_match( const VS_CHAR* pattern, const VS_CHAR* string, int flags )
       {
       while( *ps == VS_CHAR_L('*') ) ps++;
       if( ! *ps ) return 0; // pattern ends with *, will match anything
+      // there is a character after *, try to find it in ss, if end reached return error
+      while( *ss )
+        {
+        if( __sfn_eq( *ps, *ss, flags ) ) return 8;
+        ss++;
+        }
+      if( ! *ss ) return 7;
 
+/*
       while( *ss )
         {
         if( sfn_match( ps, ss++, flags ) ) continue;
         return 0;
         }
       return 11;
+*/
       }
     else if( *ps == VS_CHAR_L('[') )
       {
@@ -159,17 +169,22 @@ int sfn_match( const VS_CHAR* pattern, const VS_CHAR* string, int flags )
       ps += a; // advance data position
       if( r != 0 ) return 4;
       }
+    else if( *ps == VS_CHAR_L(']') )
+      {
+      // found ']' means no opening '[' found, so it is error, return fail
+      return 44;
+      }
     else
       {
       if( ! __sfn_eq( *ps, *ss, flags ) ) return 5;
-      }  
-    
+      }
+
     if( ! *ps && ! *ss ) return 0; // end of pattern and string reached, matched so far, return ok
-    
+
     ps++;
     ss++;
     }
-  
+
   return 0;
 }
 
@@ -280,8 +295,8 @@ int mem_quick_search_nc( const VS_CHAR *p, int ps, const VS_CHAR *d, int ds )
 **
 ** Sum search
 **
-** It is variation of Karp-Rabin idea of searching `similar' pattern and 
-** if found check the actual one. The hash function here is simple sum of 
+** It is variation of Karp-Rabin idea of searching `similar' pattern and
+** if found check the actual one. The hash function here is simple sum of
 ** bytes in the range of pattern size.
 **
 ** Not much useful since Quick search performs better in almost all cases.
@@ -746,13 +761,13 @@ int mem_string_search( const VS_CHAR *p, const VS_CHAR* d, const VS_CHAR* opt )
 
   VS_REGEXP_CLASS::VS_REGEXP_CLASS( const VS_CHAR* rs, const VS_CHAR* opt )
   {
-    re = NULL;  
+    re = NULL;
     md = NULL;
-    rc = 0;     
-    lp = NULL;  
+    rc = 0;
+    lp = NULL;
 
-    pt = NULL;  
-    pl = 0;     
+    pt = NULL;
+    pl = 0;
 
     opt_mode = MODE_REGEXP;
     comp( rs, opt );
@@ -901,9 +916,9 @@ int mem_string_search( const VS_CHAR *p, const VS_CHAR* d, const VS_CHAR* opt )
 
       size_t s = ovector[n*2];
       size_t e = ovector[n*2+1];
-      
+
       if ( s == PCRE2_UNSET || e == PCRE2_UNSET ) return substr;
-      
+
       size_t l = e - s;
       substr.setn( lp + s, l );
       }
