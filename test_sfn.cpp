@@ -36,9 +36,10 @@
 #define MATCH    1
 #define NOMATCH  0
 
-int    tests_run     = 0;
-int    tests_failed  = 0;
-int    quiet         = 0;
+int     tests_run     = 0;
+int     tests_failed  = 0;
+int     quiet         = 0;
+VString failed_lines;   /* source lines of the failed cases, for the debugger */
 
 const char* flags_str( int flags )
 {
@@ -50,7 +51,7 @@ const char* flags_str( int flags )
 
 /* copies pattern and string into exact-size heap buffers, so that a build  */
 /* with -fsanitize=address reports any access outside of them               */
-void chk( const char* pattern, const char* str, int flags, int expect, const char* note = NULL )
+void chk( int line, const char* pattern, const char* str, int flags, int expect, const char* note = NULL )
 {
   char* p = (char*)malloc( strlen( pattern ) + 1 );
   char* s = (char*)malloc( strlen( str     ) + 1 );
@@ -65,19 +66,19 @@ void chk( const char* pattern, const char* str, int flags, int expect, const cha
 
   tests_run++;
   int ok = ( got == expect );
-  if( ! ok ) tests_failed++;
+  if( ! ok ) { tests_failed++; failed_lines = failed_lines + " " + VString( line ); }
 
   if( ok && quiet ) return;
 
-  printf( "  %-4s  %-18s %-18s %-10s  got %-8s want %-8s %s\n",
-          ok ? "ok" : "FAIL",
+  printf( "  %4d  %-4s  %-18s %-18s %-10s  got %-8s want %-8s %s\n",
+          line, ok ? "ok" : "FAIL",
           pattern, str, flags_str( flags ),
           got == MATCH ? "MATCH" : "no",
           expect == MATCH ? "MATCH" : "no",
           note ? note : "" );
 }
 
-void wchk( const wchar_t* pattern, const wchar_t* str, int flags, int expect )
+void wchk( int line, const wchar_t* pattern, const wchar_t* str, int flags, int expect )
 {
   int n1 = wcslen( pattern );
   int n2 = wcslen( str );
@@ -94,19 +95,19 @@ void wchk( const wchar_t* pattern, const wchar_t* str, int flags, int expect )
 
   tests_run++;
   int ok = ( got == expect );
-  if( ! ok ) tests_failed++;
+  if( ! ok ) { tests_failed++; failed_lines = failed_lines + " " + VString( line ); }
 
   if( ok && quiet ) return;
 
-  printf( "  %-4s  %-18ls %-18ls %-10s  got %-8s want %-8s\n",
-          ok ? "ok" : "FAIL",
+  printf( "  %4d  %-4s  %-18ls %-18ls %-10s  got %-8s want %-8s\n",
+          line, ok ? "ok" : "FAIL",
           pattern, str, flags_str( flags ),
           got == MATCH ? "MATCH" : "no",
           expect == MATCH ? "MATCH" : "no" );
 }
 
 /* for malformed patterns: run it, print what happens, assert nothing */
-void inf( const char* pattern, const char* str, int flags, const char* note = NULL )
+void inf( int line, const char* pattern, const char* str, int flags, const char* note = NULL )
 {
   char* p = (char*)malloc( strlen( pattern ) + 1 );
   char* s = (char*)malloc( strlen( str     ) + 1 );
@@ -118,8 +119,8 @@ void inf( const char* pattern, const char* str, int flags, const char* note = NU
   free( p );
   free( s );
 
-  printf( "  %-4s  %-18s %-18s %-10s  got %-8s %-9s %s\n",
-          "--", pattern, str, flags_str( flags ),
+  printf( "  %4d  %-4s  %-18s %-18s %-10s  got %-8s %-9s %s\n",
+          line, "--", pattern, str, flags_str( flags ),
           r == 0 ? "MATCH" : "no", "unspecified", note ? note : "" );
 }
 
@@ -131,188 +132,188 @@ void gr( const char* name )
 void named_cases()
 {
   gr( "literals" );
-  chk( "abc",       "abc",        0, MATCH   );
-  chk( "abc",       "abd",        0, NOMATCH );
-  chk( "abc",       "ab",         0, NOMATCH );
-  chk( "ab",        "abc",        0, NOMATCH );
-  chk( "a",         "a",          0, MATCH   );
+  chk( __LINE__, "abc",       "abc",        0, MATCH   );
+  chk( __LINE__, "abc",       "abd",        0, NOMATCH );
+  chk( __LINE__, "abc",       "ab",         0, NOMATCH );
+  chk( __LINE__, "ab",        "abc",        0, NOMATCH );
+  chk( __LINE__, "a",         "a",          0, MATCH   );
 
   gr( "? -- any single character" );
-  chk( "?",         "a",          0, MATCH   );
-  chk( "a?c",       "abc",        0, MATCH   );
-  chk( "a?c",       "ac",         0, NOMATCH );
-  chk( "???",       "abc",        0, MATCH   );
-  chk( "???",       "ab",         0, NOMATCH );
-  chk( "???",       "abcd",       0, NOMATCH );
-  chk( "??*",       "vf",         0, MATCH   );
-  chk( "??*",       "v",          0, NOMATCH );
+  chk( __LINE__, "?",         "a",          0, MATCH   );
+  chk( __LINE__, "a?c",       "abc",        0, MATCH   );
+  chk( __LINE__, "a?c",       "ac",         0, NOMATCH );
+  chk( __LINE__, "???",       "abc",        0, MATCH   );
+  chk( __LINE__, "???",       "ab",         0, NOMATCH );
+  chk( __LINE__, "???",       "abcd",       0, NOMATCH );
+  chk( __LINE__, "??*",       "vf",         0, MATCH   );
+  chk( __LINE__, "??*",       "v",          0, NOMATCH );
 
   gr( "* -- any number of characters" );
-  chk( "*",         "abc",        0, MATCH   );
-  chk( "a*",        "abc",        0, MATCH   );
-  chk( "a*",        "a",          0, MATCH   );
-  chk( "*c",        "abc",        0, MATCH   );
-  chk( "a*c",       "abc",        0, MATCH   );
-  chk( "a*c",       "ac",         0, MATCH,  "* matches empty" );
-  chk( "a*c",       "abbbc",      0, MATCH   );
-  chk( "a*c",       "abcd",       0, NOMATCH );
-  chk( "*a*",       "bab",        0, MATCH   );
-  chk( "**",        "ab",         0, MATCH   );
-  chk( "v*xt**",    "vfudirtest.txt", 0, MATCH   );
-  chk( "v*xt**?",   "vfudirtest.txt", 0, NOMATCH );
-  chk( "*vfu*?",    "vfuz",       0, MATCH   );
-  chk( "vf*i*r",    "vfudir",     0, MATCH   );
-  chk( "vf*x*r",    "vfudir",     0, NOMATCH );
+  chk( __LINE__, "*",         "abc",        0, MATCH   );
+  chk( __LINE__, "a*",        "abc",        0, MATCH   );
+  chk( __LINE__, "a*",        "a",          0, MATCH   );
+  chk( __LINE__, "*c",        "abc",        0, MATCH   );
+  chk( __LINE__, "a*c",       "abc",        0, MATCH   );
+  chk( __LINE__, "a*c",       "ac",         0, MATCH,  "* matches empty" );
+  chk( __LINE__, "a*c",       "abbbc",      0, MATCH   );
+  chk( __LINE__, "a*c",       "abcd",       0, NOMATCH );
+  chk( __LINE__, "*a*",       "bab",        0, MATCH   );
+  chk( __LINE__, "**",        "ab",         0, MATCH   );
+  chk( __LINE__, "v*xt**",    "vfudirtest.txt", 0, MATCH   );
+  chk( __LINE__, "v*xt**?",   "vfudirtest.txt", 0, NOMATCH );
+  chk( __LINE__, "*vfu*?",    "vfuz",       0, MATCH   );
+  chk( __LINE__, "vf*i*r",    "vfudir",     0, MATCH   );
+  chk( __LINE__, "vf*x*r",    "vfudir",     0, NOMATCH );
 
   gr( "[...] -- character sets" );
-  chk( "[abc]",     "b",          0, MATCH   );
-  chk( "[abc]",     "d",          0, NOMATCH );
-  chk( "[abc]",     "bb",         0, NOMATCH );
-  chk( "x[abc]y",   "xby",        0, MATCH   );
-  chk( "vf[you]*",  "vfudir",     0, MATCH   );
-  chk( "[a]",       "a",          0, MATCH   );
+  chk( __LINE__, "[abc]",     "b",          0, MATCH   );
+  chk( __LINE__, "[abc]",     "d",          0, NOMATCH );
+  chk( __LINE__, "[abc]",     "bb",         0, NOMATCH );
+  chk( __LINE__, "x[abc]y",   "xby",        0, MATCH   );
+  chk( __LINE__, "vf[you]*",  "vfudir",     0, MATCH   );
+  chk( __LINE__, "[a]",       "a",          0, MATCH   );
 
   gr( "[...] -- ranges" );
-  chk( "[a-f]",     "c",          0, MATCH   );
-  chk( "[a-f]",     "a",          0, MATCH   );
-  chk( "[a-f]",     "f",          0, MATCH   );
-  chk( "[a-f]",     "g",          0, NOMATCH );
-  chk( "[0-9]",     "5",          0, MATCH   );
-  chk( "[a-cx-z]",  "y",          0, MATCH   );
-  chk( "[a-cx-z]",  "m",          0, NOMATCH );
-  chk( "v*[c-e]*",  "vfudirtest.txt", 0, MATCH );
+  chk( __LINE__, "[a-f]",     "c",          0, MATCH   );
+  chk( __LINE__, "[a-f]",     "a",          0, MATCH   );
+  chk( __LINE__, "[a-f]",     "f",          0, MATCH   );
+  chk( __LINE__, "[a-f]",     "g",          0, NOMATCH );
+  chk( __LINE__, "[0-9]",     "5",          0, MATCH   );
+  chk( __LINE__, "[a-cx-z]",  "y",          0, MATCH   );
+  chk( __LINE__, "[a-cx-z]",  "m",          0, NOMATCH );
+  chk( __LINE__, "v*[c-e]*",  "vfudirtest.txt", 0, MATCH );
 
   gr( "[!...] and [^...] -- negated sets" );
-  chk( "[!abc]",    "d",          0, MATCH   );
-  chk( "[!abc]",    "a",          0, NOMATCH );
-  chk( "[^abc]",    "d",          0, MATCH   );
-  chk( "[^abc]",    "a",          0, NOMATCH );
-  chk( "vf[^you]*", "vfudir",     0, NOMATCH );
-  chk( "[!a-f]",    "z",          0, MATCH   );
-  chk( "[!a-f]",    "c",          0, NOMATCH );
+  chk( __LINE__, "[!abc]",    "d",          0, MATCH   );
+  chk( __LINE__, "[!abc]",    "a",          0, NOMATCH );
+  chk( __LINE__, "[^abc]",    "d",          0, MATCH   );
+  chk( __LINE__, "[^abc]",    "a",          0, NOMATCH );
+  chk( __LINE__, "vf[^you]*", "vfudir",     0, NOMATCH );
+  chk( __LINE__, "[!a-f]",    "z",          0, MATCH   );
+  chk( __LINE__, "[!a-f]",    "c",          0, NOMATCH );
 
   gr( "\\ -- escaping" );
-  chk( "\\*",       "*",          0, MATCH   );
-  chk( "\\*",       "a",          0, NOMATCH );
-  chk( "\\?",       "?",          0, MATCH   );
-  chk( "a\\?b",     "a?b",        0, MATCH   );
-  chk( "a\\?b",     "axb",        0, NOMATCH );
-  chk( "\\[",       "[",          0, MATCH   );
-  chk( "\\\\",      "\\",         0, MATCH   );
-  chk( "vf\\*d[g-k]?z", "vf*dirz", 0, MATCH  );
-  chk( "vf*\\?*r",  "vfutest?xdir", 0, MATCH );
+  chk( __LINE__, "\\*",       "*",          0, MATCH   );
+  chk( __LINE__, "\\*",       "a",          0, NOMATCH );
+  chk( __LINE__, "\\?",       "?",          0, MATCH   );
+  chk( __LINE__, "a\\?b",     "a?b",        0, MATCH   );
+  chk( __LINE__, "a\\?b",     "axb",        0, NOMATCH );
+  chk( __LINE__, "\\[",       "[",          0, MATCH   );
+  chk( __LINE__, "\\\\",      "\\",         0, MATCH   );
+  chk( __LINE__, "vf\\*d[g-k]?z", "vf*dirz", 0, MATCH  );
+  chk( __LINE__, "vf*\\?*r",  "vfutest?xdir", 0, MATCH );
 
   gr( "SFN_NOESCAPE -- \\ is an ordinary character" );
-  chk( "vf\\u*",    "vfudir",     SFN_NOESCAPE, NOMATCH );
-  chk( "vf\\u*",    "vf\\udir",   SFN_NOESCAPE, MATCH   );
-  chk( "a\\b",      "a\\b",       SFN_NOESCAPE, MATCH   );
-  chk( "a\\b",      "ab",         SFN_NOESCAPE, NOMATCH );
+  chk( __LINE__, "vf\\u*",    "vfudir",     SFN_NOESCAPE, NOMATCH );
+  chk( __LINE__, "vf\\u*",    "vf\\udir",   SFN_NOESCAPE, MATCH   );
+  chk( __LINE__, "a\\b",      "a\\b",       SFN_NOESCAPE, MATCH   );
+  chk( __LINE__, "a\\b",      "ab",         SFN_NOESCAPE, NOMATCH );
 
   gr( "SFN_CASEFOLD -- case insensitive" );
-  chk( "abc",       "ABC",        SFN_CASEFOLD, MATCH   );
-  chk( "ABC",       "abc",        SFN_CASEFOLD, MATCH   );
-  chk( "abc",       "ABC",        0,            NOMATCH );
-  chk( "a?c",       "AXC",        SFN_CASEFOLD, MATCH   );
-  chk( "a*c",       "ABC",        SFN_CASEFOLD, MATCH   );
-  chk( "[a-f]",     "D",          SFN_CASEFOLD, MATCH   );
-  chk( "[abc]",     "B",          SFN_CASEFOLD, MATCH   );
-  chk( "[!abc]",    "B",          SFN_CASEFOLD, NOMATCH );
-  chk( "vf\\U*",    "Vf\\udir",   SFN_NOESCAPE,                NOMATCH );
-  chk( "vf\\U*",    "Vf\\udir",   SFN_NOESCAPE | SFN_CASEFOLD, MATCH   );
-  chk( "vF\\*d[g-k]?z", "Vf*dIrz", SFN_CASEFOLD, MATCH );
-  chk( "\\a",       "A",          SFN_CASEFOLD, MATCH,  "escaped char must fold too" );
-  chk( "x\\ay",     "XAY",        SFN_CASEFOLD, MATCH,  "escaped char must fold too" );
-  chk( "xay",       "XAY",        SFN_CASEFOLD, MATCH,  "same, unescaped" );
+  chk( __LINE__, "abc",       "ABC",        SFN_CASEFOLD, MATCH   );
+  chk( __LINE__, "ABC",       "abc",        SFN_CASEFOLD, MATCH   );
+  chk( __LINE__, "abc",       "ABC",        0,            NOMATCH );
+  chk( __LINE__, "a?c",       "AXC",        SFN_CASEFOLD, MATCH   );
+  chk( __LINE__, "a*c",       "ABC",        SFN_CASEFOLD, MATCH   );
+  chk( __LINE__, "[a-f]",     "D",          SFN_CASEFOLD, MATCH   );
+  chk( __LINE__, "[abc]",     "B",          SFN_CASEFOLD, MATCH   );
+  chk( __LINE__, "[!abc]",    "B",          SFN_CASEFOLD, NOMATCH );
+  chk( __LINE__, "vf\\U*",    "Vf\\udir",   SFN_NOESCAPE,                NOMATCH );
+  chk( __LINE__, "vf\\U*",    "Vf\\udir",   SFN_NOESCAPE | SFN_CASEFOLD, MATCH   );
+  chk( __LINE__, "vF\\*d[g-k]?z", "Vf*dIrz", SFN_CASEFOLD, MATCH );
+  chk( __LINE__, "\\a",       "A",          SFN_CASEFOLD, MATCH,  "escaped char must fold too" );
+  chk( __LINE__, "x\\ay",     "XAY",        SFN_CASEFOLD, MATCH,  "escaped char must fold too" );
+  chk( __LINE__, "xay",       "XAY",        SFN_CASEFOLD, MATCH,  "same, unescaped" );
 
   gr( "empty pattern / empty string -- documented: neither matches" );
-  chk( "",          "",           0, NOMATCH );
-  chk( "",          "a",          0, NOMATCH );
-  chk( "a",         "",           0, NOMATCH );
-  chk( "*",         "",           0, NOMATCH, "differs from fnmatch(3) by design" );
+  chk( __LINE__, "",          "",           0, NOMATCH );
+  chk( __LINE__, "",          "a",          0, NOMATCH );
+  chk( __LINE__, "a",         "",           0, NOMATCH );
+  chk( __LINE__, "*",         "",           0, NOMATCH, "differs from fnmatch(3) by design" );
 
   gr( "malformed charsets -- must not match" );
-  chk( "[a-]",      "a",          0, NOMATCH, "range with no end, use [a\\-]" );
-  chk( "[a-]",      "-",          0, NOMATCH, "range with no end, use [a\\-]" );
-  chk( "[a-]",      "b",          0, NOMATCH, "range with no end, use [a\\-]" );
-  chk( "[]",        "]",          0, NOMATCH, "empty set" );
-  chk( "[]]",       "]",          0, NOMATCH, "bare ']' in a set, use [\\]]" );
-  chk( "[]a]",      "a",          0, NOMATCH, "bare ']' in a set, use [\\]]" );
+  chk( __LINE__, "[a-]",      "a",          0, NOMATCH, "range with no end, use [a\\-]" );
+  chk( __LINE__, "[a-]",      "-",          0, NOMATCH, "range with no end, use [a\\-]" );
+  chk( __LINE__, "[a-]",      "b",          0, NOMATCH, "range with no end, use [a\\-]" );
+  chk( __LINE__, "[]",        "]",          0, NOMATCH, "empty set" );
+  chk( __LINE__, "[]]",       "]",          0, NOMATCH, "bare ']' in a set, use [\\]]" );
+  chk( __LINE__, "[]a]",      "a",          0, NOMATCH, "bare ']' in a set, use [\\]]" );
 
   gr( "escaped '-' inside a charset -- the proper way to mean a literal '-'" );
-  chk( "[a\\-]",    "a",          0, MATCH   );
-  chk( "[a\\-]",    "-",          0, MATCH   );
-  chk( "[a\\-]",    "b",          0, NOMATCH );
-  chk( "[\\-a]",    "-",          0, MATCH   );
-  chk( "[\\-a]",    "a",          0, MATCH   );
-  chk( "[a\\-c]",   "-",          0, MATCH   );
-  chk( "[a\\-c]",   "a",          0, MATCH   );
-  chk( "[a\\-c]",   "c",          0, MATCH   );
-  chk( "[a\\-c]",   "b",          0, NOMATCH, "not a range" );
-  chk( "[!a\\-]",   "-",          0, NOMATCH );
-  chk( "[!a\\-]",   "z",          0, MATCH   );
+  chk( __LINE__, "[a\\-]",    "a",          0, MATCH   );
+  chk( __LINE__, "[a\\-]",    "-",          0, MATCH   );
+  chk( __LINE__, "[a\\-]",    "b",          0, NOMATCH );
+  chk( __LINE__, "[\\-a]",    "-",          0, MATCH   );
+  chk( __LINE__, "[\\-a]",    "a",          0, MATCH   );
+  chk( __LINE__, "[a\\-c]",   "-",          0, MATCH   );
+  chk( __LINE__, "[a\\-c]",   "a",          0, MATCH   );
+  chk( __LINE__, "[a\\-c]",   "c",          0, MATCH   );
+  chk( __LINE__, "[a\\-c]",   "b",          0, NOMATCH, "not a range" );
+  chk( __LINE__, "[!a\\-]",   "-",          0, NOMATCH );
+  chk( __LINE__, "[!a\\-]",   "z",          0, MATCH   );
 
   gr( "escaped ']' inside a charset -- the proper way to mean a literal ']'" );
-  chk( "[\\]]",     "]",          0, MATCH   );
-  chk( "[\\]]",     "a",          0, NOMATCH );
-  chk( "[a\\]]",    "]",          0, MATCH   );
-  chk( "[a\\]]",    "a",          0, MATCH   );
-  chk( "[a\\]]",    "b",          0, NOMATCH );
-  chk( "[!\\]]",    "]",          0, NOMATCH );
-  chk( "[!\\]]",    "a",          0, MATCH   );
+  chk( __LINE__, "[\\]]",     "]",          0, MATCH   );
+  chk( __LINE__, "[\\]]",     "a",          0, NOMATCH );
+  chk( __LINE__, "[a\\]]",    "]",          0, MATCH   );
+  chk( __LINE__, "[a\\]]",    "a",          0, MATCH   );
+  chk( __LINE__, "[a\\]]",    "b",          0, NOMATCH );
+  chk( __LINE__, "[!\\]]",    "]",          0, NOMATCH );
+  chk( __LINE__, "[!\\]]",    "a",          0, MATCH   );
 
   gr( "']' without an opening '[' -- hard error" );
-  chk( "]",         "]",          0, NOMATCH, "bare ']' is an error" );
-  chk( "a]b",       "a]b",        0, NOMATCH, "bare ']' is an error" );
-  chk( "]*",        "]ab",        0, NOMATCH, "bare ']' is an error" );
-  chk( "a*]",       "abc]",       0, NOMATCH, "bare ']' is an error" );
-  chk( "\\]",       "]",          0, MATCH,   "escape it to mean a literal ']'" );
-  chk( "a\\]b",     "a]b",        0, MATCH,   "escape it to mean a literal ']'" );
-  chk( "[a\\]]",    "]",          0, MATCH,   "inside a set it still needs escaping" );
+  chk( __LINE__, "]",         "]",          0, NOMATCH, "bare ']' is an error" );
+  chk( __LINE__, "a]b",       "a]b",        0, NOMATCH, "bare ']' is an error" );
+  chk( __LINE__, "]*",        "]ab",        0, NOMATCH, "bare ']' is an error" );
+  chk( __LINE__, "a*]",       "abc]",       0, NOMATCH, "bare ']' is an error" );
+  chk( __LINE__, "\\]",       "]",          0, MATCH,   "escape it to mean a literal ']'" );
+  chk( __LINE__, "a\\]b",     "a]b",        0, MATCH,   "escape it to mean a literal ']'" );
+  chk( __LINE__, "[a\\]]",    "]",          0, MATCH,   "inside a set it still needs escaping" );
 
   gr( "bracket edge cases" );
-  chk( "[-a]",      "-",          0, MATCH   );
-  chk( "[-a]",      "a",          0, MATCH   );
-  chk( "[abc",      "[abc",       0, NOMATCH, "unterminated '[' is malformed" );
-  chk( "a[b",       "a[b",        0, NOMATCH, "unterminated '[' is malformed" );
-  chk( "a[b",       "ab",         0, NOMATCH );
-  chk( "vf*[u*xz",  "vfu tar tar.xz", 0, NOMATCH, "unterminated '['" );
-  chk( "vf*[u*xz",  "vfu[u tar.xz",   0, NOMATCH, "unterminated '['" );
-  chk( "\\[abc",    "[abc",       0, MATCH,   "escape it to mean a literal '['" );
-  chk( "a\\[b",     "a[b",        0, MATCH,   "escape it to mean a literal '['" );
-  chk( "vf*[u]*xz", "vfu tar tar.xz", 0, MATCH   );
-  chk( "vf*u*xz",   "vfu tar tar.xz", 0, MATCH   );
-  chk( "a?[a]-",    "a[",         0, NOMATCH, "string ends before the set" );
-  chk( "[a]",       "",           0, NOMATCH );
+  chk( __LINE__, "[-a]",      "-",          0, MATCH   );
+  chk( __LINE__, "[-a]",      "a",          0, MATCH   );
+  chk( __LINE__, "[abc",      "[abc",       0, NOMATCH, "unterminated '[' is malformed" );
+  chk( __LINE__, "a[b",       "a[b",        0, NOMATCH, "unterminated '[' is malformed" );
+  chk( __LINE__, "a[b",       "ab",         0, NOMATCH );
+  chk( __LINE__, "vf*[u*xz",  "vfu tar tar.xz", 0, NOMATCH, "unterminated '['" );
+  chk( __LINE__, "vf*[u*xz",  "vfu[u tar.xz",   0, NOMATCH, "unterminated '['" );
+  chk( __LINE__, "\\[abc",    "[abc",       0, MATCH,   "escape it to mean a literal '['" );
+  chk( __LINE__, "a\\[b",     "a[b",        0, MATCH,   "escape it to mean a literal '['" );
+  chk( __LINE__, "vf*[u]*xz", "vfu tar tar.xz", 0, MATCH   );
+  chk( __LINE__, "vf*u*xz",   "vfu tar tar.xz", 0, MATCH   );
+  chk( __LINE__, "a?[a]-",    "a[",         0, NOMATCH, "string ends before the set" );
+  chk( __LINE__, "[a]",       "",           0, NOMATCH );
 
   gr( "typical file masks" );
-  chk( "*.tar.gz",  "vfu-5.02.tar.gz",  0, MATCH   );
-  chk( "*.tar*z",   "vfu-5.02.tar.xz",  0, MATCH   );
-  chk( "*.tar*z",   "vfu-5.02_tar.xz",  0, NOMATCH );
-  chk( "*.tar*z",   "vfu-5.tar.tar.xz", 0, MATCH   );
-  chk( "*.tar*m*z", "vfu-5.tar.tar.xz", 0, NOMATCH );
-  chk( "*tar*",     "vfu tar tar.xz",   0, MATCH   );
-  chk( "*.deb",     "vfu.debug",        0, NOMATCH );
-  chk( "*ing*",     "vstring.txt",      0, MATCH   );
-  chk( "*.[ch]",    "vfu.c",            0, MATCH   );
-  chk( "*.[ch]",    "vfu.o",            0, NOMATCH );
-  chk( "*.cpp",     "vfu.cpp",          0, MATCH   );
+  chk( __LINE__, "*.tar.gz",  "vfu-5.02.tar.gz",  0, MATCH   );
+  chk( __LINE__, "*.tar*z",   "vfu-5.02.tar.xz",  0, MATCH   );
+  chk( __LINE__, "*.tar*z",   "vfu-5.02_tar.xz",  0, NOMATCH );
+  chk( __LINE__, "*.tar*z",   "vfu-5.tar.tar.xz", 0, MATCH   );
+  chk( __LINE__, "*.tar*m*z", "vfu-5.tar.tar.xz", 0, NOMATCH );
+  chk( __LINE__, "*tar*",     "vfu tar tar.xz",   0, MATCH   );
+  chk( __LINE__, "*.deb",     "vfu.debug",        0, NOMATCH );
+  chk( __LINE__, "*ing*",     "vstring.txt",      0, MATCH   );
+  chk( __LINE__, "*.[ch]",    "vfu.c",            0, MATCH   );
+  chk( __LINE__, "*.[ch]",    "vfu.o",            0, NOMATCH );
+  chk( __LINE__, "*.cpp",     "vfu.cpp",          0, MATCH   );
 
   gr( "wide (wchar_t) build" );
-  wchk( L"abc",           L"abc",           0, MATCH   );
-  wchk( L"a?c",           L"abc",           0, MATCH   );
-  wchk( L"a*c",           L"abbbc",         0, MATCH   );
-  wchk( L"[a-f]",         L"c",             0, MATCH   );
-  wchk( L"[!a-f]",        L"z",             0, MATCH   );
-  wchk( L"vf\\*d[g-k]?z", L"vf*dirz",       0, MATCH   );
-  wchk( L"vf*\\?*r",      L"vfutest?xdir",  0, MATCH   );
-  wchk( L"vF\\*d[g-k]?z", L"Vf*dIrz",       SFN_CASEFOLD, MATCH );
-  wchk( L"x\\ay",         L"XAY",           SFN_CASEFOLD, MATCH );
-  wchk( L"[a\\-]",        L"-",             0, MATCH   );
-  wchk( L"a[b",           L"a[b",           0, NOMATCH );
-  wchk( L"a\\[b",         L"a[b",           0, MATCH   );
-  wchk( L"\xe4\xf6\xfc",  L"\xe4\xf6\xfc",  0, MATCH   );
-  wchk( L"\xe4?\xfc",     L"\xe4\xf6\xfc",  0, MATCH   );
-  wchk( L"\xe4*",         L"\xe4\xf6\xfc",  0, MATCH   );
+  wchk( __LINE__, L"abc",           L"abc",           0, MATCH   );
+  wchk( __LINE__, L"a?c",           L"abc",           0, MATCH   );
+  wchk( __LINE__, L"a*c",           L"abbbc",         0, MATCH   );
+  wchk( __LINE__, L"[a-f]",         L"c",             0, MATCH   );
+  wchk( __LINE__, L"[!a-f]",        L"z",             0, MATCH   );
+  wchk( __LINE__, L"vf\\*d[g-k]?z", L"vf*dirz",       0, MATCH   );
+  wchk( __LINE__, L"vf*\\?*r",      L"vfutest?xdir",  0, MATCH   );
+  wchk( __LINE__, L"vF\\*d[g-k]?z", L"Vf*dIrz",       SFN_CASEFOLD, MATCH );
+  wchk( __LINE__, L"x\\ay",         L"XAY",           SFN_CASEFOLD, MATCH );
+  wchk( __LINE__, L"[a\\-]",        L"-",             0, MATCH   );
+  wchk( __LINE__, L"a[b",           L"a[b",           0, NOMATCH );
+  wchk( __LINE__, L"a\\[b",         L"a[b",           0, MATCH   );
+  wchk( __LINE__, L"\xe4\xf6\xfc",  L"\xe4\xf6\xfc",  0, MATCH   );
+  wchk( __LINE__, L"\xe4?\xfc",     L"\xe4\xf6\xfc",  0, MATCH   );
+  wchk( __LINE__, L"\xe4*",         L"\xe4\xf6\xfc",  0, MATCH   );
 }
 
 /****************************************************************************
@@ -513,6 +514,11 @@ int main( int argc, char** argv )
 
   printf( "\n=========================================================================\n" );
   printf( " named cases : %d run, %d failed\n", named_run, named_failed );
+  if( named_failed )
+    {
+    printf( " failed lines:%s\n", failed_lines.data() );
+    printf( " debug with  : gdb --args ./test_sfn      then  break test_sfn.cpp:LINE\n" );
+    }
   printf( " sweep       : %d disagreements\n", tests_failed - named_failed );
   printf( "=========================================================================\n" );
 
