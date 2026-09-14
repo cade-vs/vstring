@@ -147,7 +147,8 @@ int sfn_match( const VS_CHAR* pattern, const VS_CHAR* string, int flags )
       // there is a character after *, try to find it in ss, if end reached return error
       while( *ss )
         {
-        if( __sfn_eq( *ps, *ss, flags ) ) break;
+//        if( __sfn_eq( *ps, *ss, flags ) ) break;
+        if( ! sfn_match( ps, ss, flags ) ) break;
         ss++;
         }
       if( ! *ss ) return 7;
