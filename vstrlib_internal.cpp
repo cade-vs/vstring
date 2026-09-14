@@ -69,6 +69,8 @@
 **
 ** sfn_match function provides simplified pattern matching for the common
 **
+******************************************************************************
+** OK
 *****************************************************************************/
 
 int __sfn_eq( const VS_CHAR c1, const VS_CHAR c2, int flags )
@@ -79,7 +81,7 @@ int __sfn_eq( const VS_CHAR c1, const VS_CHAR c2, int flags )
 }
 
 int __sfn_match_charset( const VS_CHAR* charset, const VS_CHAR c, int flags, int *advance = NULL )
-{
+{ // OK
   VS_STRING_CLASS charset_str;
   const VS_CHAR* cs = charset;
   int r = 0;
@@ -122,7 +124,7 @@ int __sfn_match_charset( const VS_CHAR* charset, const VS_CHAR c, int flags, int
 }
 
 int sfn_match( const VS_CHAR* pattern, const VS_CHAR* string, int flags )
-{
+{ // OK
   const VS_CHAR* ps = pattern;
   const VS_CHAR* ss = string;
 
@@ -148,7 +150,17 @@ int sfn_match( const VS_CHAR* pattern, const VS_CHAR* string, int flags )
       while( *ss )
         {
 //        if( __sfn_eq( *ps, *ss, flags ) ) break;
-        if( ! sfn_match( ps, ss, flags ) ) break;
+        if( *ps == VS_CHAR_L('[') )
+          {
+          int a = 0;
+          if( ! __sfn_match_charset( ps, *ss, flags, &a ) )
+            {
+            ps += a;
+            break;
+            }
+          }
+        else
+          if( ! sfn_match( ps, ss, flags ) ) break;
         ss++;
         }
       if( ! *ss ) return 7;
