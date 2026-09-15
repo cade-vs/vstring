@@ -146,36 +146,16 @@ int sfn_match( const VS_CHAR* pattern, const VS_CHAR* string, int flags )
       {
       while( *ps == VS_CHAR_L('*') ) ps++;
       if( ! *ps ) return 0; // pattern ends with *, will match anything
-      // there is a character after *, try to find it in ss, if end reached return error
       while( *ss )
         {
-//        if( __sfn_eq( *ps, *ss, flags ) ) break;
-        if( *ps == VS_CHAR_L('[') )
-          {
-          int a = 0;
-          if( ! __sfn_match_charset( ps, *ss, flags, &a ) )
-            {
-            ps += a;
-            break;
-            }
-          }
-        else
-          if( ! sfn_match( ps, ss, flags ) ) break;
+        if( ! sfn_match( ps, ss, flags ) ) return 0;
         ss++;
         }
-      if( ! *ss ) return 7;
-
-/*
-      while( *ss )
-        {
-        if( sfn_match( ps, ss++, flags ) ) continue;
-        return 0;
-        }
-      return 11;
-*/
+      return 7; // end of the string reached, nothing matched
       }
     else if( *ps == VS_CHAR_L('[') )
       {
+      if( ! *ss ) return 2; // end of the string, nothing left for the charset
       ps++;
       int a = 0;
       int r = __sfn_match_charset( ps, *ss, flags, &a );
