@@ -306,7 +306,7 @@
 
   VS_STRING_CLASS &str_sleft( VS_STRING_CLASS &target, int len ) // SelfLeft -- just as 'Left' but works on `this'
   {
-    if ( len < target.box->sl )
+    if ( len < target.box->sl && len >= 0 )
       {
       target.detach();
       target.box->s[len] = 0;
@@ -772,7 +772,7 @@
   VS_CHAR* str_sright( VS_CHAR* target, int len ) // SelfRight -- just as 'Right' but works on `this'
   {
     int sl = str_len( target );
-    if( len < sl )
+    if( len < sl && len >= 0 )
       {
       vs_memmove( target, target + ( sl - len ), len + 1 );
       target[len] = 0;
