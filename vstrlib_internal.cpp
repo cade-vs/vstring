@@ -750,6 +750,10 @@ int mem_string_search( const VS_CHAR *p, const VS_CHAR* d, const VS_CHAR* opt )
 
     pt = NULL;
     pl = 0;
+
+    opt_mode   = MODE_REGEXP; // ok() reads it before anything is compiled
+    opt_nocase = 0;
+    pos        = -1;
   }
 
   VS_REGEXP_CLASS::VS_REGEXP_CLASS( const VS_CHAR* rs, const VS_CHAR* opt )
@@ -762,7 +766,9 @@ int mem_string_search( const VS_CHAR *p, const VS_CHAR* d, const VS_CHAR* opt )
     pt = NULL;
     pl = 0;
 
-    opt_mode = MODE_REGEXP;
+    opt_mode   = MODE_REGEXP;
+    opt_nocase = 0;
+    pos        = -1;
     comp( rs, opt );
   }
 
