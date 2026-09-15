@@ -602,7 +602,7 @@ public:
   VS_TRIE_NODE* find_node( VS_TRIE_NODE* node, const VS_CHAR* key, int create = 0 );
   void del_node( VS_TRIE_NODE* node, const VS_CHAR *key, int branch = 0 );
 
-  int count_data_nodes( VS_TRIE_NODE* node );
+  int count_data_nodes( VS_TRIE_NODE* node, int down_only = 0 );
 
   VS_TRIE_BOX* clone();
   void undef() { ASSERT( root ); delete root; root = new VS_TRIE_NODE(); };

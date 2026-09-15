@@ -971,6 +971,63 @@ void t_negative_len()
   eqs( __LINE__, "str_sright(VString,0)",   i, "" );
 }
 
+/* every mutating str_*() must detach first: changing a copy must never be
+   visible through the string it was copied from */
+void sweep_cow()
+{
+  gr( "sweep: mutating a copy must not touch the original" );
+  const char* SRC = "abcdef";
+
+  #define COW( name, code )                                     \
+    {                                                           \
+    VString a = SRC;                                            \
+    VString b = a;                                              \
+    { VString& t = b; code; }                                   \
+    sw( __LINE__, a == SRC, name, detail2( a, SRC ) );          \
+    }
+
+  COW( "str_add_ch",     str_add_ch( t, 'X' ) )
+  COW( "str_add_ch_range", str_add_ch_range( t, 'x', 'z' ) )
+  COW( "str_set_ch",     str_set_ch( t, 0, 'X' ) )
+  COW( "str_ins",        str_ins( t, 0, "X" ) )
+  COW( "str_ins_ch",     str_ins_ch( t, 0, 'X' ) )
+  COW( "str_del",        str_del( t, 0, 2 ) )
+  COW( "str_replace",    str_replace( t, "a", "X" ) )
+  COW( "str_sleft",      str_sleft( t, 2 ) )
+  COW( "str_sright",     str_sright( t, 2 ) )
+  COW( "str_trim_left",  str_trim_left( t, 2 ) )
+  COW( "str_trim_right", str_trim_right( t, 2 ) )
+  COW( "str_cut_left",   str_cut_left( t, "a" ) )
+  COW( "str_cut_right",  str_cut_right( t, "f" ) )
+  COW( "str_cut",        str_cut( t, "af" ) )
+  COW( "str_cut_spc",    str_cut_spc( t ) )
+  COW( "str_pad",        str_pad( t, 10, '.' ) )
+  COW( "str_comma",      str_comma( t ) )
+  COW( "str_mul",        str_mul( t, 2 ) )
+  COW( "str_tr",         str_tr( t, "a", "X" ) )
+  COW( "str_up",         str_up( t ) )
+  COW( "str_low",        str_low( t ) )
+  COW( "str_flip_case",  str_flip_case( t ) )
+  COW( "str_reverse",    str_reverse( t ) )
+  COW( "str_squeeze",    str_squeeze( t, "a" ) )
+  COW( "str_chop",       str_chop( t ) )
+  COW( "operator +=",    t += "X" )
+  COW( "operator []",    t[0] = 'X' )
+  COW( "cat()",          t.cat( "X" ) )
+  COW( "set()",          t.set( "X" ) )
+  COW( "setn()",         t.setn( "XY", 1 ) )
+  COW( "catn()",         t.catn( "XY", 1 ) )
+  #undef COW
+
+  /* and the same through a VArray element, which shares the box too */
+  VString c = "abcdef";
+  VArray  d;
+  d.push( c );
+  str_add_ch( c, 'X' );
+  sw( __LINE__, VString( d.get( 0 ) ) == "abcdef", "array element after push",
+      d.get( 0 ) );
+}
+
 void sweep_invariants()
 {
   gr( "sweep: invariants" );
@@ -1096,6 +1153,7 @@ int main( int argc, char** argv )
   printf( "=========================================================================\n" );
   sweep_char_vs_vstring();
   sweep_narrow_vs_wide();
+  sweep_cow();
   sweep_invariants();
   if( sweep_fail > 25 )
     printf( "  ... and %ld more\n", sweep_fail - 25 );

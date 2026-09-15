@@ -404,6 +404,7 @@
 
   void str_add_ch( VS_STRING_CLASS &target, const VS_CHAR ch ) // adds `ch' at the end
   {
+    target.detach();
     int sl = target.box->sl;
     if( sl + 1 >= target.box->size ) target.resize( sl + 1 );
     target.box->s[sl] = ch;
@@ -414,6 +415,7 @@
   void str_add_ch_range( VS_STRING_CLASS &target, const VS_CHAR fr, const VS_CHAR to ) // adds all from `fr' to 'to' at the end
   {
     if( fr > to ) return;
+    target.detach();
     target.resize( target.box->sl + ( to - fr ) + 1 );
     for( int i = fr; i <= to; i++ )
       target.box->s[target.box->sl++] = i;
@@ -1297,6 +1299,7 @@
 
   void VS_ARRAY_CLASS::ins( int n, const VS_CHAR* s )
   {
+    if( n < 0 ) return; // TODO: allow reverse indexing with negative numbers
     new_pos( n );
     box->_data[n]->set( s );
   }
@@ -1308,6 +1311,7 @@
 
   void VS_ARRAY_CLASS::set( int n, const VS_CHAR* s )
   {
+    if( n < 0 ) return; // TODO: allow reverse indexing with negative numbers
     if( n >= box->_count ) new_pos( n );
     box->_data[n]->set( s );
   }
@@ -1383,12 +1387,14 @@
 
   void VS_ARRAY_CLASS::ins( int n, const VS_STRING_CLASS& vs )
   {
+    if( n < 0 ) return; // TODO: allow reverse indexing with negative numbers
     new_pos( n );
     *box->_data[n] = vs;
   }
 
   void VS_ARRAY_CLASS::set( int n, const VS_STRING_CLASS& vs )
   {
+    if( n < 0 ) return; // TODO: allow reverse indexing with negative numbers
     if( n >= box->_count ) new_pos( n );
     *box->_data[n] = vs;
   }
@@ -1657,10 +1663,11 @@
       }
   }
 
-  int VS_TRIE_BOX::count_data_nodes( VS_TRIE_NODE* node )
+  int VS_TRIE_BOX::count_data_nodes( VS_TRIE_NODE* node, int down_only )
   {
     if( ! node ) return 0;
-    return ( node->data ? 1 : 0 ) + count_data_nodes( node->next ) + count_data_nodes( node->down );
+    return ( node->data ? 1 : 0 ) + ( down_only ? 0 : count_data_nodes( node->next ) ) + count_data_nodes( node->down );
+//    return ( node->data ? 1 : 0 ) + count_data_nodes( node->next ) + count_data_nodes( node->down );
   }
 /*
   void VS_TRIE_BOX::del_node( VS_TRIE_NODE* node, const VS_CHAR *key, int branch )
@@ -1801,7 +1808,7 @@
 
   int VS_TRIE_CLASS::count( const VS_CHAR* key )
   {
-    return box->count_data_nodes( key ? box->find_node( box->root, key ) : box->root );
+    return box->count_data_nodes( key ? box->find_node( box->root, key ) : box->root, key ? 1 : 0 );
   }
 
   void VS_TRIE_CLASS::detach()

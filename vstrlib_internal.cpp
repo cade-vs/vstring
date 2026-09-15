@@ -770,7 +770,7 @@ int mem_string_search( const VS_CHAR *p, const VS_CHAR* d, const VS_CHAR* opt )
   {
     if ( re ) pcre2_code_free( re );
     if ( md ) pcre2_match_data_free( md );
-    if ( pt ) delete pt;
+    if ( pt ) delete [] pt;
   }
 
   int VS_REGEXP_CLASS::get_options( const VS_CHAR* opt )
@@ -917,7 +917,7 @@ int mem_string_search( const VS_CHAR *p, const VS_CHAR* d, const VS_CHAR* opt )
       }
     else
       {
-      if ( n != 0 ) return substr;
+      if ( n != 0 || pos < 0 ) return substr;
       substr.setn( lp + pos, pl );
       }
     return substr;
