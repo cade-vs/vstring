@@ -968,10 +968,12 @@
   // VS_STRING_CLASS supposed to be a integer or real w/o `e' format
   VS_CHAR* str_comma( VS_CHAR* target, VS_CHAR delim )
   {
+    // a leading sign is not a digit, so nothing may be inserted in front of it
+    int first = ( target[0] == VS_CHAR_L('-') || target[0] == VS_CHAR_L('+') ) ? 1 : 0;
     int dot = str_rfind( target, VS_CHAR_L('.') );
     if (dot == -1) dot = str_len( target );
     dot -= 3;
-    while( dot > 0 )
+    while( dot > first )
       {
       str_ins_ch( target, dot , delim );
       dot -= 3;

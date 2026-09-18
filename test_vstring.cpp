@@ -425,6 +425,20 @@ void t_cut_case()
                                 eqs( __LINE__, "str_comma(...,',')",      m2, "1,234,567" );
   VString n2 = "123"; str_comma( n2 );
                                 eqs( __LINE__, "str_comma(\"123\")",      n2, "123" );
+  /* the sign is not a digit: nothing may be inserted in front of it, which
+     only shows up when the digit count is a multiple of three */
+  VString o2 = "-999999"; str_comma( o2 );
+                                eqs( __LINE__, "negative, 6 digits",      o2, "-999'999" );
+  VString p2 = "-123"; str_comma( p2 );
+                                eqs( __LINE__, "negative, 3 digits",      p2, "-123" );
+  VString q2 = "-1234567"; str_comma( q2 );
+                                eqs( __LINE__, "negative, 7 digits",      q2, "-1'234'567" );
+  VString r2 = "+999999"; str_comma( r2 );
+                                eqs( __LINE__, "leading plus",            r2, "+999'999" );
+  VString s2 = "-1234.56"; str_comma( s2 );
+                                eqs( __LINE__, "negative with a decimal", s2, "-1'234.56" );
+  VString t2 = "-1"; str_comma( t2 );
+                                eqs( __LINE__, "negative, 1 digit",       t2, "-1" );
 }
 
 void t_search()
